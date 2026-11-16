@@ -283,7 +283,8 @@ async function mgWorldCase(lib, vp) {
   const o = {};
   const seq = [];
   const visited = await walk(lib, 'food', vp, Object.assign(o, { shots: true }));
-  const a3 = visited.find((v) => v.id === 'A3');
+  // The step index can advance one frame before the screen switches.
+  const a3 = visited.find((v) => v.id === 'A3' && v.screen === 'minigame') || visited.find((v) => v.id === 'A3');
   expect(a3 && a3.screen === 'minigame', 'A3 is the registered mini-game for food: ' + JSON.stringify(a3));
   expect(await ev(lib, () => true), 'ok');
   expect(o.mgWrong >= 1, 'a wrong action was made inside the mini-game');
