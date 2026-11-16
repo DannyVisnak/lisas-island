@@ -98,16 +98,27 @@ UI.screens.run = function (flow, root, p) {
   }
   resize();
   window.addEventListener('resize', resize);
-  flow.onKill(function () { window.removeEventListener('resize', resize); cancelAnimationFrame(raf); });
+  flow.onKill(function () { window.removeEventListener('resize', resize); window.removeEventListener('keydown', onKeyDown); cancelAnimationFrame(raf); });
 
   /* ----- input ----- */
-  cv.addEventListener('pointerdown', function (e) {
-    e.preventDefault(); Snd.unlock();
-    var L = S.lisa;
+  function jumpAction() {
+    Snd.unlock();
     if (S.state === 'ready') { startRun(); }
-    if (S.state === 'run' || S.state === 'bounce') L.jumpBuf = 0.16;
-  });
+    if (S.state === 'run' || S.state === 'bounce') S.lisa.jumpBuf = 0.16;
+  }
+  cv.addEventListener('pointerdown', function (e) { e.preventDefault(); jumpAction(); });
   function startRun() { if (S.state === 'ready') S.state = 'run'; }
+  function onKeyDown(e) {
+    var target = e.target, tag = target && target.tagName;
+    if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tag || '') || (target.closest && target.closest('[contenteditable="true"]')))) return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    var key = e.key === ' ' || e.code === 'Space' ? 'Space' : e.code === 'ArrowUp' || e.key === 'ArrowUp' ? 'ArrowUp' : e.code === 'KeyW' || String(e.key || '').toLowerCase() === 'w' ? 'w' : '';
+    if (!key) return;
+    e.preventDefault();
+    if (e.repeat) return;
+    if (S.state === 'ready' || S.state === 'run' || S.state === 'bounce') jumpAction();
+  }
+  window.addEventListener('keydown', onKeyDown);
 
   /* ----- gate question: silent cue after 8 s, automatic help after 25 s without a tap ----- */
   UI.idle(flow, { visualMs: 8000, speakMs: 25000, active: function () { return S.askActive && !!Q.cur; },
