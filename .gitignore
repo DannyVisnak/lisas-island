@@ -39,3 +39,6 @@ __pycache__/
 
 # Generated screenshots
 /tools/shots/
+
+# Codex ultrapowers learning notes (private)
+/docs/superpowers/

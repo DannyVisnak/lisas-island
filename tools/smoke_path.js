@@ -74,6 +74,7 @@ const WRONG = {   /* one errorless wrong action per game (only where cheap and g
   async market() { /* the drop-beside-the-basket case is covered by smoke_mg_market */ }
 };
 async function solveMinigame(lib, st) {
+  const { page } = lib;
   const id = await ev(lib, () => (window.__mgTest ? __mgTest.id : null));
   if (!id || !MGS[id]) { await sleep(200); return; }
   let first = true, n0 = -1;
@@ -119,12 +120,17 @@ async function solveScene(lib, st) {
 }
 async function solveRun(lib, st) {
   const { page } = lib;
-  let wrong = false;
+  let wrong = false, skippedGate = -1, skippedEnd = false;
   for (let guard = 0; guard < 200; guard++) {
     if ((await lib.screen()) !== 'run') return;
     const s = await ev(lib, () => (window.__runState ? { state: __runState.state, gi: __runState.gi, n: __runState.gates.length, over: __runState.over } : null));
     if (!s) { await sleep(100); return; }
-    if (s.state === 'run') { await ev(lib, (n) => { if (__runState.gi >= n) __runState.skipToEnd(); else __runState.skipToGate(); }, s.n); await sleep(250); continue; }
+    if (s.state === 'run') {
+      /* Physics runs at real time: repeated skips rewind the approach before Lisa reaches the gate/house. */
+      if (s.gi < s.n && skippedGate !== s.gi) { await ev(lib, () => __runState.skipToGate()); skippedGate = s.gi; }
+      else if (s.gi >= s.n && !skippedEnd) { await ev(lib, () => __runState.skipToEnd()); skippedEnd = true; }
+      await sleep(250); continue;
+    }
     if (s.state === 'gate') {
       const q = await ev(lib, () => ({ id: __test.correctId(), ch: __test.choiceIds() }));
       if (!q.id) { await sleep(120); continue; }
@@ -132,7 +138,6 @@ async function solveRun(lib, st) {
       await lib.tapSel('.gatechoices .card[data-id="' + q.id + '"]');
       await sleep(500); continue;
     }
-    if (s.gi >= s.n - 0 && s.state !== 'gate') await ev(lib, () => __runState.skipToEnd());
     await sleep(150);
   }
 }
