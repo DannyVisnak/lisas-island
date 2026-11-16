@@ -1,0 +1,125 @@
+# world	id	emoji_or_color	en	pt	de	ru	q_en	q_pt	q_de
+animals	cat	🐱	cat	o gato	die Katze	кошка	Where is the cat?	Onde está o gato?	Wo ist die Katze?
+animals	dog	🐶	dog	o cão	der Hund	собака	Where is the dog?	Onde está o cão?	Wo ist der Hund?
+animals	fish	🐟	fish	o peixe	der Fisch	рыба	Where is the fish?	Onde está o peixe?	Wo ist der Fisch?
+animals	bird	🐦	bird	o pássaro	der Vogel	птичка	Where is the bird?	Onde está o pássaro?	Wo ist der Vogel?
+animals	horse	🐴	horse	o cavalo	das Pferd	лошадка	Where is the horse?	Onde está o cavalo?	Wo ist das Pferd?
+animals	cow	🐮	cow	a vaca	die Kuh	корова	Where is the cow?	Onde está a vaca?	Wo ist die Kuh?
+animals	pig	🐷	pig	o porco	das Schwein	свинка	Where is the pig?	Onde está o porco?	Wo ist das Schwein?
+animals	rabbit	🐰	rabbit	o coelho	der Hase	зайчик	Where is the rabbit?	Onde está o coelho?	Wo ist der Hase?
+animals	mouse	🐭	mouse	o rato	die Maus	мышка	Where is the mouse?	Onde está o rato?	Wo ist die Maus?
+animals	frog	🐸	frog	a rã	der Frosch	лягушка	Where is the frog?	Onde está a rã?	Wo ist der Frosch?
+animals	lion	🦁	lion	o leão	der Löwe	лев	Where is the lion?	Onde está o leão?	Wo ist der Löwe?
+animals	duck	🦆	duck	o pato	die Ente	утка	Where is the duck?	Onde está o pato?	Wo ist die Ente?
+colors	red	#e53935	red	vermelho	rot	красный	Find red!	Encontra o vermelho!	Finde Rot!
+colors	blue	#1e88e5	blue	azul	blau	синий	Find blue!	Encontra o azul!	Finde Blau!
+colors	green	#43a047	green	verde	grün	зелёный	Find green!	Encontra o verde!	Finde Grün!
+colors	yellow	#fdd835	yellow	amarelo	gelb	жёлтый	Find yellow!	Encontra o amarelo!	Finde Gelb!
+colors	orange_c	#fb8c00	orange	cor de laranja	orange	оранжевый	Find orange!	Encontra o cor de laranja!	Finde Orange!
+colors	purple	#8e24aa	purple	roxo	lila	фиолетовый	Find purple!	Encontra o roxo!	Finde Lila!
+colors	pink	#f06292	pink	cor-de-rosa	rosa	розовый	Find pink!	Encontra o cor-de-rosa!	Finde Rosa!
+colors	black	#212121	black	preto	schwarz	чёрный	Find black!	Encontra o preto!	Finde Schwarz!
+colors	white	#ffffff	white	branco	weiß	белый	Find white!	Encontra o branco!	Finde Weiß!
+colors	brown	#6d4c41	brown	castanho	braun	коричневый	Find brown!	Encontra o castanho!	Finde Braun!
+food	apple	🍎	apple	a maçã	der Apfel	яблоко	Where is the apple?	Onde está a maçã?	Wo ist der Apfel?
+food	banana	🍌	banana	a banana	die Banane	банан	Where is the banana?	Onde está a banana?	Wo ist die Banane?
+food	bread	🍞	bread	o pão	das Brot	хлеб	Where is the bread?	Onde está o pão?	Wo ist das Brot?
+food	milk	🥛	milk	o leite	die Milch	молоко	Where is the milk?	Onde está o leite?	Wo ist die Milch?
+food	water	💧	water	a água	das Wasser	вода	Where is the water?	Onde está a água?	Wo ist das Wasser?
+food	egg	🥚	egg	o ovo	das Ei	яйцо	Where is the egg?	Onde está o ovo?	Wo ist das Ei?
+food	cheese	🧀	cheese	o queijo	der Käse	сыр	Where is the cheese?	Onde está o queijo?	Wo ist der Käse?
+food	orange	🍊	orange	a laranja	die Orange	апельсин	Where is the orange?	Onde está a laranja?	Wo ist die Orange?
+food	icecream	🍦	ice cream	o gelado	das Eis	мороженое	Where is the ice cream?	Onde está o gelado?	Wo ist das Eis?
+food	cake	🎂	cake	o bolo	der Kuchen	торт	Where is the cake?	Onde está o bolo?	Wo ist der Kuchen?
+food	strawberry	🍓	strawberry	o morango	die Erdbeere	клубника	Where is the strawberry?	Onde está o morango?	Wo ist die Erdbeere?
+food	carrot	🥕	carrot	a cenoura	die Karotte	морковка	Where is the carrot?	Onde está a cenoura?	Wo ist die Karotte?
+phrases	hello	🙋	Hello!	Olá!	Hallo!	Привет!	Hello!	Olá!	Hallo!
+phrases	bye	👋	Goodbye!	Adeus!	Tschüss!	Пока!	Goodbye!	Adeus!	Tschüss!
+phrases	thanks	🙏	Thank you!	Obrigado!	Danke!	Спасибо!	Thank you!	Obrigado!	Danke!
+phrases	please	🥺	Please!	Por favor!	Bitte!	Пожалуйста!	Please!	Por favor!	Bitte!
+phrases	yes	👍	Yes!	Sim!	Ja!	Да!	Yes!	Sim!	Ja!
+phrases	no	🙅	No!	Não!	Nein!	Нет!	No!	Não!	Nein!
+phrases	hungry	🍽️	I'm hungry.	Tenho fome.	Ich habe Hunger.	Я хочу есть.	I'm hungry.	Tenho fome.	Ich habe Hunger.
+phrases	thirsty	🥤	I'm thirsty.	Tenho sede.	Ich habe Durst.	Я хочу пить.	I'm thirsty.	Tenho sede.	Ich habe Durst.
+phrases	toiletp	🚽	I need the toilet.	Preciso de ir à casa de banho.	Ich muss aufs Klo.	Я хочу в туалет.	I need the toilet.	Preciso de ir à casa de banho.	Ich muss aufs Klo.
+phrases	hurts	🤕	It hurts.	Dói-me.	Es tut weh.	Мне больно.	It hurts.	Dói-me.	Es tut weh.
+numbers	n1	1	one	um	eins	один	Find one!	Encontra o um!	Finde die Eins!
+numbers	n2	2	two	dois	zwei	два	Find two!	Encontra o dois!	Finde die Zwei!
+numbers	n3	3	three	três	drei	три	Find three!	Encontra o três!	Finde die Drei!
+numbers	n4	4	four	quatro	vier	четыре	Find four!	Encontra o quatro!	Finde die Vier!
+numbers	n5	5	five	cinco	fünf	пять	Find five!	Encontra o cinco!	Finde die Fünf!
+numbers	n6	6	six	seis	sechs	шесть	Find six!	Encontra o seis!	Finde die Sechs!
+numbers	n7	7	seven	sete	sieben	семь	Find seven!	Encontra o sete!	Finde die Sieben!
+numbers	n8	8	eight	oito	acht	восемь	Find eight!	Encontra o oito!	Finde die Acht!
+numbers	n9	9	nine	nove	neun	девять	Find nine!	Encontra o nove!	Finde die Neun!
+numbers	n10	10	ten	dez	zehn	десять	Find ten!	Encontra o dez!	Finde die Zehn!
+school	wash	🧼	Wash your hands!	Lava as mãos!	Wasch dir die Hände!	Помой руки!	Wash your hands!	Lava as mãos!	Wasch dir die Hände!
+school	sit	💺	Sit down, please!	Senta-te, por favor!	Setz dich bitte hin!	Сядь, пожалуйста!	Sit down, please!	Senta-te, por favor!	Setz dich bitte hin!
+school	quiet	🤫	Quiet, please!	Silêncio, por favor!	Leise, bitte!	Тише, пожалуйста!	Quiet, please!	Silêncio, por favor!	Leise, bitte!
+school	tidy	🧹	Tidy up!	Vamos arrumar!	Aufräumen!	Давай уберём игрушки!	Tidy up!	Vamos arrumar!	Aufräumen!
+school	look	👀	Look!	Olha!	Schau mal!	Смотри!	Look!	Olha!	Schau mal!
+school	paint	🎨	Let's paint!	Vamos pintar!	Wir malen!	Давай рисовать!	Let's paint!	Vamos pintar!	Wir malen!
+school	outside	🛝	Let's go outside!	Vamos lá para fora!	Wir gehen raus!	Идём на улицу!	Let's go outside!	Vamos lá para fora!	Wir gehen raus!
+body	hand	✋	hand	a mão	die Hand	рука	Where is the hand?	Onde está a mão?	Wo ist die Hand?
+body	foot	🦶	foot	o pé	der Fuß	ступня	Where is the foot?	Onde está o pé?	Wo ist der Fuß?
+body	eye	👁️	eye	o olho	das Auge	глаз	Where is the eye?	Onde está o olho?	Wo ist das Auge?
+body	ear	👂	ear	a orelha	das Ohr	ухо	Where is the ear?	Onde está a orelha?	Wo ist das Ohr?
+body	nose	👃	nose	o nariz	die Nase	нос	Where is the nose?	Onde está o nariz?	Wo ist die Nase?
+body	mouth	👄	mouth	a boca	der Mund	рот	Where is the mouth?	Onde está a boca?	Wo ist der Mund?
+body	tooth	🦷	tooth	o dente	der Zahn	зуб	Where is the tooth?	Onde está o dente?	Wo ist der Zahn?
+body	leg	🦵	leg	a perna	das Bein	нога	Where is the leg?	Onde está a perna?	Wo ist das Bein?
+body	face	🙂	face	a cara	das Gesicht	лицо	Where is the face?	Onde está a cara?	Wo ist das Gesicht?
+family	mum	👩	mum	a mãe	die Mama	мама	Where is mum?	Onde está a mãe?	Wo ist die Mama?
+family	dad	👨	dad	o pai	der Papa	папа	Where is dad?	Onde está o pai?	Wo ist der Papa?
+family	baby	👶	baby	o bebé	das Baby	малыш	Where is the baby?	Onde está o bebé?	Wo ist das Baby?
+family	boy	👦	boy	o menino	der Junge	мальчик	Where is the boy?	Onde está o menino?	Wo ist der Junge?
+family	girl	👧	girl	a menina	das Mädchen	девочка	Where is the girl?	Onde está a menina?	Wo ist das Mädchen?
+family	grandma	👵	grandma	a avó	die Oma	бабушка	Where is grandma?	Onde está a avó?	Wo ist die Oma?
+family	grandpa	👴	grandpa	o avô	der Opa	дедушка	Where is grandpa?	Onde está o avô?	Wo ist der Opa?
+family	friend	🧑‍🤝‍🧑	friends	os amigos	die Freunde	друзья	Where are the friends?	Onde estão os amigos?	Wo sind die Freunde?
+family	teacher	🧑‍🏫	teacher	a professora	die Lehrerin	учительница	Where is the teacher?	Onde está a professora?	Wo ist die Lehrerin?
+toys	ball	⚽	ball	a bola	der Ball	мяч	Where is the ball?	Onde está a bola?	Wo ist der Ball?
+toys	book	📕	book	o livro	das Buch	книга	Where is the book?	Onde está o livro?	Wo ist das Buch?
+toys	backpack	🎒	backpack	a mochila	der Rucksack	рюкзак	Where is the backpack?	Onde está a mochila?	Wo ist der Rucksack?
+toys	pencil	✏️	pencil	o lápis	der Stift	карандаш	Where is the pencil?	Onde está o lápis?	Wo ist der Stift?
+toys	teddy	🧸	teddy bear	o ursinho	der Teddybär	мишка	Where is the teddy bear?	Onde está o ursinho?	Wo ist der Teddybär?
+toys	balloon	🎈	balloon	o balão	der Luftballon	шарик	Where is the balloon?	Onde está o balão?	Wo ist der Luftballon?
+clothes	cap	🧢	cap	o boné	die Kappe	кепка	Where is the cap?	Onde está o boné?	Wo ist die Kappe?
+clothes	shoe	👞	shoe	o sapato	der Schuh	ботинок	Where is the shoe?	Onde está o sapato?	Wo ist der Schuh?
+clothes	socks	🧦	socks	as meias	die Socken	носки	Where are the socks?	Onde estão as meias?	Wo sind die Socken?
+clothes	dress	👗	dress	o vestido	das Kleid	платье	Where is the dress?	Onde está o vestido?	Wo ist das Kleid?
+clothes	coat	🧥	coat	o casaco	die Jacke	куртка	Where is the coat?	Onde está o casaco?	Wo ist die Jacke?
+clothes	gloves	🧤	gloves	as luvas	die Handschuhe	перчатки	Where are the gloves?	Onde estão as luvas?	Wo sind die Handschuhe?
+clothes	scarf	🧣	scarf	o cachecol	der Schal	шарф	Where is the scarf?	Onde está o cachecol?	Wo ist der Schal?
+home	house	🏠	house	a casa	das Haus	дом	Where is the house?	Onde está a casa?	Wo ist das Haus?
+home	bed	🛏️	bed	a cama	das Bett	кровать	Where is the bed?	Onde está a cama?	Wo ist das Bett?
+home	chair	🪑	chair	a cadeira	der Stuhl	стул	Where is the chair?	Onde está a cadeira?	Wo ist der Stuhl?
+home	door	🚪	door	a porta	die Tür	дверь	Where is the door?	Onde está a porta?	Wo ist die Tür?
+home	toilet	🚽	toilet	a casa de banho	die Toilette	туалет	Where is the toilet?	Onde é a casa de banho?	Wo ist die Toilette?
+home	bath	🛁	bath	a banheira	die Badewanne	ванна	Where is the bath?	Onde está a banheira?	Wo ist die Badewanne?
+home	key	🔑	key	a chave	der Schlüssel	ключ	Where is the key?	Onde está a chave?	Wo ist der Schlüssel?
+home	tv	📺	TV	a televisão	der Fernseher	телевизор	Where is the TV?	Onde está a televisão?	Wo ist der Fernseher?
+home	spoon	🥄	spoon	a colher	der Löffel	ложка	Where is the spoon?	Onde está a colher?	Wo ist der Löffel?
+transport	car	🚗	car	o carro	das Auto	машина	Where is the car?	Onde está o carro?	Wo ist das Auto?
+transport	bus	🚌	bus	o autocarro	der Bus	автобус	Where is the bus?	Onde está o autocarro?	Wo ist der Bus?
+transport	train	🚂	train	o comboio	der Zug	поезд	Where is the train?	Onde está o comboio?	Wo ist der Zug?
+transport	bike	🚲	bike	a bicicleta	das Fahrrad	велосипед	Where is the bike?	Onde está a bicicleta?	Wo ist das Fahrrad?
+transport	plane	✈️	plane	o avião	das Flugzeug	самолёт	Where is the plane?	Onde está o avião?	Wo ist das Flugzeug?
+transport	boat	⛵	boat	o barco	das Boot	лодка	Where is the boat?	Onde está o barco?	Wo ist das Boot?
+nature	sun	☀️	sun	o sol	die Sonne	солнце	Where is the sun?	Onde está o sol?	Wo ist die Sonne?
+nature	moon	🌙	moon	a lua	der Mond	луна	Where is the moon?	Onde está a lua?	Wo ist der Mond?
+nature	star	⭐	star	a estrela	der Stern	звезда	Where is the star?	Onde está a estrela?	Wo ist der Stern?
+nature	tree	🌳	tree	a árvore	der Baum	дерево	Where is the tree?	Onde está a árvore?	Wo ist der Baum?
+nature	flower	🌸	flower	a flor	die Blume	цветок	Where is the flower?	Onde está a flor?	Wo ist die Blume?
+nature	rain	🌧️	rain	a chuva	der Regen	дождь	Where is the rain?	Onde está a chuva?	Wo ist der Regen?
+nature	sea	🌊	sea	o mar	das Meer	море	Where is the sea?	Onde está o mar?	Wo ist das Meer?
+nature	beach	🏖️	beach	a praia	der Strand	пляж	Where is the beach?	Onde está a praia?	Wo ist der Strand?
+nature	shell	🐚	shell	a concha	die Muschel	ракушка	Where is the shell?	Onde está a concha?	Wo ist die Muschel?
+actions	sleep	😴	sleep	dormir	schlafen	спать	Who is sleeping?	Quem está a dormir?	Wer schläft?
+actions	run	🏃	run	correr	rennen	бегать	Who is running?	Quem está a correr?	Wer rennt?
+actions	swim	🏊	swim	nadar	schwimmen	плавать	Who is swimming?	Quem está a nadar?	Wer schwimmt?
+actions	dance	💃	dance	dançar	tanzen	танцевать	Who is dancing?	Quem está a dançar?	Wer tanzt?
+actions	sing	🧑‍🎤	sing	cantar	singen	петь	Who is singing?	Quem está a cantar?	Wer singt?
+actions	cry	😢	cry	chorar	weinen	плакать	Who is crying?	Quem está a chorar?	Wer weint?
+actions	laugh	😂	laugh	rir	lachen	смеяться	Who is laughing?	Quem está a rir?	Wer lacht?
+actions	clap	👏	clap	bater palmas	klatschen	хлопать	Who is clapping?	Quem está a bater palmas?	Wer klatscht?

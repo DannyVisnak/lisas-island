@@ -1,0 +1,64 @@
+/* Lisa's Island - mini-game "body": looks only (every selector prefixed .mg-body). */
+.mg-body .mgb-lisa { z-index: 3; }
+.mg-body .mgb-hit { position: absolute; left: -6%; right: -6%; top: -2%; bottom: 0; z-index: 6; touch-action: none; cursor: pointer; }
+.mg-body .mgb-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 5; border: .7rem solid rgba(255,233,74,0); box-sizing: border-box; }
+.mg-body .mgb-ring.mgb-hint { border-color: #ffe94a; background: rgba(255,240,120,.28); animation: mgbring 1s ease-in-out infinite; }
+.mg-body .mgb-ring.mgb-peek { border-color: #fff176; animation: mgbring .9s ease-in-out 3; }
+.mg-body .mgb-ring.mgb-pulse { animation: mgbtouch .55s ease-out 1; }
+@keyframes mgbring { 0%, 100% { transform: scale(.9); opacity: .7; } 50% { transform: scale(1.25); opacity: 1; } }
+@keyframes mgbtouch { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.9); border-color: rgba(255,255,255,.9); transform: scale(.7); } 100% { box-shadow: 0 0 0 3rem rgba(255,255,255,0); border-color: rgba(255,255,255,0); transform: scale(1.3); } }
+
+/* the one visible tooth (a little white chip on the lower lip) */
+.mg-body .mgb-tooth { position: absolute; background: #fff; border: .35rem solid #e9dcc3; border-top-width: .2rem; border-radius: .6rem .6rem 1.6rem 1.6rem; z-index: 2; pointer-events: none; box-sizing: border-box; }
+
+/* reactions: SVG parts get transform-box so they turn around their own centre */
+.mg-body .mgb-lisa svg .mgb-nose, .mg-body .mgb-lisa svg .mgb-eyel, .mg-body .mgb-lisa svg .mgb-eyer, .mg-body .mgb-lisa svg .mgb-cheek,
+.mg-body .mgb-lisa svg .mgb-footl, .mg-body .mgb-lisa svg .mgb-footr { transform-box: fill-box; transform-origin: center; }
+.mg-body .mgb-lisa svg .mgb-earl, .mg-body .mgb-lisa svg .mgb-earr { transform-box: fill-box; transform-origin: 50% 100%; }
+
+.mg-body .mgb-lisa.mgb-r-nose svg .mgb-nose { animation: mgbnose .7s ease-out 1; }
+.mg-body .mgb-lisa.mgb-r-nose .head { animation: mgbnudge .7s ease-out 1; }
+@keyframes mgbnose { 0% { transform: scale(1); } 25% { transform: scale(2.1, 1.7); } 50% { transform: scale(.85); } 75% { transform: scale(1.4); } 100% { transform: scale(1); } }
+@keyframes mgbnudge { 0%, 100% { transform: translateY(0); } 25% { transform: translateY(6px) rotate(-2deg); } 60% { transform: translateY(-2px) rotate(1deg); } }
+
+.mg-body .mgb-lisa.mgb-r-earl svg .mgb-earl { animation: mgbearl .9s ease-in-out 1; }
+.mg-body .mgb-lisa.mgb-r-earr svg .mgb-earr { animation: mgbearr .9s ease-in-out 1; }
+@keyframes mgbearl { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(-22deg); } 35% { transform: rotate(10deg); } 55% { transform: rotate(-18deg); } 75% { transform: rotate(6deg); } }
+@keyframes mgbearr { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(22deg); } 35% { transform: rotate(-10deg); } 55% { transform: rotate(18deg); } 75% { transform: rotate(-6deg); } }
+
+.mg-body .mgb-lisa.mgb-r-eyel svg .mgb-eyel { animation: mgbwink 1s ease-in-out 1; }
+.mg-body .mgb-lisa.mgb-r-eyer svg .mgb-eyer { animation: mgbwink 1s ease-in-out 1; }
+@keyframes mgbwink { 0%, 100% { transform: scaleY(1); } 18%, 70% { transform: scaleY(.1); } }
+
+.mg-body .mgb-lisa.mgb-r-handl .arm-l { animation: mgbwavel .5s ease-in-out 3; }
+.mg-body .mgb-lisa.mgb-r-handr .arm-r { animation: mgbwaver .5s ease-in-out 3; }
+@keyframes mgbwavel { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(32deg); } }
+@keyframes mgbwaver { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-32deg); } }
+
+.mg-body .mgb-lisa.mgb-r-footl svg .mgb-footl { animation: mgbstamp .7s ease-out 1; }
+.mg-body .mgb-lisa.mgb-r-footr svg .mgb-footr { animation: mgbstamp .7s ease-out 1; }
+@keyframes mgbstamp { 0%, 100% { transform: translateY(0) scale(1); } 25% { transform: translateY(-16px) scale(1.15); } 50% { transform: translateY(2px) scale(1.35, .7); } 75% { transform: translateY(-5px); } }
+
+.mg-body .mgb-lisa.mgb-r-legl svg .mgb-footl { animation: mgbkickl .8s ease-in-out 1; }
+.mg-body .mgb-lisa.mgb-r-legr svg .mgb-footr { animation: mgbkickr .8s ease-in-out 1; }
+@keyframes mgbkickl { 0%, 100% { transform: translate(0) rotate(0); } 30% { transform: translate(-22px, -22px) rotate(-30deg); } 55% { transform: translate(6px, -4px) rotate(10deg); } 75% { transform: translate(-14px, -14px) rotate(-22deg); } }
+@keyframes mgbkickr { 0%, 100% { transform: translate(0) rotate(0); } 30% { transform: translate(22px, -22px) rotate(30deg); } 55% { transform: translate(-6px, -4px) rotate(-10deg); } 75% { transform: translate(14px, -14px) rotate(22deg); } }
+
+.mg-body .mgb-lisa.mgb-r-mouth .mouth-smile, .mg-body .mgb-lisa.mgb-r-tooth .mouth-smile { display: none; }
+.mg-body .mgb-lisa.mgb-r-mouth .mouth-open, .mg-body .mgb-lisa.mgb-r-tooth .mouth-open { display: inline; }
+.mg-body .mgb-lisa.mgb-r-tooth .mgb-tooth { animation: mgbtooth 1.2s ease-in-out 1; }
+.mg-body .mgb-lisa.mgb-r-mouth .head { animation: mgbnudge .8s ease-out 1; }
+@keyframes mgbtooth { 0%, 100% { transform: scale(1); filter: none; } 30%, 70% { transform: scale(1.7) translateY(.3rem); filter: drop-shadow(0 0 .8rem #fff59d) drop-shadow(0 0 .4rem #fff); } }
+
+.mg-body .mgb-lisa.mgb-r-face .head { animation: mgbface .9s ease-in-out 1; }
+.mg-body .mgb-lisa.mgb-r-face svg .mgb-cheek { animation: mgbcheek .9s ease-in-out 1; }
+@keyframes mgbface { 0%, 100% { transform: rotate(0) scale(1); } 30% { transform: rotate(-6deg) scale(1.05); } 65% { transform: rotate(5deg) scale(1.05); } }
+@keyframes mgbcheek { 0%, 100% { transform: scale(1); opacity: .55; } 40% { transform: scale(1.7); opacity: 1; } }
+
+/* high five button */
+.mg-body .mgb-five { position: absolute; left: 100rem; top: 24rem; width: 20rem; height: 20rem; border-radius: 50%; background: #ffd54f; border: 1rem solid #fff; display: flex; align-items: center; justify-content: center; z-index: 8;
+  box-shadow: 0 1rem 0 rgba(0,0,0,.18), 0 0 4rem rgba(255,235,90,.9); animation: mgbfive .8s ease-in-out infinite alternate; }
+.mg-body .mgb-five svg { width: 72%; height: 72%; display: block; }
+.mg-body .mgb-five.hit { animation: mgbfivehit .5s ease-out 1 forwards; }
+@keyframes mgbfive { from { transform: rotate(-10deg) scale(1); } to { transform: rotate(10deg) scale(1.1); } }
+@keyframes mgbfivehit { 0% { transform: scale(1.1); } 40% { transform: scale(1.6) rotate(-14deg); } 100% { transform: scale(.01); opacity: 0; } }

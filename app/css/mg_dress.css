@@ -1,0 +1,12 @@
+/* Lisa's Island - mini-game "dress": looks only (every selector prefixed .mg-dress). */
+.mg-dress .mgd-stage { position: absolute; left: 50%; top: 50%; width: 136.6rem; height: 76.8rem; margin: -38.4rem 0 0 -68.3rem; pointer-events: none; z-index: 1; }
+.mg-dress .mgd-stage > * { position: absolute; }
+.mg-dress .mgd-rope { left: 71rem; width: 62rem; height: .8rem; border-radius: .4rem; background: #8d6e63; box-shadow: 0 .5rem 0 rgba(0,0,0,.14); }
+.mg-dress .mgd-pole { top: 26rem; width: 2.6rem; height: 50.8rem; border-radius: 1.3rem; background: linear-gradient(90deg, #a1887f, #8d6e63); box-shadow: 0 .6rem 0 rgba(0,0,0,.12); }
+.mg-dress .mgd-pole.l { left: 69.8rem; } .mg-dress .mgd-pole.r { left: 131.6rem; }
+.mg-dress .mgd-cloth { width: 19rem; height: 22rem; pointer-events: auto; }
+.mg-dress .mgd-pic { position: absolute; left: 0; right: 0; top: 2.4rem; bottom: 0; }
+.mg-dress .mgd-pic .pic img { filter: drop-shadow(0 .5rem .4rem rgba(0,0,0,.22)); }
+.mg-dress .mgd-peg { position: absolute; left: 50%; top: 0; width: 2.2rem; height: 5rem; margin-left: -1.1rem; border-radius: .6rem; background: #ffca28; box-shadow: 0 .3rem 0 rgba(0,0,0,.18); z-index: 2; }
+.mg-dress .mgd-on { transform-box: fill-box; transform-origin: 50% 50%; animation: mgdon .5s cubic-bezier(.3,1.6,.5,1) 1; }
+@keyframes mgdon { 0% { opacity: 0; scale: 1.7; } 100% { opacity: 1; scale: 1; } }

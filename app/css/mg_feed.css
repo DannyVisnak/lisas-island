@@ -1,0 +1,23 @@
+/* Lisa's Island - mini-game "feed": looks only (every selector prefixed .mg-feed). */
+.mg-feed .mgf-stage { position: absolute; left: 50%; top: 50%; width: 136.6rem; height: 76.8rem; margin: -38.4rem 0 0 -68.3rem; pointer-events: none; z-index: 1; }
+.mg-feed .mgf-stage > * { position: absolute; }
+.mg-feed .mgf-cloth { left: 62rem; top: 34rem; width: 72rem; height: 42rem; border-radius: 4rem; transform: rotate(-1.2deg);
+  background: repeating-linear-gradient(0deg, rgba(229,57,53,.5) 0 3.4rem, rgba(255,255,255,0) 3.4rem 6.8rem), repeating-linear-gradient(90deg, rgba(229,57,53,.5) 0 3.4rem, rgba(255,255,255,0) 3.4rem 6.8rem), #fff;
+  border: .8rem solid #fff; box-shadow: 0 1rem 0 rgba(0,0,0,.14), 0 2rem 3rem rgba(0,0,0,.18); }
+.mg-feed .mgf-mouth { border-radius: 50%; border: .6rem dashed rgba(255,255,255,0); transition: background .2s, border-color .2s; }
+.mg-feed.mgf-dragging .mgf-mouth { border-color: rgba(255,255,255,.7); background: rgba(255,255,255,.12); }
+.mg-feed .mgf-food { width: 18rem; height: 18rem; pointer-events: auto; rotate: var(--tilt, 0deg); }
+.mg-feed .mgf-plate { position: absolute; inset: 0; border-radius: 50%; background: #fff; box-shadow: 0 .6rem 0 rgba(0,0,0,.14), inset 0 0 0 1rem #f1f3f6; }
+.mg-feed .mgf-pic { position: absolute; inset: 14%; }
+.mg-feed .mgf-pic .pic img { filter: drop-shadow(0 .4rem .3rem rgba(0,0,0,.25)); }
+.mg-feed .mgf-pop { animation: mgfpop .5s cubic-bezier(.3,1.6,.5,1) 1; }
+@keyframes mgfpop { 0% { opacity: 0; scale: .2; } 100% { opacity: 1; scale: 1; } }
+.mg-feed .lisa.mgf-open .mouth-smile, .mg-feed .lisa.mgf-chew .mouth-smile { display: none; }
+.mg-feed .lisa.mgf-open .mouth-open { display: inline; }
+.mg-feed .lisa.mgf-happy .eyes-open { display: none; }
+.mg-feed .lisa.mgf-happy .eyes-happy { display: inline; }
+.mg-feed .lisa.mgf-chew .head { animation: mgfchew .35s ease-in-out 2; }
+@keyframes mgfchew { 0%, 100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(-3deg) translateY(3px); } 70% { transform: rotate(3deg) translateY(3px); } }
+.mg-feed .lisa .body { transform-box: fill-box; transform-origin: 50% 85%; transition: transform .5s cubic-bezier(.3,1.5,.5,1); }
+.mg-feed .lisa.mgf-f1 .body { transform: scale(1.05, 1.03); } .mg-feed .lisa.mgf-f2 .body { transform: scale(1.1, 1.06); } .mg-feed .lisa.mgf-f3 .body { transform: scale(1.15, 1.09); }
+.mg-feed .lisa.mgf-f4 .body { transform: scale(1.2, 1.12); } .mg-feed .lisa.mgf-f5 .body { transform: scale(1.25, 1.15); } .mg-feed .lisa.mgf-f6 .body { transform: scale(1.3, 1.18); }

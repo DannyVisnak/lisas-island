@@ -1,0 +1,42 @@
+/* Lisa's Island - mini-game "bus": looks only (every selector prefixed .mg-bus). Frame = 136.6 x 76.8 rem. Layout: sky (scene) / far hills / trees / sidewalk (y 47-53) / road (53-70) / near bushes. */
+.screen.mg-bus .mgbus-l { position: absolute; left: 0; right: 0; background-repeat: repeat-x; z-index: 1; animation-name: mgbusscroll; animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; pointer-events: none; }
+.screen.mg-bus.mgbus-go .mgbus-l { animation-play-state: running; }
+@keyframes mgbusscroll { from { background-position-x: 0; } to { background-position-x: calc(-1 * var(--tw)); } }
+.screen.mg-bus .mgbus-far { z-index: 1; }
+.screen.mg-bus .mgbus-mid { z-index: 1; }
+.screen.mg-bus .mgbus-ground { position: absolute; left: 0; right: 0; top: 47rem; bottom: 0; background: #7cd95a; z-index: 1; pointer-events: none; }
+.screen.mg-bus .mgbus-walk { z-index: 2; background-color: #e6dcc3; }
+.screen.mg-bus .mgbus-road { position: absolute; left: 0; right: 0; top: 53rem; height: 17rem; background: #5d6b78; border-top: .8rem solid #cfd8dc; border-bottom: .8rem solid #cfd8dc; box-sizing: border-box; z-index: 2; pointer-events: none; }
+.screen.mg-bus .mgbus-dash { z-index: 2; }
+.screen.mg-bus .mgbus-near { z-index: 7; }
+
+/* the bus */
+.screen.mg-bus .mgbus-bus { position: absolute; left: 6rem; top: 49.4rem; width: 44rem; height: 20rem; z-index: 4; }
+.screen.mg-bus .mgbus-bus svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.screen.mg-bus .mgbus-body { transform-origin: 50% 100%; }
+.screen.mg-bus .mgbus-bus .wh { transform-box: fill-box; transform-origin: center; animation: mgbuswheel .7s linear infinite; animation-play-state: paused; }
+.screen.mg-bus.mgbus-go .mgbus-bus .wh { animation-play-state: running; }
+.screen.mg-bus.mgbus-go .mgbus-bus .mgbus-body { animation: mgbusbob .5s ease-in-out infinite alternate; }
+.screen.mg-bus .mgbus-bus .mgbus-door { transform-box: fill-box; transform-origin: 0 50%; transition: transform .45s ease-out; }
+.screen.mg-bus .mgbus-bus.mgbus-open .mgbus-door { transform: scaleX(.16); }
+.screen.mg-bus .mgbus-bus.mgbus-bump { animation: mgbusbump .5s ease-out 1; }
+@keyframes mgbuswheel { to { transform: rotate(360deg); } }
+@keyframes mgbusbob { from { transform: translateY(0); } to { transform: translateY(-.35rem) rotate(-.3deg); } }
+@keyframes mgbusbump { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-1rem); } 55% { transform: translateX(.6rem); } 80% { transform: translateX(-.3rem); } }
+
+/* bus stops (touch target = the whole stop: 22 x 40 rem) */
+.screen.mg-bus .mgbus-stops { position: absolute; left: 0; top: 0; width: 136.6rem; height: 76.8rem; z-index: 3; pointer-events: none; }
+.screen.mg-bus .mgbus-stop { position: absolute; top: 12.5rem; width: 22rem; height: 40rem; pointer-events: auto; }
+.screen.mg-bus .mgbus-sign { position: absolute; left: 0; top: 0; width: 22rem; height: 25rem; border-radius: 2.4rem; background: #fff; border: 1rem solid #fff; box-shadow: 0 .8rem 0 rgba(0,0,0,.18), 0 0 0 .5rem #039be5; box-sizing: border-box; overflow: hidden; }
+.screen.mg-bus .mgbus-band { position: absolute; left: 0; right: 0; top: 0; height: 5rem; background: #039be5; display: flex; align-items: center; justify-content: center; }
+.screen.mg-bus .mgbus-band svg { height: 3.6rem; width: auto; display: block; }
+.screen.mg-bus .mgbus-pic { position: absolute; left: .6rem; right: .6rem; top: 5.4rem; bottom: .2rem; }
+.screen.mg-bus .mgbus-pole { position: absolute; left: 10rem; top: 24.6rem; width: 2rem; height: 15rem; background: #90a4ae; border-radius: 1rem; z-index: -1; }
+.screen.mg-bus .mgbus-base { position: absolute; left: 7rem; top: 38.6rem; width: 8rem; height: 1.8rem; background: #607d8b; border-radius: 50%; z-index: -1; }
+
+/* passenger */
+.screen.mg-bus .mgbus-paxbox { position: absolute; left: 0; top: 0; width: 136.6rem; height: 76.8rem; z-index: 5; pointer-events: none; }
+.screen.mg-bus .mgbus-pax { position: absolute; left: 33rem; top: 57rem; width: 10rem; height: 10rem; opacity: 0; }
+.screen.mg-bus .mgbus-pax.mgbus-wave { animation: mgbuswave .5s ease-in-out 3; opacity: 1; }
+.screen.mg-bus .mgbus-pax.mgbus-bye { transition: opacity .4s; opacity: 0; }
+@keyframes mgbuswave { 0%, 100% { rotate: 0deg; } 30% { rotate: -14deg; } 70% { rotate: 14deg; } }

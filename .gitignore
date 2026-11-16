@@ -1,0 +1,41 @@
+# Private operator notes and pipeline (contain device/infra details)
+/CLAUDE.md
+/HANDOFF.md
+/AGENTS.md
+/tickets/*
+!/tickets/BACKLOG.md
+/tools/tickets/
+/tools/deploy_surface.sh
+
+# Credentials
+.env
+.env.*
+*.pem
+*.key
+
+# Dependencies, caches
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Build products
+/desktop/build/
+/desktop/dist/
+
+# Audio generation intermediates, local voice models, QA records
+/tools/_gemini_raw/
+/tools/audio_piper_backup/
+/tools/voice_samples/
+/tools/voices/
+/tools/gemini_manifest.json
+/tools/gemini_audio_report.md
+/tools/_probe.js
+
+# Generated screenshots
+/tools/shots/

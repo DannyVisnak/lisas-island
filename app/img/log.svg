@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120">
+<!-- original art: wooden log, side view with the cut end on the right -->
+<path d="M30 14 H250 Q262 14 262 60 Q262 106 250 106 H30 Q12 106 12 60 Q12 14 30 14Z" fill="#a8662f"/>
+<path d="M30 14 H250 Q262 14 262 60 H12 Q12 14 30 14Z" fill="#c07a3c"/>
+<path d="M36 36 H200 M24 62 H226 M40 86 H190" stroke="#7a4420" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+<path d="M60 24 H120 M150 98 H235" stroke="#d99a5c" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+<ellipse cx="256" cy="60" rx="30" ry="46" fill="#7a4420"/>
+<ellipse cx="256" cy="60" rx="25" ry="41" fill="#e9b877"/>
+<ellipse cx="256" cy="60" rx="18" ry="30" fill="none" stroke="#c98d4d" stroke-width="3.5"/>
+<ellipse cx="256" cy="60" rx="10" ry="17" fill="none" stroke="#c98d4d" stroke-width="3.5"/>
+<ellipse cx="256" cy="60" rx="3.5" ry="6" fill="#c98d4d"/>
+<path d="M12 40 Q4 36 8 28 M12 80 Q2 84 6 94" stroke="#7a4420" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>
