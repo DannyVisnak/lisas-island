@@ -32,7 +32,7 @@ Space and asserts a jump.
 Falling respawns Lisa at the last door/gate she passed (checkpoint), not the level start. Collected stars stay.
 Accept: smoke test falls after door 2 and asserts the respawn x ≈ door 2.
 
-## LISA-05 Letters & typing game (design ticket, then build ticket LISA-05b)
+## LISA-05 Letters & typing game (design ticket, then build ticket LISA-18)
 Slow alphabet track for a 6-year-old pre-reader, Latin script, in the active target language. Research-based order
 (letter SOUNDS before names, start with first letters of words he already knows, few letters per day, multisensory:
 see + hear + trace/tap, then find the letter on a big on-screen keyboard and on the real keyboard, then build 3-letter
@@ -40,15 +40,33 @@ words with the picture). Fits the linear path as an optional step once ≥ 20 wo
 Plan must list: letter order per language, step types, which Lisa lines are needed (Opus writes them), audio keys.
 Accept for the design ticket: tickets/LISA-05/DESIGN.md with research refs; build ticket gets its own acceptance.
 
+## LISA-18 Letters & typing game — build (from LISA-05 design)
+Build the letters track from tickets/LISA-05/DESIGN.md (letter queues per language §2, five step types §3, path slot §4,
+audio contract §6). Russian Lisa lines are DONE (controller): merge tickets/LISA-05/COPY.tsv rows into content/ui.tsv
+verbatim; copy gate = none for those keys. Target-language letter sounds/names = new audio keys under
+app/audio/<lang>/letters/ (runner generates with gen_audio_gemini.py --keys; list them in AUDIO_KEYS). First slice:
+PT-PT only, first 6 letters (p a m o l v), steps listen → see word + first letter → tap letter (2 choices) → trace or tap →
+on-screen key → real key (e.code, any keyboard layout). Optional path step after >= 20 known PT words. No "wrong", no timers.
+Accept: new smoke_letters.js (or a smoke_path case) walks one encounter at 1128 and 1920, real-key press via e.code works
+with a Russian layout key value, all suites pass, shots show big letters >= 110 px tap targets.
+
 ## LISA-06 Money & shop game (research → copy → build)
 Grocery shop: Lisa's basket, price tags with pictures (no reading needed: coin/note pictures + spoken price), pay by
 dragging coins/notes; first whole euros (1 €, 2 €, 5 € note), later cents (10/20/50 c), later change.
 Euro first and most of the time. Sometimes a trip to a shop in another country with its own money and ONE
 culture fact told by Lisa (e.g. Japan: money goes on a small tray, no tips; UK pound; Swiss franc; US dollar).
 Currency pictures: our own stylised drawings in the right colours/sizes (no photo reproduction of banknotes).
-Step a (Codex Sol research): denominations, colours, sizes, 1 checked culture fact per country with source → tickets/LISA-06/RESEARCH.md.
-Step b (Opus): Lisa lines + facts in Russian. Step c (Luna build) mini-game `mg_shop`.
+Step a DONE: tickets/LISA-06/RESEARCH.md (denominations, colours, sizes, ECB reproduction rules, 6 currencies, shop facts, levels 0-10).
+Step b DONE: tickets/LISA-06/COPY.tsv (Opus; merge rows verbatim into content/ui.tsv; copy gate = none for those keys; read both from the main checkout /root/kids-lang-game/tickets/LISA-06/).
+Step c (this build): mini-game `mg_shop`, launch scope = RESEARCH.md levels 0-7 (euro first); passport shops (other currencies + one fact each) after level 7. Target-language prices/currency names = new audio keys via --keys.
 Accept: smoke_mg shop passes; euro coins/notes recognisable side by side in a shot.
+
+## LISA-19 Test-harness flake hardening
+Three timing assertions fail under load (load avg ~10) and pass alone: smoke_scene "house: no inertia after release"
+(measures movement right after release), smoke_lesson "float: tile too small" (measured 117 = 0.78 x 150 during the
+pop-in animation), smoke_path A3 (fixed 16.11 in 523d21f: settle on the screen, not the first record). Make each wait for
+a settled state (animation end / bounded polling) instead of a fixed sleep; no weaker thresholds.
+Accept: each of the three passes 3x in a row while another suite runs in parallel; all suites pass.
 
 ## LISA-07 Deploy Round 4 (house, lessons, linear path) to the Surface — controller
 Back up the son's save first. Done in session 16.11 if the receipt says so.
