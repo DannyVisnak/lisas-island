@@ -190,7 +190,7 @@ async function waitScreenAfterCelebrations(want) {
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 
   try {
-    await page.goto(URL);
+    await page.goto(URL, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.__test && __test.screen() === 'home');
     await page.evaluate(() => __test.speedUp(8));
     /* count every speech call (Snd.say) so idle behaviour can be asserted */
@@ -321,21 +321,166 @@ async function waitScreenAfterCelebrations(want) {
 
     /* ---- L5 run ---- */
     log('L5 run');
+    await page.evaluate(() => __test.speedUp(1));
     await tapSel('.lvnode.lv4');
-    await waitScreen('run'); await sleep(500);
+    await waitScreen('run');
+    await waitFor(() => __runState.state === 'ready', null, 1000, 'fresh Run ready state');
     await shot('run-ready'); await checkTargets('run'); await checkInside('run'); await checkRunBar('ready');
-    const jumpBefore = await page.evaluate(() => ({ y: __runState.lisa.y, x: __runState.lisa.x }));
-    /* tap to start + jump */
-    await page.touchscreen.tap(700, 300);
-    await sleep(350);
-    const st1 = await page.evaluate(() => ({ state: __runState.state, y: __runState.lisa.y, x: __runState.lisa.x, ground: __runState.lisa.onGround }));
-    expect(st1.state === 'run' || st1.state === 'bounce', 'tap should start the run (state ' + st1.state + ')');
-    await page.waitForFunction(() => __runState.lisa.onGround && __runState.state === 'run', null, { timeout: 8000 }).catch(() => {});
-    await page.touchscreen.tap(700, 300);
-    let jumped = false;
-    for (let i = 0; i < 12 && !jumped; i++) { await sleep(40); jumped = await page.evaluate(() => !__runState.lisa.onGround && __runState.lisa.y < 470); }
-    expect(jumped, 'tap should make Lisa jump');
+    /* Keyboard input must start Run from ready and produce a physics jump. */
+    await page.evaluate(() => {
+      window.__kbAudit = null;
+      /* Keep the event: a remounted Run's handler may run after this observer.
+         Read defaultPrevented only after the complete dispatch has returned. */
+      window.__kbAuditListener = (e) => { if (e.code === 'Space') window.__kbAudit = e; };
+      window.addEventListener('keydown', window.__kbAuditListener);
+      window.__kbGroundY = __runState.lisa.y;
+    });
+    await page.keyboard.press('Space');
+    await waitFor(() => __runState.state === 'run' && !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1500, 'Space starts Run and initiates a jump');
+    const keyboardStart = await page.evaluate(() => ({ state: __runState.state, y: __runState.lisa.y, vy: __runState.lisa.vy, groundY: __kbGroundY, prevented: __kbAudit && __kbAudit.defaultPrevented }));
+    expect(keyboardStart.state === 'run' && keyboardStart.vy < 0 && keyboardStart.y < keyboardStart.groundY, 'Space on ready starts a real jump (' + JSON.stringify(keyboardStart) + ')');
+    expect(keyboardStart.prevented, 'Space default is prevented while Run is active');
+    await shot('run-keyboard-jump');
+    async function groundRunForKeyTest() {
+      await page.evaluate(() => {
+        const s = __runState, l = s.lisa;
+        s.state = 'run'; s.over = false; s.gi = 0; l.x = 220; l.y = __kbGroundY; l.vy = 0; l.onGround = true; l.coyote = 0; l.jumpBuf = 0; s.cam = 0;
+      });
+    }
+    async function assertKeyboardJump(key, label) {
+      await groundRunForKeyTest();
+      await page.keyboard.press(key);
+      const ok = await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0 && __runState.lisa.y < __kbGroundY, null, 1200, label + ' initiates a real jump');
+      expect(ok, label + ' should jump from grounded Run');
+      await page.waitForFunction(() => __runState.lisa.onGround, null, { timeout: 2500 }).catch(() => {});
+      expect(await page.evaluate(() => __runState.lisa.onGround), label + ' test returns to grounded state');
+    }
+    await assertKeyboardJump('ArrowUp', 'ArrowUp');
+    await assertKeyboardJump('w', 'lowercase W');
+    await assertKeyboardJump('W', 'uppercase W');
+    /* Physical W must work when a Russian keyboard layout reports Cyrillic ц. */
+    await groundRunForKeyTest();
+    await page.evaluate(() => {
+      const e = new KeyboardEvent('keydown', { key: 'ц', code: 'KeyW', bubbles: true, cancelable: true });
+      window.dispatchEvent(e);
+    });
+    expect(await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0 && __runState.lisa.y < __kbGroundY, null, 1200, 'Russian-layout physical W initiates a real jump'), 'key ц with code KeyW should produce upward motion');
+    await page.waitForFunction(() => __runState.lisa.onGround, null, { timeout: 2500 }).catch(() => {});
+    /* Space hold/repeat cannot queue another jump; a fresh press after release can. */
+    await groundRunForKeyTest();
+    await page.keyboard.down('Space');
+    await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1200, 'held Space first jump');
+    await page.waitForFunction(() => __runState.lisa.onGround, null, { timeout: 2500 }).catch(() => {});
+    await page.evaluate(() => {
+      const e = new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true, cancelable: true, repeat: true });
+      window.__kbRepeatAudit = null;
+      window.__kbRepeatListener = (ev) => { if (ev === e) window.__kbRepeatAudit = { prevented: ev.defaultPrevented, repeat: ev.repeat }; };
+      window.addEventListener('keydown', window.__kbRepeatListener);
+      window.dispatchEvent(e);
+      window.removeEventListener('keydown', window.__kbRepeatListener);
+    });
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    expect(await page.evaluate(() => __runState.lisa.onGround && __runState.lisa.jumpBuf === 0), 'held/repeated Space does not trigger or buffer another jump after landing');
+    expect(await page.evaluate(() => __kbRepeatAudit && __kbRepeatAudit.prevented && __kbRepeatAudit.repeat), 'repeated Space remains default-prevented without requesting a jump');
+    await page.keyboard.up('Space');
+    await page.keyboard.press('Space');
+    expect(await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1200, 'Space after release jumps again'), 'released Space can jump again');
+    await page.waitForFunction(() => __runState.lisa.onGround, null, { timeout: 2500 }).catch(() => {});
+    /* Prove the fixture scrolls with the Run listener removed, then prove Run prevents it. */
+    await page.evaluate(() => __test.go('map')); await waitScreen('map');
+    const scrollStyles = await page.evaluate(() => {
+      const html = document.documentElement, body = document.body;
+      const old = { htmlStyle: html.getAttribute('style'), bodyStyle: body.getAttribute('style') };
+      html.style.height = '220vh'; html.style.overflow = 'auto'; body.style.height = '220vh'; body.style.minHeight = '220vh'; body.style.overflow = 'auto'; window.scrollTo(0, 0);
+      return old;
+    });
+    try {
+      await page.keyboard.press('Space');
+      expect(await waitFor(() => scrollY > 0, null, 1000, 'unhandled Space scrolls the temporary fixture'), 'temporary fixture must scroll for unhandled Space');
+      /* Let the native smooth Space scroll finish before resetting the fixture. */
+      await page.evaluate(() => { window.__kbScrollSettle = { y: scrollY, since: performance.now() }; });
+      await waitFor(() => {
+        const s = __kbScrollSettle, now = performance.now();
+        if (s.y !== scrollY) { s.y = scrollY; s.since = now; }
+        return scrollY > 0 && now - s.since >= 150;
+      }, null, 2000, 'unhandled Space scrolling settles');
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await waitFor(() => scrollY === 0, null, 1000, 'scroll fixture resets to the top');
+      await page.evaluate(() => __test.go('run', { lang: 'pt', world: 'animals' })); await waitScreen('run');
+      await waitFor(() => __runState.state === 'ready', null, 1000, 'Run ready for handled Space scroll check');
+      await page.evaluate(() => {
+        document.documentElement.style.height = '220vh'; document.documentElement.style.overflow = 'auto';
+        document.body.style.height = '220vh'; document.body.style.minHeight = '220vh'; document.body.style.overflow = 'auto'; window.scrollTo(0, 0);
+        window.__kbAudit = null;
+      });
+      await page.keyboard.press('Space');
+      await waitFor(() => __runState.state === 'run' && !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1200, 'handled Space starts and jumps without scrolling');
+      await page.evaluate(() => { window.__kbScrollProbe = { until: performance.now() + 500, moved: scrollY !== 0 }; });
+      await waitFor(() => {
+        __kbScrollProbe.moved = __kbScrollProbe.moved || scrollY !== 0;
+        return performance.now() >= __kbScrollProbe.until;
+      }, null, 1500, 'handled Space scroll observation window');
+      const scrollCheck = await page.evaluate(() => ({ y: scrollY, moved: __kbScrollProbe.moved, prevented: __kbAudit && __kbAudit.defaultPrevented }));
+      expect(!scrollCheck.moved && scrollCheck.y === 0, 'Space does not scroll the page during Run');
+      expect(scrollCheck.prevented, 'scroll fixture observes Space default prevention');
+    } finally {
+      await page.evaluate((old) => {
+        const html = document.documentElement, body = document.body;
+        if (old.htmlStyle === null) html.removeAttribute('style'); else html.setAttribute('style', old.htmlStyle);
+        if (old.bodyStyle === null) body.removeAttribute('style'); else body.setAttribute('style', old.bodyStyle);
+        window.scrollTo(0, 0);
+      }, scrollStyles);
+    }
+    /* Non-game keys, editable targets and modified shortcuts leave jump state alone. */
+    await groundRunForKeyTest();
+    await page.keyboard.press('x');
+    await page.keyboard.down('Control'); await page.keyboard.press('Space'); await page.keyboard.up('Control');
+    const modifiedKeyAudit = await page.evaluate(() => __kbAudit && __kbAudit.defaultPrevented);
+    await page.evaluate(() => { const i = document.createElement('input'); i.id = 'kb-editable-test'; document.body.appendChild(i); i.focus(); });
+    await page.keyboard.press('ArrowUp');
+    const ignoredInput = await page.evaluate(() => ({ buf: __runState.lisa.jumpBuf, ground: __runState.lisa.onGround }));
+    expect(ignoredInput.buf === 0 && ignoredInput.ground && modifiedKeyAudit === false, 'unrelated keys, editable targets and modified shortcuts do not request jumps or suppress modified Space');
+    await page.evaluate(() => { document.getElementById('kb-editable-test').remove(); document.activeElement.blur(); });
+    /* Finish still belongs to the mounted Run; keep Lisa away from the house
+       so this isolated input check cannot complete the level and kill its flow. */
+    await groundRunForKeyTest();
+    await page.evaluate(() => { __runState.state = 'finish'; __runState.finishT = 0; window.__kbAudit = null; });
+    await page.keyboard.press('Space');
+    const finishKey = await page.evaluate(() => ({ mounted: __test.screen() === 'run' && !UI.flow.dead && !!document.querySelector('.s-run .runcv'), state: __runState.state, buf: __runState.lisa.jumpBuf, prevented: __kbAudit && __kbAudit.defaultPrevented }));
+    expect(finishKey.mounted && finishKey.state === 'finish' && finishKey.buf === 0 && finishKey.prevented, 'Space in mounted Run finish state suppresses scrolling without requesting a jump');
+    await page.evaluate(() => { __runState.state = 'run'; __runState.lisa.jumpBuf = 0; });
+    await page.evaluate(() => { window.removeEventListener('keydown', window.__kbAuditListener); __test.go('map'); }); await waitScreen('map');
+    await page.evaluate(() => {
+      __test.speedUp(1);
+      window.__touchOldRun = __runState;
+      window.scrollTo(0, 0);
+      __test.go('run', { lang: 'pt', world: 'animals', level: 4 });
+    });
+    await waitScreen('run');
+    /* The screen hook is synchronous; wait for the entrance paint and a usable
+       canvas hit target before sending native touch input to the new screen. */
+    await waitFor(() => {
+      const cv = document.querySelector('.s-run .runcv');
+      if (!cv || __runState === __touchOldRun || __runState.state !== 'ready' || UI.flow.dead || getComputedStyle(cv.parentElement).opacity !== '1') return false;
+      const b = cv.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
+      return b.width > 0 && b.height > 0 && x > 0 && x < innerWidth && y > 0 && y < innerHeight && document.elementFromPoint(x, y) === cv;
+    }, null, 1500, 'fresh painted Run ready with a hittable touch canvas');
+    /* Touch starts a newly mounted ready Run and initiates its physics jump. */
+    await page.evaluate(() => {
+      const cv = document.querySelector('.s-run .runcv');
+      window.__touchRun = __runState;
+      window.__touchGroundY = __runState.lisa.y;
+      window.__touchStartAudit = null;
+      cv.addEventListener('pointerdown', (e) => {
+        window.__touchStartAudit = { state: __runState.state, touch: e.pointerType === 'touch', trusted: e.isTrusted };
+      }, { capture: true, once: true });
+    });
+    await tapSel('.s-run .runcv');
+    expect(await page.evaluate(() => __touchStartAudit && __touchStartAudit.state === 'ready' && __touchStartAudit.touch && __touchStartAudit.trusted), 'real touch reaches the fresh ready Run canvas');
+    expect(await waitFor(() => __runState === __touchRun && __runState.state === 'run' && !__runState.lisa.onGround && __runState.lisa.vy < 0 && __runState.lisa.y < __touchGroundY, null, 1200, 'touch starts Run and initiates a physics jump'), 'tap on fresh ready Run starts and jumps');
+    const st1 = await page.evaluate(() => ({ state: __runState.state, y: __runState.lisa.y, x: __runState.lisa.x }));
     await shot('run-jump');
+    await page.evaluate(() => __test.speedUp(8));
     /* watch her run for a while without jumping: states must stay friendly (no fail state) */
     const seen = new Set();
     for (let i = 0; i < 40; i++) { seen.add(await page.evaluate(() => __runState.state)); await sleep(150); }
@@ -352,6 +497,12 @@ async function waitScreenAfterCelebrations(want) {
       await page.evaluate(() => __runState.skipToGate());
       await waitFor(() => __runState.state === 'gate' && !!document.querySelector('.gatechoices .card') && __test.correctId(), null, 15000, 'gate ' + gi + ' question');
       await sleep(700);
+      if (gi === 0) {
+        const beforeKey = await page.evaluate(() => ({ gi: __runState.gi, buf: __runState.lisa.jumpBuf, target: __test.correctId(), mistakes: __runState.mistakes, gate: __runState.gates[__runState.gi].state }));
+        await page.keyboard.press('Space');
+        const afterKey = await page.evaluate(() => ({ state: __runState.state, gi: __runState.gi, buf: __runState.lisa.jumpBuf, target: __test.correctId(), mistakes: __runState.mistakes, gate: __runState.gates[__runState.gi].state }));
+        expect(afterKey.state === 'gate' && afterKey.gi === beforeKey.gi && afterKey.buf === 0 && afterKey.target === beforeKey.target && afterKey.mistakes === beforeKey.mistakes && afterKey.gate === beforeKey.gate, 'Space at a gate only suppresses scrolling; it neither jumps nor answers');
+      }
       if (gi === 0) { await shot('run-gate'); await checkTargets('gate'); await checkOverlap('gate'); await checkInside('gate'); await checkRunBar('gate'); }
       let gBefore = null, gId = null;
       if (gi === 0) {
@@ -377,6 +528,21 @@ async function waitScreenAfterCelebrations(want) {
     await waitResultToPath('path');
     expect(await page.evaluate(() => document.querySelectorAll('.lvnode.done').length) === 5, 'all 5 levels done after the run');
     await shot('path-complete');
+    /* A killed Run releases its keyboard listener; mounting Run again restores it. */
+    await page.evaluate(() => { window.__oldRunState = __runState; __test.go('map'); }); await waitScreen('map');
+    await page.evaluate(() => {
+      window.__outsideKeyAudit = null;
+      window.__outsideKeyListener = (e) => { if (e.code === 'Space') window.__outsideKeyAudit = e.defaultPrevented; };
+      window.addEventListener('keydown', window.__outsideKeyListener);
+    });
+    await page.keyboard.press('Space');
+    expect(await page.evaluate(() => __outsideKeyAudit === false && __oldRunState.lisa.jumpBuf === 0), 'after leaving Run, Space is not intercepted and the old jump buffer is unchanged');
+    await page.evaluate(() => { window.removeEventListener('keydown', window.__outsideKeyListener); __test.go('run', { lang: 'pt', world: 'animals' }); });
+    await waitScreen('run');
+    await waitFor(() => __runState.state === 'ready', null, 1000, 're-entered Run ready state');
+    await page.keyboard.press('ArrowUp');
+    expect(await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1200, 're-entered Run keyboard jump'), 're-entering Run restores keyboard jumping');
+    await tapSel('.b-back'); await waitScreen('path');
 
     /* ---- review round (chest) when box-2 words are due ----
        PATH_SPEC §4: box 2 is due after 3 days. At +1 only box-1 words are due;
