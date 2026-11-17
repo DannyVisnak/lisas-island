@@ -72,7 +72,7 @@ UI.screens.run = function (flow, root, p) {
   var S = window.__runState = {
     state: 'ready', t: 0, gi: 0, gates: gates, mistakes: 0, collected: 0, blocked: false, blockT: 0, readyT: 0, finishT: 0,
     lisa: { x: 220, y: GY, vy: 0, onGround: true, coyote: 0, jumpBuf: 0 }, endX: endX, askActive: false, ad: { n: 2, recent: [], streak: 0 }, firstGate: true,
-    cam: 0, parts: [], bounceT: 0, over: false, houseStop: houseX + 40
+    cam: 0, parts: [], bounceT: 0, over: false, houseStop: houseX + 40, checkpointX: 220
   };
   var maxN = wi >= 3 ? 4 : 3;
   var ctxUI = { bar: null };
@@ -171,12 +171,16 @@ UI.screens.run = function (flow, root, p) {
     else if (S.state === 'finish') vx = L.x < S.houseStop ? SPEED * 0.75 : 0;
     var g = gates[S.gi];
     if (S.state === 'run' && g && g.state === 'closed' && L.x + vx * dt >= g.x - 150) { vx = Math.max(0, (g.x - 150 - L.x) / dt); S.state = 'gatewait'; }
-    var nx = L.x + vx * dt; S.blocked = false;
+    var previousX = L.x, nx = L.x + vx * dt; S.blocked = false;
     for (var bi = 0; bi < blocks.length; bi++) {
       var b = blocks[bi];
       if (L.y > b.top + 10 && L.x + HW <= b.x0 + 4 && nx + HW > b.x0) { nx = b.x0 - HW; S.blocked = true; }
     }
     L.x = nx;
+    /* Unlocking is not passage: checkpoint only after Lisa's full body clears an open gate. */
+    gates.forEach(function (gg) {
+      if (gg.state === 'open' && previousX <= gg.x + HW && L.x > gg.x + HW) S.checkpointX = gg.x + 80;
+    });
     S.blockT = S.blocked ? S.blockT + dt : 0;
     /* jump */
     if (L.jumpBuf > 0 && (L.onGround || L.coyote > 0) && S.state === 'run') {
@@ -198,14 +202,10 @@ UI.screens.run = function (flow, root, p) {
     if (!landed && L.onGround) { L.onGround = false; L.coyote = 0.12; }
     /* gate arrival */
     if (S.state === 'gatewait' && L.onGround) { S.state = 'gate'; openGate(g); }
-    /* fall into a gap -> spring back onto the ledge */
+    /* fall -> spring back to the last open door physically passed */
     if (L.y > H + 120 && S.state !== 'bounce') {
-      var near = null;
-      gaps.forEach(function (gp) { if (L.x >= gp.x0 - 80 && L.x <= gp.x1 + 80) near = gp; });
-      if (!near) gaps.forEach(function (gp) { if (gp.x1 <= L.x + 80) near = gp; });
-      var nxp = near ? Math.max(60, near.x0 - 150) : Math.max(60, L.x - 300);
-      S.springX = near ? (near.x0 + near.x1) / 2 : L.x; S.bounceT = 0;
-      L.x = nxp; L.y = H + 80; L.vy = -1650; L.onGround = false; S.state = 'bounce'; Snd.sfx('bounce');
+      S.springX = S.checkpointX; S.bounceT = 0;
+      L.x = S.checkpointX; L.y = H + 80; L.vy = -1650; L.onGround = false; L.coyote = 0; L.jumpBuf = 0; S.state = 'bounce'; Snd.sfx('bounce');
       burst(S.springX, GY + 40, 10, ['#ffd54f', '#fff', '#ff8a65']);
     }
     if (S.state === 'bounce') { S.bounceT += dt; if (L.onGround && S.bounceT > 0.3) S.state = 'run'; }
@@ -428,6 +428,8 @@ UI.screens.run = function (flow, root, p) {
   S.skipToGate = function () { if (S.state === 'run' && gates[S.gi]) { S.lisa.x = gates[S.gi].x - 400; } };
   S.skipToEnd = function () { S.lisa.x = endX - 100; };
   S.correctId = function () { return Q.cur ? Q.cur.target : null; };
+  /* Read-only regression snapshot; recovery never mutates the bubble collection. */
+  S.collectibleSnapshot = function () { return { collected: S.collected, got: bubbles.map(function (b) { return b.got; }), positions: bubbles.map(function (b) { return { x: b.x, y: b.y }; }) }; };
 
   flow.after(500, function () { Core.sayRu(flow, 'run_intro'); });
 };
