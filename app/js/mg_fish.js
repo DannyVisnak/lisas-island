@@ -68,6 +68,14 @@ MG.register({
       f.inner.style.scale = f.dir === 1 ? '1 1' : '-1 1';
       f.inner.style.rotate = Core.clamp(vy / Math.max(Math.abs(vx), 30) * 24, -16, 16) * f.dir + 'deg';
     }
+    function restoreSwimmer(f) {
+      f.held = false; f.caught = false; f.jumping = false; f.t = 0; f.x = f.cx; f.y = f.cy; f.dir = 1;
+      f.wrap.style.display = '';
+      f.inner.classList.remove('fh-hooked');
+      f.wrap.style.transform = '';
+      f.inner.style.scale = '1 1'; f.inner.style.rotate = '0deg';
+      place(f, 0);
+    }
 
     /* finger near -> fish slow down / almost stop; hover (mouse) does the same close to a fish */
     var down = false, ptr = null;
@@ -167,6 +175,7 @@ MG.register({
       hookAt(TIP.x, TIP.y, false);
       await say;
       if (caughtN >= total) { await finale(); }
+      restoreSwimmer(f);
       busy = false; stage = 'idle';
       if (roundDone) { var d = roundDone; roundDone = null; d(); }
     }

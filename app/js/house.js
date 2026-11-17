@@ -163,7 +163,7 @@ House.mapBtn = function (from) {
 UI.screens.house = function (flow, root, p) {
   var lang = Core.curLang(); Core.lang = lang;
   var H = Core.house();
-  UI.scene(root, 'meadow');
+  UI.scene(root, 'garden');
   var busy = false, lisa = null, sleeping = false, extSvg = null, itemsLayer = null, giftBox = null, offered = [];
   var mode = H.stage >= 5 ? 'room' : 'build';
 

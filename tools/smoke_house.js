@@ -10,6 +10,15 @@ const { boot, sleep, SHOTS } = require('./mg_lib');
 const shotTo = (lib, name) => lib.page.screenshot({ path: path.join(SHOTS, 'house_' + name + '.png') });
 const hs = (lib) => lib.page.evaluate(() => (window.__houseTest ? __houseTest.state() : null));
 const lang = (lib) => lib.page.evaluate(() => Core.curLang());
+const expectSingleBuildSun = async (lib, label) => {
+  const n = await lib.page.evaluate(() => {
+    const exterior = document.querySelector('.house-bg svg');
+    const garden = document.querySelector('.house-stage + .house-tray') && document.querySelector('.scene svg');
+    return { exterior: exterior ? exterior.querySelectorAll('circle[cx="1040"]').length : 0,
+      gardenSun: garden ? garden.querySelectorAll('circle[cx="1180"]').length : 0 };
+  });
+  lib.expect(n.exterior === 2 && n.gardenSun === 0, label + ': house exterior has one sun and backdrop adds none: ' + JSON.stringify(n));
+};
 
 async function run(lib) {
   const { page, expect } = lib;
@@ -32,6 +41,7 @@ async function run(lib) {
   await sleep(700);
   let s = await hs(lib);
   expect(s && s.mode === 'build' && s.stage === 0 && s.stageDue === 0 && !s.gift, 'fresh house = empty plot, nothing due: ' + JSON.stringify(s));
+  await expectSingleBuildSun(lib, 'stage 0');
   await shotTo(lib, 'build0_1128');
   /* 2 stars are still below the first milestone (3) */
   await page.evaluate(() => { Core.addStars(2); __test.go('house', { from: 'map' }); });
@@ -52,13 +62,24 @@ async function run(lib) {
   await shotTo(lib, 'build1_1128');
   s = await hs(lib);
   expect(s.stage === 1 && s.stageDue === 0, 'exactly one stage at 3 stars: ' + JSON.stringify(s));
+  await expectSingleBuildSun(lib, 'stage 1');
   expect(await page.evaluate(() => JSON.stringify(Core.save.hats)) === hatsA, 'hats must be unaffected by the house');
   expect(await page.evaluate(() => document.querySelectorAll('.hstep.done').length) === 1, 'the roadmap should show one finished step');
   expect(await page.evaluate(() => !/more|еще|ещё/i.test(document.querySelector('.house-tray').textContent) && !/\d/.test(document.querySelector('.house-tray').textContent)), 'no "stars needed" text or number anywhere in the tray');
   await stars();
 
-  /* ---- 3. lots of stars: the rest of the house builds, hats come from stars only ---- */
-  await page.evaluate(() => { Core.addStars(39); });  /* 42 lifetime stars = the last milestone */
+  /* ---- 3. build each remaining exterior stage and check its single sun ---- */
+  for (const step of [{ add: 5, stage: 2 }, { add: 8, stage: 3 }, { add: 12, stage: 4 }]) {
+    await page.evaluate((n) => Core.addStars(n), step.add);
+    await openFromMap();
+    await waitHouse((stage) => window.__houseTest && __houseTest.state().stage === stage, step.stage, 'exterior stage ' + step.stage + ' appears at its milestone');
+    await expectSingleBuildSun(lib, 'stage ' + step.stage);
+    await shotTo(lib, 'build' + step.stage + '_1128');
+    await goMap();
+  }
+
+  /* ---- 4. final stage completes the house; hats come from stars only ---- */
+  await page.evaluate(() => { Core.addStars(14); });  /* 42 lifetime stars = the last milestone */
   const hatsB = await page.evaluate(() => JSON.stringify(Core.save.hats.unlocked));
   expect(hatsB === '["cap","sunglasses"]', 'hats at 42 stars should be cap + sunglasses, got ' + hatsB);
   await page.evaluate(() => __test.go('house', { from: 'map' }));
