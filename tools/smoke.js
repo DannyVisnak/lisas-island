@@ -493,8 +493,14 @@ async function waitScreenAfterCelebrations(want) {
     log('  gates: ' + nG);
     for (let gi = 0; gi < nG; gi++) {
       /* wait until she can be teleported */
-      for (let t = 0; t < 120; t++) { const s = await page.evaluate(() => __runState.state); if (s === 'run') break; await sleep(100); }
-      await page.evaluate(() => __runState.skipToGate());
+      await waitFor(() => {
+        const s = __runState;
+        if (s.state === 'gate') return true;
+        /* skipToGate changes only x: never carry a fall below the new ground.
+           Check and teleport in one dispatch, before physics can advance. */
+        if (s.state !== 'run' || !s.lisa.onGround) return false;
+        s.skipToGate(); return true;
+      }, null, 12000, 'grounded Run approach or existing gate');
       await waitFor(() => __runState.state === 'gate' && !!document.querySelector('.gatechoices .card') && __test.correctId(), null, 15000, 'gate ' + gi + ' question');
       await sleep(700);
       if (gi === 0) {
