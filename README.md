@@ -69,6 +69,7 @@ Tests are Playwright smoke suites in `tools/smoke*.js`. The open work is in [`ti
 - Code, Lisa, the scenes and the lesson art: MIT, see [LICENSE](LICENSE).
 - Emoji artwork: Noto Emoji © Google, Apache-2.0. Flags: region-flags. Details in `app/img/LICENSES.md`.
 - Voices: generated with Google Gemini text-to-speech for this project.
+- Optional vocabulary subtitle font: Andika (SIL OFL 1.1), see `app/fonts/OFL.txt`.
 
 Pull requests with new words, languages or games are welcome. Please keep it offline, ad-free and readable
 for a child who cannot read yet.

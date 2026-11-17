@@ -32,6 +32,24 @@ Core.picKey = function (it) {
   var p = it.pic;
   return p.type === 'emoji' ? 'e:' + p.src : p.type === 'color' ? 'c:' + String(p.hex).toLowerCase() : 'n:' + p.n;
 };
+Core.vocabLabel = function (lang, item) {
+  var text = item && item[lang] && item[lang].word || '', color = '#263238';
+  if (lang === 'de') {
+    var de = /^(der|die|das)\s+/i.exec(text);
+    if (de) color = de[1].toLowerCase() === 'der' ? '#1565c0' : de[1].toLowerCase() === 'die' ? '#c62828' : '#2e7d32';
+  } else if (lang === 'pt') {
+    var pt = /^(o|os|a|as)\s+/i.exec(text);
+    if (pt) color = /^(o|os)$/i.test(pt[1]) ? '#1565c0' : '#c62828';
+  }
+  return { text: text, color: color };
+};
+Core.vocabLabelEl = function (lang, item, gloss, cls) {
+  var info = Core.vocabLabel(lang, item), wrap = document.createElement('span');
+  wrap.className = (cls || 'vocab-label') + (Core.save.settings.subtitles ? '' : ' subtitles-off');
+  var word = document.createElement('span'); word.className = 'vocab-word'; word.textContent = info.text; word.style.color = info.color; wrap.appendChild(word);
+  if (gloss) { var ru = document.createElement('span'); ru.className = 'vocab-gloss'; ru.textContent = gloss; wrap.appendChild(ru); }
+  return wrap;
+};
 function norm(s) { return String(s || '').toLowerCase().replace(/[.!?,]/g, '').trim(); }
 Core.url = {
   w: function (lang, id) { return D.audioPath.word.replace('{lang}', lang).replace('{id}', id); },
@@ -73,7 +91,7 @@ var KEY = 'lisa-island-v1';
 function defaults() {
   return {
     v: 1, firstRun: true,
-    settings: { enabled: { pt: true, en: true, de: false }, ruHelp: true, sessionMin: 15, pathSmall: false, hard: false, volume: 0.9, dailyGoal: 30 },
+    settings: { enabled: { pt: true, en: true, de: false }, ruHelp: true, subtitles: true, sessionMin: 15, pathSmall: false, hard: false, volume: 0.9, dailyGoal: 30 },
     stars: 0, hats: { unlocked: [], worn: [] }, hardStop: null, langs: {},
     /* rewards (added with the Duolingo-style layer; old saves get these defaults through merge()) */
     xp: 0, daily: { day: -1, xp: 0, met: false }, goalDays: [], crowns: {},
@@ -93,6 +111,7 @@ function sanitize(s) {
   s.goalDays = s.goalDays.filter(function (d) { return typeof d === 'number' && isFinite(d); });
   if (!s.crowns || typeof s.crowns !== 'object' || Array.isArray(s.crowns)) s.crowns = {};
   var g = Number(s.settings.dailyGoal);
+  if (typeof s.settings.subtitles !== 'boolean') s.settings.subtitles = true;
   s.settings.dailyGoal = (g >= 10 && g <= 300) ? Math.round(g) : 30;
   var h = s.house;
   if (!h || typeof h !== 'object' || Array.isArray(h)) h = s.house = { stage: 0, gifts: 0, owned: [], placed: {}, reviewDay: -1 };

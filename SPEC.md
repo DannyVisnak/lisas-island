@@ -5,7 +5,7 @@ English (British), German (optional, parent-enabled). Device: old touchscreen la
 Workstation, Firefox. Everything works with NO network. Research basis: `research/01_*.md`, `research/02_*.md`.
 
 ## Hard rules
-- **No reading needed anywhere in the child UI.** No text labels the child must read. Every instruction is
+- **No reading needed anywhere in the child UI.** Vocabulary subtitles are an optional aid and reuse existing words only; no text is required to play. Every instruction is
   voiced (Russian instruction voice), every item = picture + audio. Small decorative numerals are OK.
 - Touch first: every child tap target ≥ 110 px at 1366×768 (≈2.5 cm), generous spacing. Use pointer
   events (`pointerdown`/`pointerup`), never hover, never drag-required, never double-tap. `touch-action: none`,
@@ -39,7 +39,7 @@ Workstation, Firefox. Everything works with NO network. Research basis: `researc
   `file://`. Audio via `HTMLAudioElement` (pooled/cached); sound effects via WebAudio oscillators (no files).
   Storage: `localStorage` key `lisa-island-v1` (JSON), with try/catch fallback to memory.
 - Lightweight: vanilla JS + CSS + one `<canvas>` for the platformer; cap canvas DPR at 1.5; 60 fps target on
-  an old Intel iGPU; no frameworks, no web fonts (system fonts only for the parent screen).
+  an old Intel iGPU; no frameworks. The optional vocabulary subtitles use the bundled offline Andika font; system fonts remain the fallback and parent-screen font.
 
 ## Content
 - `content/vocab.tsv` (117 words, 13 worlds) and `content/ui.tsv` are the single source of truth; generate

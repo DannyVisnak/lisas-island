@@ -18,8 +18,13 @@ async function solveListen(lib, st) {
   const wrongDone = st.wrong;
   for (let guard = 0; guard < 60; guard++) {
     if ((await lib.screen()) !== st.screen) return;
-    const q = await ev(lib, () => ({ id: __test.correctId(), ch: __test.choiceIds() }));
-    if (!q.id) { await sleep(120); continue; }
+    const q = await ev(lib, () => {
+      const id = __test.correctId();
+      // Q.cur survives feedback and the gap before the next question is mounted.
+      if (!id || !document.querySelector('.choices .card[data-id="' + id + '"]:not(.right)')) return null;
+      return { id, ch: __test.choiceIds() };
+    });
+    if (!q) { await sleep(120); continue; }
     if (!st.wrong.done) {
       st.wrong.done = true;
       const w = q.ch.find((c) => c !== q.id);
@@ -39,14 +44,46 @@ async function solveListen(lib, st) {
 async function solveMemory(lib, st) {
   const { page } = lib;
   await sleep(700);
+  lib.expect(await ev(lib, () => [...document.querySelectorAll('.memory-label')].every((e) => getComputedStyle(e).visibility === 'hidden')), 'memory labels stay hidden before a match');
+  await ev(lib, () => UI.memory.help());
+  lib.expect(await ev(lib, () => [...document.querySelectorAll('.memory-label')].every((e) => getComputedStyle(e).visibility === 'hidden')), 'memory labels stay hidden during temporary help reveals');
+  // Help flips are not player flips: the handler ignores these cards until the peek ends.
+  await page.waitForFunction(() => !document.querySelector('.mcard.peek'), null, { timeout: 8000 });
   const ids = await ev(lib, () => [...document.querySelectorAll('.mcard')].map((c) => c.dataset.id));
   const uniq = [...new Set(ids)];
   const idxOf = (id) => ids.map((x, i) => (x === id ? i : -1)).filter((i) => i >= 0);
   const tapCard = async (i) => { const c = await ev(lib, (k) => { const b = document.querySelectorAll('.mcard')[k].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await page.touchscreen.tap(c.x, c.y); };
-  if (uniq.length >= 2) { await tapCard(idxOf(uniq[0])[0]); await sleep(140); await tapCard(idxOf(uniq[1])[0]); await sleep(900); }   /* the wrong pair first */
-  for (const id of uniq) {
-    const [a, b] = idxOf(id); await tapCard(a); await sleep(120); await tapCard(b);
-    await page.waitForFunction((i) => document.querySelectorAll('.mcard.matched[data-id="' + i + '"]').length === 2 || !document.querySelector('.mcard'), id, { timeout: 8000 }).catch(() => lib.fail('memory: pair ' + id + ' not matched'));
+  if (uniq.length >= 2) {
+    await tapCard(idxOf(uniq[0])[0]); await sleep(140); await tapCard(idxOf(uniq[1])[0]);
+    lib.expect(await ev(lib, () => { const open = [...document.querySelectorAll('.mcard.flipped:not(.matched)')]; return open.length === 2 && [...document.querySelectorAll('.memory-label')].every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'mismatched memory labels stay hidden while both wrong fronts are face-up');
+    await sleep(900);
+  }   /* the wrong pair first */
+  // Capture both fronts at the match, before the final pair can hand over to the next screen.
+  await ev(lib, () => {
+    const root = UI.root, pairs = {};
+    const observer = new MutationObserver(() => {
+      for (const card of root.querySelectorAll('.mcard.matched')) {
+        const target = card.dataset.id;
+        if (Object.prototype.hasOwnProperty.call(pairs, target)) continue;
+        const cards = [...root.querySelectorAll('.mcard.matched[data-id="' + target + '"]')];
+        if (cards.length !== 2) continue;
+        pairs[target] = cards.every((c) => {
+          const e = c.querySelector('.memory-label'), word = e && e.querySelector('.vocab-word');
+          return e && getComputedStyle(e).visibility === 'visible' && word && word.textContent === Core.item(target)[Core.curLang()].word;
+        });
+      }
+    });
+    window.__memoryMatchAudit = { pairs, observer };
+    observer.observe(root, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  });
+  try {
+    for (const id of uniq) {
+      const [a, b] = idxOf(id); await tapCard(a); await sleep(120); await tapCard(b);
+      await page.waitForFunction((i) => Object.prototype.hasOwnProperty.call(window.__memoryMatchAudit.pairs, i), id, { timeout: 8000 }).catch(() => lib.fail('memory: pair ' + id + ' not matched'));
+      lib.expect(await ev(lib, (target) => window.__memoryMatchAudit.pairs[target] === true, id), 'matched memory pair shows the exact target label on both fronts');
+    }
+  } finally {
+    await ev(lib, () => window.__memoryMatchAudit.observer.disconnect());
   }
 }
 const MGS = {
@@ -157,7 +194,7 @@ async function solveLesson(lib, st) {
 /* walk the running session until Lisa is home again; returns the list of visited steps */
 async function walk(lib, tag, vp, o) {
   o = o || {};
-  const visited = [], seenScreens = {};
+  const visited = [], seenScreens = {}; let subtitleShot = false;
   const t0 = Date.now(); let lastKey = '', st = null;
   while (Date.now() - t0 < (o.timeout || 420000)) {
     const info = await ev(lib, () => { const S = Path.session(Core.curLang()); return { sc: __test.screen(), step: S ? S.step : -1, id: S && S.plan ? S.plan[S.step] : null, done: S ? S.done : false }; });
@@ -177,6 +214,22 @@ async function walk(lib, tag, vp, o) {
     else if (info.sc === 'run') await solveRun(lib, st);
     else if (info.sc === 'lesson') await solveLesson(lib, st);
     else if (info.sc === 'pmeet') {
+      if (!subtitleShot) {
+        subtitleShot = true;
+        // Non-screenshot walks can arrive during Meet's initial pause, before any word request.
+        await lib.page.waitForFunction(() => window.__pmeetSpeechAudit && window.__pmeetSpeechAudit.some((a) => a.root === UI.root && a.wordId), null, { timeout: 8000 });
+        const labelOk = await ev(lib, () => {
+          // Screenshots can outlast the first word; inspect its recorded card, not the current light.
+          const audit = window.__pmeetSpeechAudit && window.__pmeetSpeechAudit.find((a) => a.root === UI.root && a.wordId);
+          const c = audit && document.querySelector('.meetgrid .card[data-id="' + audit.wordId + '"]'), label = c && c.querySelector('.meet-label'), item = c && Core.item(c.dataset.id);
+          const ru = label && label.querySelector('.vocab-gloss');
+          const word = label && label.querySelector('.vocab-word'), token = item && item[Core.curLang()].word.split(/\s+/)[0].toLowerCase();
+          const expected = Core.curLang() === 'pt' ? (/^(o|os)$/.test(token) ? 'rgb(21, 101, 192)' : /^(a|as)$/.test(token) ? 'rgb(198, 40, 40)' : 'rgb(38, 50, 56)') : 'rgb(38, 50, 56)';
+          return !!(label && label.classList.contains('revealed') && getComputedStyle(label).visibility === 'visible' && word.textContent === item[Core.curLang()].word && getComputedStyle(word).color === expected && ru && ru.textContent === item.ru && parseFloat(getComputedStyle(ru).fontSize) < parseFloat(getComputedStyle(word).fontSize) && getComputedStyle(ru).color === 'rgb(119, 119, 119)' && audit && audit.id === c.dataset.id && audit.visible && audit.glossVisible);
+        });
+        lib.expect(labelOk, 'daily-path Meet label and first-exposure gloss are visible at the first word-audio request');
+        await lib.page.screenshot({ path: path.join(SHOTS, 'path_subtitles_meet_pt_' + vp.width + '.png') });
+      }
       const lit = await ev(lib, () => !!document.querySelector('.path-lit.nudge'));
       if (lit && !st.tapped) { st.tapped = true; await lib.tapSel('.path-lit'); }
       await sleep(150);
@@ -374,7 +427,39 @@ async function ruleCases(lib, vp) {
 }
 
 /* ---------- boot helpers ---------- */
-async function freshBoot(vp) { return boot({ viewport: vp, speed: 8 }); }
+async function freshBoot(vp) {
+  const lib = await boot({ viewport: vp, speed: 8 });
+  const day = await ev(lib, () => Core.today());
+  // Only explicit dayShift calls may advance the calendar, including after reload.
+  // Keep Date.now() real so active-play and animation timing still get exercised.
+  const pinDay = (base) => {
+    const install = () => { Core.today = () => base + Core.dayShift; };
+    if (window.Core) install();
+    else document.addEventListener('DOMContentLoaded', install, { once: true });
+  };
+  await lib.page.addInitScript(pinDay, day);
+  await ev(lib, pinDay, day);
+  const auditSpeech = () => {
+    const install = () => {
+      window.__pmeetSpeechAudit = [];
+      const snd = Core.Snd, say = snd.say;
+      snd.say = function (list) {
+        if (__test.screen() === 'pmeet') {
+          const card = document.querySelector('.path-lit'), label = card && card.querySelector('.meet-label');
+          const ru = label && label.querySelector('.vocab-gloss');
+          const wordId = Array.isArray(list) && UI.p.words.find((id) => list[0] === Core.url.w(Core.curLang(), id));
+          window.__pmeetSpeechAudit.push({ root: UI.root, wordId, id: card && card.dataset.id, visible: !!(label && label.classList.contains('revealed') && getComputedStyle(label).visibility === 'visible'), glossVisible: !!(ru && getComputedStyle(ru).visibility === 'visible' && ru.textContent === Core.item(card.dataset.id).ru), list: Array.isArray(list) ? list.slice() : list });
+        }
+        return say.apply(this, arguments);
+      };
+    };
+    if (window.Core) install();
+    else document.addEventListener('DOMContentLoaded', install, { once: true });
+  };
+  await lib.page.addInitScript(auditSpeech);
+  await ev(lib, auditSpeech);
+  return lib;
+}
 
 (async () => {
   let code = 0;

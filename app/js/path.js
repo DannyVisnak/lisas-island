@@ -310,10 +310,13 @@ UI.screens.pmeet = function (flow, root, p) {
   var ctx = UI.chrome(flow, root, p, 1, 'explore');
   ctx.dots.classList.add('hidden'); ctx.help.classList.add('hidden');
   var grid = el('div', 'meetgrid n' + words.length); ctx.area.appendChild(grid);
-  var cards = {}, armed = null;
+  var cards = {}, labels = {}, armed = null;
   words.forEach(function (id) {
     var c = el('div', 'card meet dim'); c.dataset.id = id;
     c.appendChild(Core.Pic.el(Core.item(id)));
+    var first = SRS.peek(lang, id).box < 1;
+    var label = Core.vocabLabelEl(lang, Core.item(id), first && Core.save.settings.ruHelp ? Core.item(id).ru : '', 'vocab-label meet-label');
+    labels[id] = label; c.appendChild(label);
     c.appendChild(el('span', 'check', Lisa.ico.check));
     cards[id] = c; grid.appendChild(c);
     flow.after(700, function () { c.classList.add('path-still'); });
@@ -335,6 +338,7 @@ UI.screens.pmeet = function (flow, root, p) {
     for (var i = 0; i < words.length; i++) {
       var id = words[i], first = SRS.peek(lang, id).box < 1;
       light(id);
+      labels[id].classList.add('revealed');
       SRS.intro(lang, id);
       var l1 = [Core.url.w(lang, id)];
       if (first && Core.save.settings.ruHelp) l1.push(250, Core.url.gloss(id));
