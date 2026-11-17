@@ -95,10 +95,11 @@ MG.register({
     /* ----- the question: wrong pot = wiggle + its own name, then the question again ----- */
     function repeatAsk() {
       var my = ++askT;
-      setTimeout(function () { if (my === askT && stage === 'pot' && cur && !busy && !flow.dead) ctx.ask(cur); }, 900 / Core.speed);
+      var promptGen = ctx.promptGen();
+      setTimeout(function () { if (my === askT && stage === 'pot' && cur && !busy && !flow.dead && !ctx.prompting() && ctx.promptGen() === promptGen) ctx.ask(cur); }, 900 / Core.speed);
     }
     async function onPot(id) {
-      if (busy || ctx.finished || stage === 'idle') return;
+      if (busy || ctx.prompting() || ctx.finished || stage === 'idle') return;
       var node = potNode[id];
       if (stage === 'paint') {    /* brush is loaded: other pots just say their name (errorless) */
         ctx.wiggle(node, 'mgwig'); Snd.say([ctx.wordUrl(id)]); return;
@@ -129,7 +130,7 @@ MG.register({
 
     /* ----- a shape is tapped ----- */
     async function onShape(i, e) {
-      if (busy || ctx.finished) return;
+      if (busy || ctx.prompting() || ctx.finished) return;
       var g = shapes[i];
       if (g.classList.contains('painted')) { ctx.wiggle(g, 'mgwig'); return; }
       if (stage === 'pot') {      /* no paint yet: gently point back at the pots (no penalty) */
@@ -199,6 +200,7 @@ MG.register({
       targets: targets,
       play: function (item) {
         cur = item; stage = 'pot'; busy = false;
+        ctx.setPromptTargets(Object.keys(potNode).map(function (id) { return potNode[id]; }));
         ctx.setTarget(item, potNode[item]);
         return new Promise(function (res) { roundDone = res; });
       }

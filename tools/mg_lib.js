@@ -32,6 +32,34 @@ async function boot(o) {
   lib.shot = (name) => page.screenshot({ path: path.join(SHOTS, 'mg_' + name + '.png') });
   lib.screen = () => page.evaluate(() => __test.screen());
   lib.gameState = () => page.evaluate(() => (window.__mgTest ? __mgTest.state() : null));
+  lib.waitPromptFree = (timeout = 22000) => page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
+  lib.holdAudio = () => page.evaluate(() => {
+    if (window.__mgHeldAudio) throw new Error('audio is already held');
+    const snd = Core.Snd;
+    const state = { fast: Core.fast, Audio: window.Audio, cache: snd.cache, pending: [] };
+    window.__mgHeldAudio = state;
+    Core.fast = false;
+    snd.cache = {};
+    window.Audio = function () {
+      const audio = document.createElement('audio');
+      Object.defineProperty(audio, 'duration', { configurable: true, value: 30 });
+      audio.addEventListener('error', (e) => { if (!e.lisaTest) e.stopImmediatePropagation(); });
+      audio.play = function () { state.pending.push(audio); return Promise.resolve(); };
+      return audio;
+    };
+  });
+  lib.releaseAudio = async () => {
+    await page.evaluate(() => {
+      const state = window.__mgHeldAudio;
+      if (!state) return;
+      state.pending.forEach((audio) => audio.dispatchEvent(new Event('ended')));
+      window.Audio = state.Audio;
+      Core.Snd.cache = state.cache;
+      Core.fast = state.fast;
+      delete window.__mgHeldAudio;
+    });
+    await lib.waitPromptFree();
+  };
   lib.center = (sel) => page.evaluate((s) => { const b = document.querySelector(s).getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, sel);
   lib.tapAt = (x, y) => page.touchscreen.tap(x, y);
   lib.tapSel = async (sel) => { const c = await lib.center(sel); await page.touchscreen.tap(c.x, c.y); return c; };

@@ -66,11 +66,11 @@ MG.register({
         cue.then(function () {
           /* Missing cues leave this token unchanged; canceled or superseded cues lose ownership. */
           if (current() && inputVersion === thisInput && thisPlayback === playbackToken && Core.Snd.token === cueSoundToken)
-            flow.say([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
+            ctx.prompt([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
         });
         return;
       }
-      flow.say([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
+      ctx.prompt([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
     }
     ctx.onPeek(function () { remind(false); });
     ctx.onAssist(function () { remind(true); });
@@ -92,6 +92,7 @@ MG.register({
     }
 
     function onDrop(n, t) {
+      if (ctx.prompting()) return false;
       if (!t) return false;                                         /* beside the basket: back to the stall, no sound, no judgement */
       if (solved || count >= target) { extras++; Snd.sfx('boop'); wig(badge, 'mgm-pop'); return 'back'; }   /* one too many: it hops back out */
       inputVersion++;
@@ -124,9 +125,10 @@ MG.register({
         target = ROUNDS[round]; fruit = fruits[round % fruits.length]; count = 0; solved = false;
         inLayer.innerHTML = ''; badge.classList.remove('on'); badge.innerHTML = '';
         buildPile(); ctx.progress(round);
+        ctx.setPromptTargets(alive());
         ctx.setTarget('n' + target, basket);
         await ctx.quiet(6000);
-        ctx.say('n' + target);
+        await ctx.prompt([ctx.wordUrl('n' + target)]);
         await new Promise(function (r) { waiter = r; });
         ctx.lock(true);
         if (round < ROUNDS.length - 1) {

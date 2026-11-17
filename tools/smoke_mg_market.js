@@ -66,12 +66,13 @@ async function run(lib) {
     if (r === 0) await lib.shot('market_ask');
     if (r === 2) {
       /* a stray drop beside the basket: back to the stall, nothing counted */
-      const f = await fruitC(); await lib.dragMouse(f, { x: f.x + 20, y: f.y + 120 }, 6); await sleep(400);
+      const f = await fruitC(); await lib.waitPromptFree(); await lib.dragMouse(f, { x: f.x + 20, y: f.y + 120 }, 6); await sleep(400);
       lib.expect((await lib.gameState()).count === 0, 'market: a drop beside the basket must not count');
     }
     for (let k = 1; k <= s.goal; k++) {
       const f = await fruitC(), b = await basketC();
       await page.evaluate(() => { window.__marketAudio = []; });
+      await lib.waitPromptFree();
       await lib.dragMouse(f, b, 10);
       await page.waitForFunction((n) => __mgTest.state().count === n, k, { timeout: 5000 }).catch(() => lib.fail('market: drop #' + k + ' in round ' + r + ' did not count'));
       const bareCount = await page.evaluate((count) => window.__marketAudio.some((list) => {
@@ -106,6 +107,7 @@ async function run(lib) {
     }
     if (r === 1) {
       /* an extra fruit right after the target: synchronous synthetic drag, must hop back (extras++), count unchanged */
+      await lib.waitPromptFree();
       const res = await page.evaluate(() => {
         const n = document.querySelector('.mg-market .mgm-fruit:not(.mgm-gone)'), nr = n.getBoundingClientRect(), br = document.querySelector('.mg-market .mgm-basket').getBoundingClientRect();
         const ev = (t, x, y) => new PointerEvent(t, { pointerId: 7, pointerType: 'mouse', button: 0, buttons: 1, clientX: x, clientY: y, bubbles: true });

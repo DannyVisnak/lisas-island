@@ -30,6 +30,7 @@ async function waitScreen(name, timeout = 25000) {
   try { await page.waitForFunction((n) => __test.screen() === n, name, { timeout }); }
   catch (e) { fail('timeout waiting for screen "' + name + '" (now "' + (await screen()) + '")'); throw new Error('stop'); }
 }
+async function waitPromptFree(timeout = 22000) { return page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout }); }
 async function waitFor(fn, arg, timeout = 15000, what = 'condition') {
   try { await page.waitForFunction(fn, arg, { timeout }); return true; }
   catch (e) { fail('timeout: ' + what); return false; }
@@ -111,6 +112,7 @@ async function tapSel(sel, idx = 0) {
 /* answer listening questions until the screen changes; wrongFirst: tap one wrong card once at the first question */
 async function answerAll(screens, opts = {}) {
   let answered = 0, shotDone = false, wrongDone = false;
+  let retryId = null, retries = 0;
   for (let g = 0; g < 1500; g++) {
     const st = await page.evaluate(() => {
       const wrap = document.querySelector('.choices:not([data-seen])');
@@ -122,6 +124,7 @@ async function answerAll(screens, opts = {}) {
     if (opts.wrongFirst && !wrongDone && st.ch.length > 1) {
       wrongDone = true;
       const wrongId = st.ch.find((x) => x !== st.id);
+      await waitPromptFree();
       await tapSel('.choices:not([data-seen]) .card[data-id="' + wrongId + '"]');
       await sleep(250);
       const w = await page.evaluate((id) => { const c = document.querySelector('.choices:not([data-seen]) .card[data-id="' + id + '"]'); return c ? c.className : null; }, wrongId);
@@ -132,8 +135,21 @@ async function answerAll(screens, opts = {}) {
       expect(screens.includes(still), 'a wrong answer must not leave the question screen');
       continue;
     }
+    await waitPromptFree();
     await page.evaluate(() => { document.querySelector('.choices:not([data-seen])').dataset.seen = '1'; });
+    await waitPromptFree();
     await tapSel('.choices .card[data-id="' + st.id + '"]:not(.gone)');
+    const accepted = await page.waitForFunction((arg) => {
+      const card = document.querySelector('.choices .card[data-id="' + arg.id + '"]');
+      return (card && card.classList.contains('right')) || !arg.screens.includes(__test.screen());
+    }, { id: st.id, screens }, { timeout: 600 }).then(() => true).catch(() => false);
+    if (!accepted) {
+      if (retryId === st.id) retries++; else { retryId = st.id; retries = 1; }
+      await page.evaluate((id) => { const card = document.querySelector('.choices .card[data-id="' + id + '"]'); const wrap = card && card.closest('.choices'); if (wrap) delete wrap.dataset.seen; }, st.id);
+      if (retries >= 5) { fail('correct tap ignored 5x for ' + st.id); return answered; }
+      continue;
+    }
+    retryId = null; retries = 0;
     answered++;
     await sleep(60);
   }
@@ -269,7 +285,7 @@ async function waitScreenAfterCelebrations(want) {
     expect(await page.evaluate(() => { const e = document.querySelector('.meet-label'); return e && getComputedStyle(e).visibility === 'hidden'; }), 'free-play Meet label is hidden before first word playback');
     await shot('meet'); await checkTargets('meet'); await checkOverlap('meet'); await checkInside('meet');
     const nm = await page.evaluate(() => document.querySelectorAll('.meetgrid .card').length);
-    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm; i++) { await tapSel('.meetgrid .card', i); if (rep === 0 && i === 0) expect(await page.evaluate(() => { const c = document.querySelector('.meetgrid .card'), e = c.querySelector('.meet-label'), it = Core.item(c.dataset.id); return e.classList.contains('revealed') && e.querySelector('.vocab-word').textContent === it[Core.curLang()].word && e.querySelector('.vocab-gloss') && e.querySelector('.vocab-gloss').textContent === it.ru && getComputedStyle(e).visibility === 'visible'; }), 'free-play Meet reveals exact vocabulary and first-exposure Russian gloss on first word playback'); await sleep(rep === 0 && i === 0 ? 350 : 120); if (rep === 0 && i === 0) await shot('meet-tapped'); }
+    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm; i++) { await waitPromptFree(); await tapSel('.meetgrid .card', i); if (rep === 0 && i === 0) expect(await page.evaluate(() => { const c = document.querySelector('.meetgrid .card'), e = c.querySelector('.meet-label'), it = Core.item(c.dataset.id); return e.classList.contains('revealed') && e.querySelector('.vocab-word').textContent === it[Core.curLang()].word && e.querySelector('.vocab-gloss') && e.querySelector('.vocab-gloss').textContent === it.ru && getComputedStyle(e).visibility === 'visible'; }), 'free-play Meet reveals exact vocabulary and first-exposure Russian gloss on first word playback'); await sleep(rep === 0 && i === 0 ? 350 : 120); if (rep === 0 && i === 0) await shot('meet-tapped'); }
     await sleep(300);
     await shot('meet-seen');
     await waitFor(() => !document.querySelector('.meetgrid'), null, 15000, 'meet grid replaced by questions');
@@ -293,7 +309,7 @@ async function waitScreenAfterCelebrations(want) {
     expect(tapSays <= 1, 'listen-tap: at most 1 speech call after entry in >=60 s idle, got ' + tapSays);
     log('  listen-tap speech calls after entry during ~70 s idle: ' + tapSays);
     expect(await page.evaluate(() => !!document.querySelector('.choices .card.hint')), 'automatic help glows the correct card after ~25 s idle');
-    await tapSel('.choices .card[data-id="' + q1 + '"]:not(.gone)');
+    await waitPromptFree(); await tapSel('.choices .card[data-id="' + q1 + '"]:not(.gone)');
     await waitFor((prev) => __test.correctId() !== prev && document.querySelectorAll('.choices .card').length >= 2, q1, 15000, 'second tap question');
     await sleep(700);
     /* manual help: hint on the correct card, helped answer does not promote the word */
@@ -301,7 +317,7 @@ async function waitScreenAfterCelebrations(want) {
     const boxBefore = await page.evaluate((id) => Core.L('pt').words[id] ? Core.L('pt').words[id].box : 0, q2);
     await tapSel('.top-help'); await sleep(250);
     expect(await page.evaluate((id) => !!document.querySelector('.choices .card[data-id="' + id + '"].hint'), q2), 'help button must glow the correct card');
-    await tapSel('.choices .card[data-id="' + q2 + '"]:not(.gone)'); await sleep(250);
+    await waitPromptFree(); await tapSel('.choices .card[data-id="' + q2 + '"]:not(.gone)'); await sleep(250);
     const boxAfter = await page.evaluate((id) => Core.L('pt').words[id].box, q2);
     expect(boxAfter === Math.max(boxBefore, 1), 'helped answer must not promote the word (box ' + boxBefore + ' -> ' + boxAfter + ')');
     await waitFor((prev) => __test.correctId() !== prev, q2, 15000, 'third tap question');
@@ -314,7 +330,7 @@ async function waitScreenAfterCelebrations(want) {
     await waitScreen('meet'); await sleep(900);
     const nm2 = await page.evaluate(() => document.querySelectorAll('.meetgrid .card').length);
     await shot('meet2'); await checkTargets('meet2'); await checkOverlap('meet2');
-    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm2; i++) { await tapSel('.meetgrid .card', i); await sleep(110); }
+    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm2; i++) { await waitPromptFree(); await tapSel('.meetgrid .card', i); await sleep(110); }
     await waitFor(() => !document.querySelector('.meetgrid'), null, 15000, 'meet2 grid replaced');
     await answerAll(['meet'], { shot: 'question-3choices', shotAt: 3 });
     await waitResultToPath('path');
@@ -334,12 +350,12 @@ async function waitScreenAfterCelebrations(want) {
     expect(ids.length === uniq.length * 2, 'memory deck must have pairs');
     /* one mismatch first */
     const a = ids.indexOf(uniq[0]), b = ids.indexOf(uniq[1]);
-    await tapSel('.mcard', a); await sleep(150); await tapSel('.mcard', b); await sleep(600);
+    await waitPromptFree(); await tapSel('.mcard', a); await sleep(150); await waitPromptFree(); await tapSel('.mcard', b); await sleep(600);
     await shot('memory-mismatch');
     await waitFor(() => !document.querySelector('.mcard.flipped'), null, 8000, 'mismatched cards flip back');
     for (const id of uniq) {
       const idx = ids.map((x, i) => (x === id ? i : -1)).filter((i) => i >= 0);
-      await tapSel('.mcard', idx[0]); await sleep(120); await tapSel('.mcard', idx[1]);
+      await waitPromptFree(); await tapSel('.mcard', idx[0]); await sleep(120); await waitPromptFree(); await tapSel('.mcard', idx[1]);
       await waitFor((i) => document.querySelectorAll('.mcard.matched[data-id="' + i + '"]').length === 2 || !document.querySelector('.mcard'), id, 8000, 'pair matched ' + id);
       if (id === uniq[0]) await shot('memory-matched');
     }
@@ -686,13 +702,14 @@ async function waitScreenAfterCelebrations(want) {
     expect(await page.evaluate(() => __test.save().settings.subtitles === false && !document.querySelector('[data-setting="subtitles"] .ptoggle').classList.contains('on')), 'Subtitles OFF survives reload and Parent reopen');
     await page.evaluate(() => __test.go('meet', { lang: 'pt', world: 'animals', level: 1, part: 0 })); await waitScreen('meet');
     const meetCardOff = await page.evaluate(() => { const b = document.querySelector('.meetgrid .card').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+    await waitPromptFree();
     await page.touchscreen.tap(meetCardOff.x, meetCardOff.y);
     await page.waitForFunction(() => { const e = document.querySelector('.meet-label'); return e && e.classList.contains('revealed'); }, null, { timeout: 5000 });
     expect(await page.evaluate(() => { const es = [...document.querySelectorAll('.meet-label')]; return es.length > 0 && es[0].classList.contains('revealed') && es.every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'Subtitles OFF keeps a revealed free-play Meet label hidden');
     await page.evaluate(() => __test.go('memory', { lang: 'pt', world: 'animals', level: 3 })); await waitScreen('memory');
     const memIds = await page.evaluate(() => [...document.querySelectorAll('.mcard')].map((e) => e.dataset.id));
     const pairId = memIds[0], pairIdx = memIds.map((id, i) => id === pairId ? i : -1).filter((i) => i >= 0);
-    for (const i of pairIdx) { const r = await page.evaluate((n) => { const b = document.querySelectorAll('.mcard')[n].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await page.touchscreen.tap(r.x, r.y); await sleep(120); }
+    for (const i of pairIdx) { const r = await page.evaluate((n) => { const b = document.querySelectorAll('.mcard')[n].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await waitPromptFree(); await page.touchscreen.tap(r.x, r.y); await sleep(120); }
     await page.waitForFunction((id) => document.querySelectorAll('.mcard.matched[data-id="' + id + '"]').length === 2, pairId, { timeout: 5000 });
     expect(await page.evaluate(() => { const es = [...document.querySelectorAll('.memory-label')]; return es.length > 0 && document.querySelectorAll('.mcard.matched').length > 0 && es.every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'Subtitles OFF keeps labels hidden on a completed memory match');
     await page.evaluate(() => __test.go('parent')); await waitScreen('parent');
@@ -703,6 +720,7 @@ async function waitScreenAfterCelebrations(want) {
     expect(await page.evaluate(() => __test.save().settings.subtitles === true && document.querySelector('[data-setting="subtitles"] .ptoggle').classList.contains('on')), 'Subtitles ON survives reload and Parent reopen');
     await page.evaluate(() => __test.go('meet', { lang: 'pt', world: 'animals', level: 1, part: 0 })); await waitScreen('meet');
     const meetCardOn = await page.evaluate(() => { const b = document.querySelector('.meetgrid .card').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+    await waitPromptFree();
     await page.touchscreen.tap(meetCardOn.x, meetCardOn.y);
     await page.waitForFunction(() => { const e = document.querySelector('.meet-label'); return e && e.classList.contains('revealed'); }, null, { timeout: 5000 });
     expect(await page.evaluate(() => { const e = document.querySelector('.meet-label'); return document.querySelectorAll('.meet-label').length > 0 && e.classList.contains('revealed') && getComputedStyle(e).visibility === 'visible'; }), 'Subtitles ON shows a revealed free-play Meet label');
@@ -785,6 +803,8 @@ async function waitScreenAfterCelebrations(want) {
   }
 
   errors.forEach((e) => fail(e));
+  try { await require('./smoke_prompt_audio.js')(page); }
+  catch (e) { fail('prompt audio sub-smoke: ' + e.message); }
   await browser.close();
   const uniqTiny = [...new Set(tiny)];
   uniqTiny.forEach((t) => fail('target below 110px: ' + t));
@@ -798,16 +818,17 @@ async function answerGate(gi) {
   const st = await page.evaluate(() => ({ id: __test.correctId(), ch: __test.choiceIds() }));
   if (gi === 2 && st.ch.length > 1) {
     const wrong = st.ch.find((x) => x !== st.id);
-    await tapSel('.gatechoices .card[data-id="' + wrong + '"]'); await sleep(300);
+    await waitPromptFree(); await tapSel('.gatechoices .card[data-id="' + wrong + '"]'); await sleep(300);
     const cls = await page.evaluate((id) => document.querySelector('.gatechoices .card[data-id="' + id + '"]').className, wrong);
     expect(/wrong/.test(cls), 'wrong gate answer wobbles');
     expect(await page.evaluate(() => __runState.state === 'gate'), 'wrong gate answer keeps the gate closed');
     await sleep(900);
   }
-  await tapSel('.gatechoices .card[data-id="' + st.id + '"]:not(.gone)');
+  await waitPromptFree(); await tapSel('.gatechoices .card[data-id="' + st.id + '"]:not(.gone)');
 }
 
 async function tapCorrectNow() {
+  await waitPromptFree();
   const id = await page.evaluate(() => { const w = document.querySelector('.choices:not([data-seen])'); if (w) w.dataset.seen = '1'; return __test.correctId(); });
   await tapSel('.choices .card[data-id="' + id + '"]:not(.gone)');
   return id;
@@ -892,7 +913,7 @@ async function rewards() {
   const wrongs = await page.evaluate(() => { const id = __test.correctId(); return __test.choiceIds().filter((x) => x !== id); });
   const sfxMark = await page.evaluate(() => window.__sfx.length);
   const o0 = (await page.evaluate(() => __test.fx())).oops;
-  await tapSel('.choices:not([data-seen]) .card[data-id="' + wrongs[0] + '"]'); await sleep(200);
+  await waitPromptFree(); await tapSel('.choices:not([data-seen]) .card[data-id="' + wrongs[0] + '"]'); await sleep(200);
   const m1 = await page.evaluate(() => ({ fx: __test.fx(), hud: __test.hud(), sfx: window.__sfx.slice() }));
   expect(m1.fx.combo === 0 && m1.hud.combo === '0', 'a miss resets the combo');
   expect(m1.sfx.slice(sfxMark).every((n) => n === 'boop'), 'a miss makes no new negative sound (only the usual soft boop): ' + m1.sfx.slice(sfxMark).join(','));
@@ -903,7 +924,7 @@ async function rewards() {
   expect((await page.evaluate(() => __test.fx())).combo === 1, 'combo restarts at 1 after a miss');
   await nextQuestion(q, 'reward question 5');
   const wrongs2 = await page.evaluate(() => { const id = __test.correctId(); return __test.choiceIds().filter((x) => x !== id); });
-  await tapSel('.choices:not([data-seen]) .card[data-id="' + wrongs2[0] + '"]'); await sleep(200);
+  await waitPromptFree(); await tapSel('.choices:not([data-seen]) .card[data-id="' + wrongs2[0] + '"]'); await sleep(200);
   const m2 = await page.evaluate(() => __test.fx());
   expect(m2.oops === o0, 'oops line only on every other miss (toggle back after the 2nd miss)');
   await sleep(500);
@@ -972,7 +993,7 @@ async function rewards() {
   await waitFor(() => __test.correctId() && document.querySelectorAll('.choices .card').length >= 2, null, 20000, 'missing-audio question 1');
   await sleep(1200);
   const wr = await page.evaluate(() => { const id = __test.correctId(); return __test.choiceIds().filter((x) => x !== id)[0]; });
-  await tapSel('.choices:not([data-seen]) .card[data-id="' + wr + '"]'); await sleep(1100);
+  await waitPromptFree(); await tapSel('.choices:not([data-seen]) .card[data-id="' + wr + '"]'); await sleep(1100);
   const t0 = Date.now();
   q = await tapCorrectNow();
   await nextQuestion(q, 'next question after an answer whose Lisa audio is missing');

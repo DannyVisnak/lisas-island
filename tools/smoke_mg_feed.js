@@ -13,6 +13,16 @@ async function run(lib) {
   const nodeFor = (id) => lib.center('.mg-feed .mgf-food[data-id="' + id + '"]');
   await ready(); await sleep(300);
   await lib.shot('feed_start');
+  const feedBefore = await lib.gameState();
+  await lib.holdAudio();
+  await lib.tapSel('.mg-feed .mgf-food');
+  await page.waitForFunction(() => MG.cur.prompting(), null, { timeout: 3000 }).catch(() => lib.fail('feed: tapped food did not start a prompt'));
+  const feedOther = (await page.evaluate(() => __mgTest.state().left)).find((k) => k !== feedBefore.target);
+  const feedTap = await nodeFor(feedOther);
+  await lib.dragMouse(feedTap, await mouth(), 8);
+  const feedAfter = await lib.gameState();
+  lib.expect(feedAfter.done === feedBefore.done && feedAfter.others === feedBefore.others, 'feed: drop during word prompt is rejected without progress or other count');
+  await lib.releaseAudio();
   for (let i = 0; i < 6; i++) {
     await ready();
     let s = await lib.gameState();
@@ -21,6 +31,7 @@ async function run(lib) {
       const other = (await page.evaluate(() => __mgTest.state().left)).find((k) => k !== s.target);
       const o0 = s.others;
       const a = await nodeFor(other), m = await mouth();
+      await lib.waitPromptFree();
       await page.mouse.move(a.x, a.y); await page.mouse.down();
       for (let k = 1; k <= 8; k++) { await page.mouse.move(a.x + (m.x - a.x) * k / 8, a.y + (m.y - a.y) * k / 8); await sleep(15); }
       await lib.shot('feed_drag');
@@ -33,6 +44,7 @@ async function run(lib) {
       lib.expect(s.done === i, 'feed: a wrong food must not advance the progress');
     }
     const a = await nodeFor(s.target), m = await mouth();
+    await lib.waitPromptFree();
     await lib.dragMouse(a, m, 8);
     await page.waitForFunction((n) => __mgTest.state().done > n || __mgTest.state().finished, i, { timeout: 12000 }).catch(() => lib.fail('feed: correct food #' + i + ' did not count'));
     if (i === 2) await lib.shot('feed_mid');

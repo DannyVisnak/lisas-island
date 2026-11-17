@@ -19,11 +19,25 @@ async function run(lib) {
     if (round === 0) {
       const wrong = (await page.evaluate(() => __mgTest.state().pots)).find((p) => p !== s.target);
       const o0 = s.others;
+      await page.evaluate(() => { window.__retryOldSpeed = Core.speed; Core.speed = 1; });
+      await page.evaluate(() => { const c = MG.cur; window.__retryAskCount = 0; window.__retryAskOriginal = c.ask; c.ask = function () { window.__retryAskCount++; return window.__retryAskOriginal.apply(this, arguments); }; });
+      await lib.waitPromptFree();
       await lib.tapSel('.mg-paint .pt-pot[data-id="' + wrong + '"]'); await sleep(350);
       const s2 = await st();
       lib.expect(s2.others === o0 + 1 && s2.target === s.target && s2.stage === 'pot', 'paint: a wrong pot is errorless (others+1, same question)');
+      await lib.waitPromptFree();
+      const asksBeforeHelp = await page.evaluate(() => __retryAskCount);
+      await lib.holdAudio();
+      await lib.tapSel('.top-help');
+      await page.waitForFunction(() => MG.cur.prompting(), null, { timeout: 3000 }).catch(() => lib.fail('paint: help prompt did not start'));
+      await sleep(1000);
+      lib.expect(await page.evaluate(() => MG.cur.prompting()), 'paint: Help remains active during the retry window');
+      lib.expect(await page.evaluate(() => __retryAskCount) === asksBeforeHelp, 'paint: delayed retry does not replace Help');
+      await lib.releaseAudio();
+      await page.evaluate(() => { MG.cur.ask = window.__retryAskOriginal; Core.speed = window.__retryOldSpeed; delete window.__retryAskOriginal; delete window.__retryAskCount; delete window.__retryOldSpeed; });
       await lib.shot('paint_wrong');
     }
+    await lib.waitPromptFree();
     await lib.tapSel('.mg-paint .pt-pot[data-id="' + s.target + '"]');
     await page.waitForFunction(() => __mgTest.state().stage === 'paint', null, { timeout: 12000 }).catch(() => lib.fail('paint: round ' + round + ' brush never loaded'));
     await sleep(150);
@@ -31,6 +45,7 @@ async function run(lib) {
     const hasBrush = await page.evaluate(() => getComputedStyle(document.querySelector('.mg-paint .pt-brush')).opacity === '1');
     lib.expect(hasBrush, 'paint: brush visible once the pot is chosen');
     const before = (await st()).painted;
+    await lib.waitPromptFree();
     await lib.tapSel('.mg-paint .pt-shape:not(.painted) .pt-base');
     if (round === 2) { await sleep(250); await lib.shot('paint_flood'); }
     if (round < 5) await page.waitForFunction((b) => __mgTest.state().painted === b + 1 && __mgTest.state().stage === 'pot', before, { timeout: 12000 }).catch(() => lib.fail('paint: round ' + round + ' shape did not fill'));

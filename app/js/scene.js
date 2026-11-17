@@ -169,6 +169,7 @@ UI.screens.scene = function (flow, root, p) {
   function toFront(n) { if (n.node.parentNode !== front) front.appendChild(n.node); }
 
   function handleTap(cx, cy) {
+    if (flow.promptActive()) return;
     var pt = worldPoint(cx, cy), n = hitTest(pt.x, pt.y);
     if (!n) { try { FX.burst(cx - frameRect().left, cy - frameRect().top, { n: 4, power: 0.45 }); } catch (e) { /* cosmetic */ } return; }
     if (locked) { /* between questions: still fun, still errorless */ if (!n.found) { toFront(n); wiggle(n); Snd.say([Core.url.w(lang, n.def.id)]); } return; }
@@ -183,16 +184,16 @@ UI.screens.scene = function (flow, root, p) {
       if (tl) list.push(250, tl);
       list.push(350, Core.url.q(lang, tid));
     }
-    Snd.say(list);
+    flow.prompt(root, list, Object.keys(nodes).map(function (id) { return nodes[id].node; }));
     idleMs = 0;
   }
 
-  function replay() { if (tid && !locked) { Snd.say([Core.url.q(lang, tid)]); UI.pulse(speaker); } }
+  function replay() { if (tid && !locked && !flow.promptActive()) { flow.prompt(root, [Core.url.q(lang, tid)], Object.keys(nodes).map(function (id) { return nodes[id].node; })); UI.pulse(speaker); } }
   function onHelp() {
-    if (!tid || locked) return;
+    if (!tid || locked || flow.promptActive()) return;
     helpPresses++; idleMs = 0;
     var list = [Core.ruUrl('scene_help'), 300, Core.url.q(lang, tid)];
-    Snd.say(list); lisa.react('point');
+    flow.prompt(root, list, Object.keys(nodes).map(function (id) { return nodes[id].node; })); lisa.react('point');
     /* the second press on the same target gives a real hint (glow + pan); that answer counts as helped */
     if (helpPresses >= 2) assist();
   }
@@ -240,7 +241,7 @@ UI.screens.scene = function (flow, root, p) {
     }
     if (!panned && idleMs >= HELP_MS) {
       panned = true; assist();
-      Snd.say([Core.url.q(lang, tid)]);
+      flow.prompt(root, [Core.url.q(lang, tid)], Object.keys(nodes).map(function (id) { return nodes[id].node; }));
     }
   });
 
@@ -256,14 +257,15 @@ UI.screens.scene = function (flow, root, p) {
     /* a little pan to the right and back shows the picture is bigger than the screen */
     panTo(300, 1400, function () { if (!down && !dragging) panTo(0, 1400); });
     await flow.wait(1200);
-    locked = false; asking = true;
+    asking = true;
     for (var i = 0; i < total; i++) {
       if (p.path && i > 0 && Path.shouldStop()) { total = i; break; }
-      idx = i; tid = targets[i]; helpedNow = false; helpPresses = 0; peeked = false; panned = false; idleMs = 0; seq = Core.inputSeq; locked = false;
+      idx = i; tid = targets[i]; helpedNow = false; helpPresses = 0; peeked = false; panned = false; idleMs = 0; seq = Core.inputSeq; locked = true;
       dots.set(i);
       var pr = new Promise(function (res) { foundResolve = res; });
       await quiet(7000);
-      if (!n0(tid).found) { Snd.say([Core.url.q(lang, tid)]); UI.pulse(speaker); }
+      if (!n0(tid).found) { await flow.prompt(root, [Core.url.q(lang, tid)], Object.keys(nodes).map(function (id) { return nodes[id].node; })); UI.pulse(speaker); }
+      locked = false;
       await pr;
       locked = true;
     }

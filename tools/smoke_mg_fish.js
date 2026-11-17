@@ -34,15 +34,27 @@ async function run(lib) {
     lib.expect(readyFish === 6, 'fish: question ' + (round + 1) + ' has all six swimmers available (' + readyFish + ')');
     if (round === 0) {
       const wrong = s.ids.find((i) => i !== s.target), o0 = s.others;
-      const c = await center(wrong); await lib.tapAt(c.x, c.y); await sleep(200);
+      await page.evaluate(() => { window.__retryOldSpeed = Core.speed; Core.speed = 1; });
+      await page.evaluate(() => { const c = MG.cur; window.__retryAskCount = 0; window.__retryAskOriginal = c.ask; c.ask = function () { window.__retryAskCount++; return window.__retryAskOriginal.apply(this, arguments); }; });
+      const c = await center(wrong); await lib.waitPromptFree(); await lib.tapAt(c.x, c.y); await sleep(200);
       const s2 = await st();
       lib.expect(s2.others === o0 + 1 && s2.target === s.target && s2.stage === 'ask', 'fish: a wrong fish is errorless (others+1, same question)');
       await lib.shot('fish_wrong');
-      await sleep(500);
+      await lib.waitPromptFree();
+      const asksBeforeHelp = await page.evaluate(() => __retryAskCount);
+      await lib.holdAudio();
+      await lib.tapSel('.top-help');
+      await page.waitForFunction(() => MG.cur.prompting(), null, { timeout: 3000 }).catch(() => lib.fail('fish: help prompt did not start'));
+      await sleep(1100);
+      lib.expect(await page.evaluate(() => MG.cur.prompting()), 'fish: Help remains active during the retry window');
+      lib.expect(await page.evaluate(() => __retryAskCount) === asksBeforeHelp, 'fish: delayed retry does not replace Help');
+      await lib.releaseAudio();
+      await page.evaluate(() => { MG.cur.ask = window.__retryAskOriginal; Core.speed = window.__retryOldSpeed; delete window.__retryAskOriginal; delete window.__retryAskCount; delete window.__retryOldSpeed; });
     }
     if (round === 5) await lib.shot('fish_final_question');
-    const c = await center(s.target); await lib.tapAt(c.x, c.y);
+    const c = await center(s.target); await lib.waitPromptFree(); await lib.tapAt(c.x, c.y);
     /* A second tap during the catch animation must not collect this fish twice. */
+    await lib.waitPromptFree();
     await lib.tapAt(c.x, c.y);
     if (round === 2) { await sleep(180); await lib.shot('fish_hook'); await sleep(80); await lib.shot('fish_swing'); }
     await page.waitForFunction((n) => __mgTest.state().caught === n + 1, round, { timeout: 15000 }).catch(() => lib.fail('fish: round ' + round + ' fish was not caught'));

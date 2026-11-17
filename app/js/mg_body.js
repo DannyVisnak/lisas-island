@@ -97,7 +97,7 @@ MG.register({
 
     async function onTouch(e) {
       e.preventDefault(); e.stopPropagation();
-      if (finishing) return;
+      if (finishing || ctx.prompting()) return;
       Snd.unlock();
       var n = nearest(toSvg(e.clientX, e.clientY));
       if (n.score > NEUTRAL) { giggle(); Snd.sfx('pop'); return; }       /* tummy: a tickle, nothing asked */
@@ -115,7 +115,7 @@ MG.register({
           giggle(); await after;
           if (ctx.target !== item) return;
           var u = ctx.ruUrl('tickle');
-          await flow.say([u, 300, ctx.askUrl(item)].filter(function (x) { return x != null; }));
+          await ctx.prompt([u, 300, ctx.askUrl(item)].filter(function (x) { return x != null; }));
         }
       }
     }
@@ -147,6 +147,8 @@ MG.register({
     (async function () {
       await ctx.intro();
       for (var i = 0; i < targets.length; i++) {
+        /* Dim Lisa's visible answer artwork; the transparent rings remain available for hints. */
+        ctx.setPromptTargets([lisa]);
         ctx.setTarget(targets[i], rings[targets[i]][0]); ctx.progress(i);
         hintOff(); solved = false;
         await ctx.quiet(7000);

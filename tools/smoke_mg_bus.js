@@ -21,6 +21,7 @@ async function run(lib) {
     if (i === 1) {
       const wrong = s.stops.find((x) => x !== s.target), o0 = s.others, d0 = s.done;
       const c = await lib.center('.mg-bus .mgbus-stop[data-id="' + wrong + '"]');
+      await lib.waitPromptFree();
       await page.touchscreen.tap(c.x, c.y);
       await page.waitForFunction((n) => __mgTest.state().others === n + 1, o0, { timeout: 6000 }).catch(() => lib.fail('bus: wrong stop should count as other'));
       await sleep(150); await lib.shot('bus_wrong');
@@ -28,6 +29,7 @@ async function run(lib) {
       lib.expect((await lib.gameState()).done === d0, 'bus: wrong stop must not advance');
     }
     const c = await lib.center('.mg-bus .mgbus-stop[data-id="' + s.target + '"]');
+    await lib.waitPromptFree();
     await page.touchscreen.tap(c.x, c.y);
     if (i === 2) { await page.waitForSelector('.mg-bus .mgbus-bus.mgbus-open', { timeout: 8000 }).catch(() => lib.fail('bus: doors never opened')); await sleep(60); await lib.shot('bus_arrive'); }
     if (i === 3) { await sleep(900); await lib.shot('bus_driving'); }

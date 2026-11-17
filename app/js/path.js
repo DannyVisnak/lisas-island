@@ -320,17 +320,17 @@ UI.screens.pmeet = function (flow, root, p) {
     c.appendChild(el('span', 'check', Lisa.ico.check));
     cards[id] = c; grid.appendChild(c);
     flow.after(700, function () { c.classList.add('path-still'); });
-    tap(c, function () { if (armed && armed.id === id) armed.fire(); }, { silent: true, nopress: true });
+    tap(c, function () { if (!flow.promptActive() && armed && armed.id === id) armed.fire(); }, { silent: true, nopress: true });
   });
   ctx.speaker.onclick = null;
   function light(id) { words.forEach(function (w) { cards[w].classList.toggle('dim', w !== id); cards[w].classList.toggle('path-lit', w === id); }); }
   function waitTap(id, ms) {   /* exposure 3: the child touches the lit picture; without a touch it goes on by itself */
     return new Promise(function (res) {
       var c = cards[id]; c.classList.remove('nudge'); void c.offsetWidth; c.classList.add('nudge');
-      var done = false;
-      function fin() { if (done) return; done = true; armed = null; c.classList.add('seen'); res(); }
-      armed = { id: id, fire: function () { if (done) return; c.classList.remove('zoom'); void c.offsetWidth; c.classList.add('zoom'); flow.say([Core.url.w(lang, id)]).then(fin); } };
-      flow.after(ms, fin);
+      var done = false, inactivity = null;
+      function fin() { if (done) return; done = true; if (inactivity != null) clearTimeout(inactivity); armed = null; c.classList.add('seen'); res(); }
+      armed = { id: id, fire: function () { if (done || flow.promptActive()) return; if (inactivity != null) clearTimeout(inactivity); inactivity = null; armed = null; c.classList.remove('zoom'); void c.offsetWidth; c.classList.add('zoom'); flow.prompt(ctx.area, [Core.url.w(lang, id)], [c]).then(fin); } };
+      inactivity = flow.after(ms, fin);
     });
   }
   (async function () {
@@ -342,10 +342,10 @@ UI.screens.pmeet = function (flow, root, p) {
       SRS.intro(lang, id);
       var l1 = [Core.url.w(lang, id)];
       if (first && Core.save.settings.ruHelp) l1.push(250, Core.url.gloss(id));
-      await flow.say(l1); await flow.wait(350);
-      await flow.say([Core.url.q(lang, id)]); await flow.wait(350);
+      await flow.prompt(ctx.area, l1, [cards[id]]); await flow.wait(350);
+      await flow.prompt(ctx.area, [Core.url.q(lang, id)], [cards[id]]); await flow.wait(350);
       if (i === 0) await Core.sayRu(flow, 'explore');
-      else await flow.say([Core.url.w(lang, id)]);
+      else await flow.prompt(ctx.area, [Core.url.w(lang, id)], [cards[id]]);
       await waitTap(id, 6500);
       await flow.wait(300);
     }

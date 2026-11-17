@@ -457,6 +457,11 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .bigtrophy { width: 38rem; height: 38rem; animation: stickerin .7s cubic-bezier(.3,1.6,.5,1) both; filter: drop-shadow(0 2rem 2rem rgba(0,0,0,.3)); }
 .bigtrophy svg, .bigcrown svg { width: 100%; height: 100%; display: block; }
 .goal-lisa { position: relative; width: 30rem; height: 33.8rem; }
+.prompt-choice { opacity: .72; }
+.prompt-ear { position: absolute; right: .7rem; top: .5rem; z-index: 20; width: 2.6rem; height: 2.6rem; color: #6b56b5; pointer-events: none; animation: prompt-ear-pulse .85s ease-in-out infinite alternate; }
+.prompt-ear svg { display: block; width: 100%; height: 100%; }
+@keyframes prompt-ear-pulse { from { opacity: .55; transform: scale(.92); } to { opacity: 1; transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .prompt-ear { animation: none; opacity: .8; } }
 .bigcrown { position: relative; z-index: 2; width: 46rem; height: 35rem; animation: stickerin .7s cubic-bezier(.3,1.6,.5,1) both; filter: drop-shadow(0 2rem 2rem rgba(0,0,0,.3)); }
 
 @keyframes cardpop { 0% { transform: scale(1); } 22% { transform: scale(1.2) rotate(-2deg); } 45% { transform: scale(.96) rotate(1.5deg); } 68% { transform: scale(1.12) rotate(-.5deg); } 100% { transform: scale(1.07); } }

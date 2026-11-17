@@ -11,6 +11,7 @@ const DEV = process.argv.includes('--dev');
 const URL = 'file://' + path.join(ROOT, DEV ? 'tools/lesson_dev.html' : 'app/index.html');
 const VIEWPORTS = [{ width: 1128, height: 752 }, { width: 1920, height: 1080 }];
 const SHOT_BEATS = { float: { 0: 'start', 3: 'logfloats', 5: 'keysinks', 7: 'recap' }, daynight: { 0: 'morning', 1: 'noon', 4: 'night', 6: 'badges' }, stones: { 0: 'start', 1: 'count', 4: 'hop', 5: 'across' } };
+const waitPromptFree = (lib, timeout = 22000) => lib.page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
 const lt = (lib) => lib.page.evaluate(() => (window.__lessonTest ? __lessonTest.state() : null));
 
 async function playLesson(lib, id, vp, firstRun) {
@@ -48,6 +49,7 @@ async function playLesson(lib, id, vp, firstRun) {
       const r = await page.evaluate(() => { const t = document.querySelector('.ls-tile').getBoundingClientRect(); const e = document.elementFromPoint(t.left + t.width / 2, t.top + t.height / 2); return { w: t.width, h: t.height, hit: !!(e && e.closest('.ls-tile')) }; });
       expect(r.w >= 150 && r.hit, id + ': tile too small or not tappable ' + JSON.stringify(r));
       const c = await page.evaluate(() => { const t = document.querySelectorAll('.ls-tile')[0].getBoundingClientRect(); return { x: t.left + t.width / 2, y: t.top + t.height / 2 }; });
+      await waitPromptFree(lib);
       await page.touchscreen.tap(c.x, c.y); pickedPrompts++;
       await sleep(200); const s2 = await lt(lib);
       expect(s2.picks.length === pickedPrompts && !s2.picks[pickedPrompts - 1].auto, id + ': the tap was not recorded ' + JSON.stringify(s2.picks));

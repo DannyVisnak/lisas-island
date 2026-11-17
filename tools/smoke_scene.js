@@ -15,8 +15,10 @@ function fail(m) { problems.push(m); console.log('  FAIL: ' + m); }
 function expect(c, m) { if (!c) fail(m); return !!c; }
 async function shot(name) { await page.screenshot({ path: path.join(SHOTS, 'scene_' + name + '.png') }); }
 const st = () => page.evaluate(() => (window.__sceneTest ? __sceneTest.state() : null));
+async function waitPromptFree(timeout = 22000) { return page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout }); }
 async function waitFor(fn, arg, timeout, what) { try { await page.waitForFunction(fn, arg, { timeout: timeout || 12000 }); return true; } catch (e) { fail('timeout: ' + what); return false; } }
 async function tapItem(id) {
+  await waitPromptFree();
   const r = await page.evaluate((i) => __sceneTest.rect(i), id);
   await page.touchscreen.tap(r.x, r.y);
   return r;

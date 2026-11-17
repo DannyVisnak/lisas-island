@@ -31,6 +31,7 @@ async function run(lib) {
       for (let k = 0; k < n; k++) {
         const wrong = parts.find((p) => p !== s.target && p !== 'tooth' && p !== 'face' && (k === 0 || p !== 'nose'));
         const o0 = (await lib.gameState()).others, c = await pos(wrong);
+        await lib.waitPromptFree();
         await page.touchscreen.tap(c.x, c.y);
         await page.waitForFunction((n0) => __mgTest.state().others === n0 + 1, o0, { timeout: 6000 }).catch(() => lib.fail('body: wrong part ' + wrong + ' should count as other'));
         if (k === 0) await lib.shot('body_wrong_' + wrong);
@@ -38,6 +39,7 @@ async function run(lib) {
       }
       /* a touch on the tummy = tickle, never counted */
       const t0 = await lib.gameState(), tummy = await page.evaluate(() => __mgTest.svgPos(120, 208));
+      await lib.waitPromptFree();
       await page.touchscreen.tap(tummy.x, tummy.y); await sleep(200);
       lib.expect((await lib.gameState()).others === t0.others, 'body: a tummy touch must not count as an answer');
       await ready();
@@ -46,6 +48,7 @@ async function run(lib) {
     }
     const c = await pos(s.target, i % 2);
     if (i === 0) await lib.shot('body_ask');
+    await lib.waitPromptFree();
     await page.touchscreen.tap(c.x, c.y);
     await sleep(120);
     if (i === 2) await lib.shot('body_react_' + s.target);

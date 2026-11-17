@@ -8,6 +8,7 @@ const path = require('path');
 const { boot, sleep, SHOTS } = require('./mg_lib');
 
 const shotTo = (lib, name) => lib.page.screenshot({ path: path.join(SHOTS, 'house_' + name + '.png') });
+const waitPromptFree = (lib, timeout = 22000) => lib.page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
 const hs = (lib) => lib.page.evaluate(() => (window.__houseTest ? __houseTest.state() : null));
 const lang = (lib) => lib.page.evaluate(() => Core.curLang());
 const expectSingleBuildSun = async (lib, label) => {
@@ -141,6 +142,7 @@ async function run(lib) {
   const pick1 = s.cards[0];
   const heard0 = await page.evaluate(([l, i]) => Core.SRS.peek(l, i).heard || 0, [L, pick1]);
   await page.evaluate(() => { window.__cw = 0; });
+  await waitPromptFree(lib);
   await lib.tapSel('.hcard[data-id="' + pick1 + '"]');
   await sleep(250);
   await shotTo(lib, 'gift_flying_1128');
@@ -160,6 +162,7 @@ async function run(lib) {
   s = await hs(lib);
   const pick2 = s.cards[1];
   const from = await lib.center('.hcard[data-id="' + pick2 + '"]'), to = await lib.center('.house-stage');
+  await waitPromptFree(lib);
   await lib.dragMouse(from, to, 8);
   await waitHouse(([p]) => __houseTest.state().owned.indexOf(p) >= 0, [pick2], 'dragging a card onto the room should place it');
   await sleep(1500);
