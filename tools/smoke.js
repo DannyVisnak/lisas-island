@@ -532,6 +532,11 @@ async function waitScreenAfterCelebrations(want) {
     const st1 = await page.evaluate(() => ({ state: __runState.state, y: __runState.lisa.y, x: __runState.lisa.x }));
     await shot('run-jump');
     await page.evaluate(() => __test.speedUp(8));
+    /* A fall before any door returns to the initial spawn checkpoint. */
+    await page.evaluate(() => { __runState.lisa.y = 900; __runState.lisa.vy = 1200; __runState.lisa.onGround = false; });
+    await waitFor(() => __runState.state === 'bounce', null, 2000, 'pre-door fall enters spring recovery');
+    expect(await page.evaluate(() => __runState.checkpointX === 220 && __runState.lisa.x === 220), 'fall before the first door returns to initial spawn');
+    await waitFor(() => __runState.state === 'run', null, 5000, 'running resumes after pre-door recovery');
     /* watch her run for a while without jumping: states must stay friendly (no fail state) */
     const seen = new Set();
     for (let i = 0; i < 40; i++) { seen.add(await page.evaluate(() => __runState.state)); await sleep(150); }
@@ -542,16 +547,18 @@ async function waitScreenAfterCelebrations(want) {
     await shot('run-mid');
     const nG = await page.evaluate(() => __runState.gates.length);
     log('  gates: ' + nG);
+    log('  pre-gate state: ' + JSON.stringify(await page.evaluate(() => ({ s: __runState.state, x: Math.round(__runState.lisa.x), y: Math.round(__runState.lisa.y), g: __runState.lisa.onGround, gi: __runState.gi, cp: __runState.checkpointX, gs: __runState.gates.map((g) => g.state + '@' + g.x) }))));
     for (let gi = 0; gi < nG; gi++) {
       /* wait until she can be teleported */
-      await waitFor(() => {
+      await waitFor((gi) => {
         const s = __runState;
         if (s.state === 'gate') return true;
         /* skipToGate changes only x: never carry a fall below the new ground.
            Check and teleport in one dispatch, before physics can advance. */
         if (s.state !== 'run' || !s.lisa.onGround) return false;
+        if (gi > 0 && s.checkpointX < s.gates[gi - 1].x + 80) return false;
         s.skipToGate(); return true;
-      }, null, 12000, 'grounded Run approach or existing gate');
+      }, gi, 12000, 'grounded Run approach or existing gate');
       await waitFor(() => __runState.state === 'gate' && !!document.querySelector('.gatechoices .card') && __test.correctId(), null, 15000, 'gate ' + gi + ' question');
       await sleep(700);
       if (gi === 0) {
@@ -570,6 +577,7 @@ async function waitScreenAfterCelebrations(want) {
         expect(await page.evaluate((id) => !!document.querySelector('.gatechoices .card[data-id="' + id + '"].hint'), gId), 'gate help must glow the correct card');
         await shot('run-gate-help');
       }
+      if (gi === 0) await page.evaluate(() => { Core.runScale = 0; });
       await answerGate(gi);
       if (gi === 0) {
         await sleep(250);
@@ -577,7 +585,53 @@ async function waitScreenAfterCelebrations(want) {
         expect(gAfter === Math.max(gBefore, 1), 'helped gate answer must not promote the word (box ' + gBefore + ' -> ' + gAfter + ')');
       }
       await waitFor((n) => __runState.gi >= n, gi + 1, 12000, 'gate ' + gi + ' opens');
-      if (gi === 1) await shot('run-after-gate');
+      if (gi === 0) {
+        /* The unlocked door is not a checkpoint until Lisa physically clears it. */
+        const unopenedPassage = await page.evaluate(() => ({ gi: __runState.gi, x: __runState.lisa.x, checkpoint: __runState.checkpointX, gate0: __runState.gates[0].x }));
+        expect(unopenedPassage.gi === 1 && unopenedPassage.checkpoint === 220 && unopenedPassage.x + 30 <= unopenedPassage.gate0, 'opened but unpassed door does not advance checkpoint');
+        await page.evaluate(() => { Core.runScale = 1; });
+        await page.evaluate(() => { __runState.lisa.y = 900; __runState.lisa.vy = 1200; __runState.lisa.onGround = false; });
+        await waitFor(() => __runState.state === 'bounce', null, 2000, 'unpassed-door fall enters recovery');
+        expect(await page.evaluate(() => __runState.lisa.x === 220), 'fall after unlocking but before passage returns to spawn');
+        await waitFor(() => __runState.state === 'run', null, 5000, 'running resumes after unpassed-door recovery');
+        /* Back to the safe approach before open door 1 (as skipToGate does), so terrain pits between spawn and the door can't loop her back to spawn. */
+        await waitFor(() => { const s = __runState; if (s.state !== 'run' || !s.lisa.onGround) return false; s.lisa.x = s.gates[0].x - 400; return true; }, null, 5000, 'grounded before open door 1');
+        await waitFor(() => __runState.checkpointX === __runState.gates[0].x + 80, null, 8000, 'clearing open door 1 sets its checkpoint');
+      }
+      if (gi === 1) {
+        await waitFor(() => __runState.lisa.x - 30 > __runState.gates[1].x, null, 12000, 'Lisa physically clears open door 2');
+        const itemSetup = await page.evaluate(() => {
+          const s = __runState, items = s.collectibleSnapshot(), idx = items.got.findIndex((got, i) => !got && items.positions[i].x > s.gates[1].x + 100 && items.positions[i].x < s.gates[2].x - 200), pos = items.positions[idx];
+          if (idx < 0 || !pos) return { before: items.collected, after: items.collected };
+          s.lisa.x = pos.x; s.lisa.y = pos.y + 55; s.lisa.vy = 0; s.lisa.onGround = false; s.lisa.jumpBuf = 0; s.state = 'run';
+          return { before: items.collected };
+        });
+        await waitFor((n) => __runState.collected > n, itemSetup.before, 2500, 'test setup collects a real bubble');
+        const collectedSetup = await page.evaluate(() => __runState.collected);
+        expect(collectedSetup > 0, 'door 2 recovery fixture collected at least one bubble');
+        const checkpoint = await page.evaluate(() => ({ x: __runState.checkpointX, door: __runState.gates[1].x, items: __runState.collectibleSnapshot(), hud: document.querySelector('.collected b').textContent, gi: __runState.gi, gates: __runState.gates.map((g) => g.state), mistakes: __runState.mistakes, xp: Core.save.xp, stars: Core.save.stars }));
+        expect(checkpoint.x === checkpoint.door + 80, 'door 2 passage sets checkpoint beyond the door');
+        await page.evaluate(() => { __runState.lisa.y = 900; __runState.lisa.vy = 1200; __runState.lisa.onGround = false; });
+        await waitFor(() => __runState.state === 'bounce', null, 2000, 'door 2 fall enters spring recovery');
+        const recovered = await page.evaluate(() => ({ x: __runState.lisa.x, checkpoint: __runState.checkpointX, items: __runState.collectibleSnapshot(), hud: document.querySelector('.collected b').textContent, gi: __runState.gi, mistakes: __runState.mistakes, xp: Core.save.xp, stars: Core.save.stars }));
+        expect(Math.abs(recovered.x - checkpoint.door - 80) <= 5, 'fall recovery returns to door 2 checkpoint (' + recovered.x + ')');
+        expect(JSON.stringify(recovered.items) === JSON.stringify(checkpoint.items) && recovered.hud === checkpoint.hud && recovered.gi === checkpoint.gi && recovered.mistakes === checkpoint.mistakes && recovered.xp === checkpoint.xp && recovered.stars === checkpoint.stars, 'recovery preserves collectibles, gate progress, mistakes and rewards');
+        expect(recovered.gi === 2 && checkpoint.gates[0] === 'open' && checkpoint.gates[1] === 'open' && checkpoint.gates[2] === 'closed', 'doors 1–2 remain open and door 3 remains next');
+        const collectedBubble = checkpoint.items.positions.find((p, i) => checkpoint.items.got[i]);
+        if (collectedBubble) {
+          await page.evaluate((arg) => { const s = __runState; s.lisa.x = arg.pos.x; s.lisa.y = arg.pos.y + 55; s.lisa.vy = 0; s.lisa.onGround = false; s.state = 'run'; }, { pos: collectedBubble });
+          await sleep(100);
+          expect(await page.evaluate((count) => __runState.collected === count, checkpoint.items.collected), 'revisiting a collected bubble does not increment the counter');
+        }
+        await shot('run-door2-recovery');
+        await waitFor(() => __runState.state === 'run', null, 5000, 'running resumes after door 2 recovery');
+        await page.evaluate(() => { __runState.lisa.y = 900; __runState.lisa.vy = 1200; __runState.lisa.onGround = false; });
+        await waitFor(() => __runState.state === 'bounce', null, 2000, 'repeated fall enters recovery');
+        expect(await page.evaluate((x) => __runState.lisa.x === x, checkpoint.x), 'repeated fall uses the same door 2 checkpoint');
+        await waitFor(() => __runState.state === 'run', null, 5000, 'running resumes after repeated recovery');
+        await shot('run-door2-resumed');
+        await shot('run-after-gate');
+      }
     }
     await page.evaluate(() => __runState.skipToEnd());
     await sleep(900);
@@ -597,6 +651,7 @@ async function waitScreenAfterCelebrations(want) {
     await page.evaluate(() => { window.removeEventListener('keydown', window.__outsideKeyListener); __test.go('run', { lang: 'pt', world: 'animals' }); });
     await waitScreen('run');
     await waitFor(() => __runState.state === 'ready', null, 1000, 're-entered Run ready state');
+    expect(await page.evaluate(() => __runState.checkpointX === 220), 'a fresh Run resets its checkpoint to initial spawn');
     await page.keyboard.press('ArrowUp');
     expect(await waitFor(() => !__runState.lisa.onGround && __runState.lisa.vy < 0, null, 1200, 're-entered Run keyboard jump'), 're-entering Run restores keyboard jumping');
     await tapSel('.b-back'); await waitScreen('path');

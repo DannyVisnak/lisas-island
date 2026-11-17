@@ -119,8 +119,10 @@ the voice line plays at most once per 4 s cooldown (and never over another runni
      stopping point).
 4. **Platformer "Run!"** (canvas): side view, Lisa **auto-runs** right at a calm speed; **tap anywhere** to jump
    (one button, generous coyote time, jump buffering). Terrain: grass ground, low blocks, small gaps, floating
-   picture-bubbles / fruit to collect (sparkle sound). **No death**: falling into a gap makes a spring bounce
-   Lisa back up onto the last ledge. A level has 5–6 **gates** (big wooden doors with a lock). At a gate Lisa
+   picture-bubbles / fruit to collect (sparkle sound). **No death**: falling makes the existing spring bounce
+   return Lisa to the last open gate she physically cleared, using x=220 before she clears any gate. Opening
+   a gate alone does not set a checkpoint. Falls preserve collected bubbles and their count, open gates,
+   progress, mistakes and earned rewards for the active run. A level has 5–6 **gates** (big wooden doors with a lock). At a gate Lisa
    stops, `gate` voiced on the first gate only, then 3 big picture buttons slide up over the scene and the
    question plays. Correct → the lock pops, door swings open, Lisa continues. Wrong → errorless rules above.
    End: a flag + the fox's house; celebration. Length ≈ 2–3 min. Theme/colours vary per world (meadow, farm,

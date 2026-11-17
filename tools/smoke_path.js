@@ -161,10 +161,36 @@ async function solveRun(lib, st) {
   let wrong = false, skippedGate = -1, skippedEnd = false;
   for (let guard = 0; guard < 200; guard++) {
     if ((await lib.screen()) !== 'run') return;
-    const s = await ev(lib, () => (window.__runState ? { state: __runState.state, gi: __runState.gi, n: __runState.gates.length, over: __runState.over } : null));
+    const s = await ev(lib, () => (window.__runState ? { state: __runState.state, gi: __runState.gi, n: __runState.gates.length, over: __runState.over, x: __runState.lisa.x, checkpoint: __runState.checkpointX, door2: __runState.gates[1] && __runState.gates[1].x } : null));
     if (!s) { await sleep(100); return; }
     if (s.state === 'run') {
       /* Physics runs at real time: repeated skips rewind the approach before Lisa reaches the gate/house. */
+      if (s.gi === 2 && !st.runFallChecked && s.x - 30 > s.door2) {
+        const collected = await ev(lib, () => {
+          const snap = __runState.collectibleSnapshot();
+          const i = snap.got.findIndex((got, n) => !got && snap.positions[n].x > __runState.gates[1].x + 120 && snap.positions[n].x < __runState.gates[2].x - 200);
+          if (i < 0) return null;
+          const pos = snap.positions[i], s = __runState;
+          s.lisa.x = pos.x; s.lisa.y = pos.y + 55; s.lisa.vy = 0; s.lisa.onGround = false; s.state = 'run';
+          return { baseline: snap.collected, x: pos.x };
+        });
+        lib.expect(collected, 'daily path: a real bubble is available to collect before recovery');
+        if (collected) await page.waitForFunction((baseline) => __runState.collected > baseline, collected.baseline, { timeout: 3000 }).catch(() => lib.fail('daily path: simulation did not collect a bubble'));
+        const before = await ev(lib, () => ({ cp: __runState.checkpointX, door: __runState.gates[1].x, items: __runState.collectibleSnapshot(), hud: document.querySelector('.collected b').textContent }));
+        lib.expect(collected && before.items.collected > collected.baseline && before.items.got.some(Boolean), 'daily path: simulation collected a real bubble before recovery');
+        await ev(lib, () => { __runState.lisa.y = 900; __runState.lisa.vy = 1200; __runState.lisa.onGround = false; });
+        await page.waitForFunction(() => __runState.state === 'bounce', null, { timeout: 3000 });
+        const after = await ev(lib, () => ({ x: __runState.lisa.x, items: __runState.collectibleSnapshot(), hud: document.querySelector('.collected b').textContent }));
+        lib.expect(before.cp === before.door + 80 && Math.abs(after.x - before.cp) <= 5, 'daily path: door 2 fall returns to its passed checkpoint');
+        lib.expect(JSON.stringify(before.items) === JSON.stringify(after.items) && before.hud === after.hud, 'daily path: collectibles and HUD survive Run recovery');
+        st.runFallChecked = true;
+        if (st.shots) await page.screenshot({ path: path.join(SHOTS, 'path_run_recovery_' + page.viewportSize().width + '.png') });
+        await page.waitForFunction(() => __runState.state === 'run', null, { timeout: 7000 });
+        continue;
+      }
+      /* Let normal physics clear the just-opened door before a solver teleport. */
+      const needsPassage = s.gi > 0 && s.checkpoint < (await ev(lib, (n) => __runState.gates[n - 1].x + 80, s.gi));
+      if (needsPassage) { await sleep(150); continue; }
       if (s.gi < s.n && skippedGate !== s.gi) { await ev(lib, () => __runState.skipToGate()); skippedGate = s.gi; }
       else if (s.gi >= s.n && !skippedEnd) { await ev(lib, () => __runState.skipToEnd()); skippedEnd = true; }
       await sleep(250); continue;
@@ -193,6 +219,7 @@ async function solveLesson(lib, st) {
 }
 
 /* walk the running session until Lisa is home again; returns the list of visited steps */
+const RUN_FALL = {};
 async function walk(lib, tag, vp, o) {
   o = o || {};
   const visited = [], seenScreens = {}; let subtitleShot = false;
@@ -203,7 +230,7 @@ async function walk(lib, tag, vp, o) {
     if (o.stopAt != null && info.step >= o.stopAt && info.sc !== 'pritual') break;
     const key = info.sc + '#' + info.step;
     if (key !== lastKey) {
-      lastKey = key; st = { screen: info.sc, wrong: { done: false } }; visited.push({ screen: info.sc, step: info.step, id: info.id });
+      lastKey = key; st = { screen: info.sc, wrong: { done: false }, shots: !!o.shots }; visited.push({ screen: info.sc, step: info.step, id: info.id });
       const sk = info.sc + '_' + info.id;
       if (o.shots && info.id === 'R' && !seenScreens[sk]) { seenScreens[sk] = 1; await ev(lib, () => __test.realTime()); await sleep(1800); await lib.page.screenshot({ path: path.join(SHOTS, 'path_' + tag + '_ritual_' + vp.width + '.png') }); await ev(lib, () => __test.speedUp(8)); }
       if (!seenScreens[sk]) { seenScreens[sk] = 1; if (o.shots) { await sleep(1100); await lib.page.screenshot({ path: path.join(SHOTS, 'path_' + tag + '_' + sk + '_' + vp.width + '.png') }); } }
@@ -238,6 +265,7 @@ async function walk(lib, tag, vp, o) {
     if (st.mgWrong) o.mgWrong = (o.mgWrong || 0) + st.mgWrong, st.mgWrong = 0;
     if (st.sceneWrong) o.sceneWrong = st.sceneWrong;
     if (st.runWrong) o.runWrong = true;
+    if (st.runFallChecked) { o.runFallChecked = true; RUN_FALL[vp.width] = true; }
     if (st.lessonTaps) o.lessonTaps = st.lessonTaps;
   }
   return visited;
@@ -338,7 +366,7 @@ async function mgWorldCase(lib, vp) {
   const seq = [];
   const visited = await walk(lib, 'food', vp, Object.assign(o, { shots: true }));
   // The step index can advance one frame before the screen switches.
-  const a3 = visited.find((v) => v.id === 'A3' && v.screen === 'minigame') || visited.find((v) => v.id === 'A3');
+  const a3 = visited.slice().reverse().find((v) => v.id === 'A3' && v.screen === 'minigame') || visited.slice().reverse().find((v) => v.id === 'A3');
   expect(a3 && a3.screen === 'minigame', 'A3 is the registered mini-game for food: ' + JSON.stringify(a3));
   expect(await ev(lib, () => true), 'ok');
   expect(o.mgWrong >= 1, 'a wrong action was made inside the mini-game');
@@ -495,15 +523,19 @@ async function freshBoot(vp) {
       await sleep(900); await shot(lib, 'day2_warmup', vp);
       const ch = await ev(lib, () => __test.choiceIds().length);
       expect(ch === 2, 'warm-up uses 2 choices, got ' + ch);
-      const v2 = await walk(lib, 'day2', vp, { shots: true });
+      const o2 = { shots: true };
+      const v2 = await walk(lib, 'day2', vp, o2);
       const ids2 = v2.map((v) => v.id);
       console.log('    day2 steps: ' + ids2.join('>') + '  screens: ' + v2.map((v) => v.screen).join('>'));
+      /* B3 alternates between seek-and-find and Run by day, so the Run recovery check is asserted once both days have been walked. */
+      expect(RUN_FALL[vp.width] === true, 'daily path: Run checkpoint recovery was executed and checked (day 1 or day 2)');
       expect(ids2[0] === 'warm' && ids2.includes('R'), 'day 2 ran warm-up ... ritual');
       await waitHome(lib); await sleep(400);
       const Sd2b = await sess(lib);
       expect(Sd2b.done && Sd2b.newA.every((i) => !(Sd2.newA.concat([]).length === 0)), 'day 2 record closed');
       const s3 = await ev(lib, () => Core.save.stars);
-      expect(s3 > starsB, 'stars grew on day 2');
+      const paid2 = [...new Set(ids2)].filter((i) => ['warm', 'A1', 'A2', 'A3', 'L', 'B1', 'B2', 'B3', 'rv1', 'rv2', 'rv3'].includes(i)).length;
+      expect(s3 - starsB === paid2 + 3, 'day 2 stars equal finished-step rewards (' + paid2 + ') plus 3 for the ritual, got ' + (s3 - starsB));
       const lifetimeOk = await ev(lib, () => Core.save.stars >= 0);
       expect(lifetimeOk, 'stars never go below zero');
     } catch (e) { lib.fail('exception: ' + (e && e.stack || e)); }
