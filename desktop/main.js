@@ -46,7 +46,11 @@ function createWindow() {
   win.setMenuBarVisibility(false);
   win.once('ready-to-show', () => win.show());
   const wc = win.webContents;
-  wc.setVisualZoomLevelLimits(1, 1);
+  wc.on('did-finish-load', () => {
+    Promise.resolve(wc.setVisualZoomLevelLimits(1, 1)).catch((error) => {
+      console.error('Failed to set visual zoom level limits:', error);
+    });
+  });
   wc.setZoomFactor(1);
 
   const blockNav = (e, url) => { if (!url.startsWith(GAME_PREFIX)) e.preventDefault(); };
