@@ -75,7 +75,7 @@ Lesson.play = function (id, root, onDone, opts) {
     if (early && !finished && onDone) { finished = true; onDone(false); }
   }
   var handle = { flow: flow, stop: function () { stop(true); }, state: function () { return JSON.parse(JSON.stringify(st)); },
-    replay: function () { if (st.promptOpen && st.promptKey) { Core.Snd.say([uiUrl(st.promptKey)]); } return st.promptOpen; }, S: S };
+    replay: function () { if (st.promptOpen && st.promptKey && !flow.promptActive()) { flow.prompt(box, [uiUrl(st.promptKey)], box.querySelectorAll('.ls-tile')); } return st.promptOpen; }, S: S };
   if (ownFlow) flow.every(1000, function () { if (!box.isConnected) stop(true); });
 
   /* ----- voice: plays a line, schedules cues by word position, pads the time when the audio file is missing ----- */
@@ -110,7 +110,7 @@ Lesson.play = function (id, root, onDone, opts) {
   async function runPrompt(b, i) {
     var P = b.prompt, qkey = P.q || b.line;
     st.phase = 'ask'; st.promptKey = qkey;
-    if (P.q) await speak(P.q);
+    if (P.q) await flow.prompt(box, [uiUrl(P.q)], []);
     st.phase = 'prompt';
     var wrap = el('div', 'ls-prompt'), pos = (scene.promptBox || { x: 683, y: 540, size: 280, gap: 40 });
     var size = pos.size, gap = pos.gap, left = pos.x - size - gap / 2, top = pos.y - size / 2;
@@ -129,7 +129,7 @@ Lesson.play = function (id, root, onDone, opts) {
     st.tiles = tiles.length; st.promptOpen = true; st.pulsed = false; st.repeated = false;
     var picked = null, auto = false, resolveFn, done = new Promise(function (r) { resolveFn = r; });
     tiles.forEach(function (t) {
-      Core.tap(t, function () { if (picked) return; picked = t.dataset.choice; resolveFn(); }, { nopress: true });
+      Core.tap(t, function () { if (picked || flow.promptActive()) return; picked = t.dataset.choice; resolveFn(); }, { nopress: true });
     });
     var idle = 0, seq = Core.inputSeq;
     var timer = flow.every(500, function () {
@@ -139,7 +139,7 @@ Lesson.play = function (id, root, onDone, opts) {
       idle += 500;
       if (idle >= Lesson.PEEK_MS && !st.pulsed) {
         st.pulsed = true; wrap.classList.add('ls-pulse');
-        if (!st.repeated) { st.repeated = true; Snd().say([uiUrl(qkey)]); }
+        if (!st.repeated && !flow.promptActive()) { st.repeated = true; flow.prompt(box, [uiUrl(qkey)], tiles); }
       }
       if (idle >= Lesson.AUTO_MS) { picked = 'auto'; auto = true; resolveFn(); }
     });

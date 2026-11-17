@@ -3,26 +3,37 @@
 'use strict';
 var D = Core.D, Snd = Core.Snd, el = Core.el, tap = Core.tap, SRS = Core.SRS;
 var Q = window.Q = { cur: null };
+function sayInstruction(flow, key) {
+  (async function () {
+    while (!flow.dead && (flow.promptActive() || (flow._promptPlaybackToken === Snd.chainTok && Snd.busy()))) {
+      var pending = flow._promptPromise;
+      if (flow.promptActive() && pending) await pending; else await flow.wait(100);
+    }
+    if (!flow.dead) await Core.sayRu(flow, key);
+  })();
+}
 
 /* ---------- one listening question ---------- */
 /* o: lang, target, choices[], host, speaker, lisa, srs(bool), gate(bool), onCorrect(fn) -> resolves {first, wrongs} */
 Q.ask = function (flow, host, o) {
   return new Promise(function (resolve) {
-    var lang = o.lang, tid = o.target, wrongs = 0, locked = false, done = false, cards = {}, helped = false, inPath = !!(window.Path && Path.active && Path.active());
+    var lang = o.lang, tid = o.target, wrongs = 0, locked = false, done = false, cards = {}, helped = false, prompting = false, inPath = !!(window.Path && Path.active && Path.active());
     var wrap = el('div', 'choices n' + o.choices.length + (o.cls ? ' ' + o.cls : ''));
     host.appendChild(wrap);
-    function playQ() { return Snd.say([Core.url.q(lang, tid)]); }
-    Q.cur = { target: tid, lang: lang, choices: o.choices.slice(), wrongs: function () { return wrongs; }, replay: function () { if (!done) { playQ(); if (o.speaker) UI.pulse(o.speaker); } },
+    var promptGeneration = 0, replayGeneration = 0;
+    function prompt(list) { if (done) return Promise.resolve(false); replayGeneration++; prompting = true; var gen = ++promptGeneration; return flow.prompt(host, list, Object.keys(cards).map(function (k) { return cards[k]; })).then(function (r) { if (gen === promptGeneration) prompting = flow.promptActive(); return r; }); }
+    function playQ() { return prompt([Core.url.q(lang, tid)]); }
+    Q.cur = { target: tid, lang: lang, choices: o.choices.slice(), wrongs: function () { return wrongs; }, busy: function () { return !done && (prompting || locked); }, replay: function () { if (!done && !prompting) { playQ(); if (o.speaker) UI.pulse(o.speaker); } },
       helped: function () { return helped; },
       /* silent cue: pulse speaker + help button, Lisa looks at the cards */
       nudge: function () { if (done) return; if (o.speaker) UI.pulse(o.speaker); if (o.helpBtn) UI.pulse(o.helpBtn); if (o.lisa) o.lisa.react('point'); },
       /* help: word, then Russian gloss (if on), correct card glows, Lisa points. Answer will not count (no SRS promotion). */
       help: function () {
-        if (done) return; helped = true;
+        if (done || prompting) return; helped = true;
         var list = [Core.url.w(lang, tid)], hl = Core.lisaLine('help');
         if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(tid));
         if (hl) list = [hl, 150].concat(list);
-        Snd.say(list);
+        prompt(list);
         cards[tid].classList.add('hint');
         if (o.lisa) o.lisa.react('point');
         if (o.helpBtn) UI.pulse(o.helpBtn);
@@ -36,9 +47,10 @@ Q.ask = function (flow, host, o) {
       tap(c, function () { pick(id, c); }, { silent: true, nopress: true });
     });
     Snd.preload(Core.url.w(lang, tid));
-    flow.after(450, function () { if (!done) playQ(); });
+    prompting = true; /* close the scheduled-prompt gap before its timer can fire */
+    flow.after(450, function () { if (!done) playQ(); else prompting = false; });
     async function pick(id, c) {
-      if (locked || done) return;
+      if (locked || done || prompting) return;
       if (id === tid) {
         locked = true; done = true;
         var first = wrongs === 0, t0 = Date.now();
@@ -63,9 +75,10 @@ Q.ask = function (flow, host, o) {
         setTimeout(function () { c.classList.add('gone'); }, 650 / Core.speed);
         if (wrongs >= 2 || inPath) cards[tid].classList.add('hint');
         locked = true;
+        var replayTicket = ++replayGeneration;
         await flow.wait(inPath ? 600 : 850);
         locked = false;
-        if (!done) { if (inPath) Snd.say([Core.url.w(lang, tid)]); else if (oops) Snd.say([oops, 200, Core.url.q(lang, tid)]); else playQ(); }
+        if (!done && replayTicket === replayGeneration) { if (inPath) prompt([Core.url.w(lang, tid)]); else if (oops) prompt([oops, 200, Core.url.q(lang, tid)]); else playQ(); }
       }
     }
   });
@@ -126,7 +139,7 @@ function chrome(flow, root, p, total, speakKey) {
   FX.levelStart();
   var dots = UI.dots(total || 6); bar.appendChild(dots);
   var sp = UI.speakerBtn(function () {
-    if (Q.cur) Q.cur.replay(); else if (speakKey) Snd.say([Core.ruUrl(speakKey)]);
+    if (Q.cur) Q.cur.replay(); else if (speakKey) flow.sayAfterPrompt([Core.ruUrl(speakKey)]);
   });
   bar.appendChild(sp);
   var hb = UI.helpBtn(function () { if (p.kind === 'memory') { if (UI.memory) UI.memory.help(); } else if (Q.cur) Q.cur.help(); });
@@ -171,14 +184,14 @@ UI.screens.meet = function (flow, root, p) {
     c.appendChild(el('span', 'check', Lisa.ico.check));
     cards[id] = c; counts[id] = 0;
     tap(c, function () {
-      if (finished) return;
+      if (finished || flow.promptActive()) return;
       c.classList.remove('zoom'); void c.offsetWidth; c.classList.add('zoom');
       counts[id]++; labels[id].classList.add('revealed'); SRS.intro(lang, id);
       if (counts[id] >= 2) c.classList.add('seen');
       ctx.lisa.react('cheer');
       var list = [Core.url.w(lang, id)];
       if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(id));
-      flow.say(list).then(check);
+      flow.prompt(ctx.area, list, Object.keys(cards).map(function (k) { return cards[k]; })).then(check);
     }, { silent: true, nopress: true });
     grid.appendChild(c);
   });
@@ -208,7 +221,7 @@ UI.screens.meet = function (flow, root, p) {
     finish(flow, p, m);
   }
   function rebuildDots(c, n) { var d = UI.dots(n); c.bar.replaceChild(d, c.dots); return d; }
-  flow.after(500, function () { Core.sayRu(flow, 'explore'); });
+  flow.after(500, function () { sayInstruction(flow, 'explore'); });
   /* explore: silent nudge on the next unheard card; one spoken repeat of the instruction after ~20 s */
   UI.idle(flow, { visualMs: 7000, speakMs: 20000, active: function () { return !finished; },
     visual: function () {
@@ -216,7 +229,7 @@ UI.screens.meet = function (flow, root, p) {
       var next = words.filter(function (id) { return counts[id] < 2; })[0];
       if (next) { cards[next].classList.remove('nudge'); void cards[next].offsetWidth; cards[next].classList.add('nudge'); }
     },
-    speak: function () { Snd.say([Core.ruUrl('explore')]); } });
+    speak: function () { flow.sayAfterPrompt([Core.ruUrl('explore')]); } });
 };
 
 /* ---------- L2: listen and tap ---------- */
@@ -263,16 +276,18 @@ UI.screens.memory = function (flow, root, p) {
     open.forEach(function (o) { o.c.classList.remove('flipped'); }); open = [];
   }
   function flip(c, id) {
-    if (finished || c.classList.contains('flipped') || c.classList.contains('matched')) return;
+    if (finished || flow.promptActive() || c.classList.contains('flipped') || c.classList.contains('matched')) return;
     if (open.length >= 2) closeOpen();
     c.classList.add('flipped'); flips++; Snd.sfx('flip');
-    Snd.say([Core.url.w(lang, id)]);
+    var wordPrompt = flow.prompt(ctx.area, [Core.url.w(lang, id)], Array.prototype.slice.call(grid.children));
     SRS.intro(lang, id);
     open.push({ c: c, id: id });
     if (open.length === 2) {
       if (open[0].id === open[1].id) {
         var a = open[0].c, b = open[1].c; open = [];
         flow.after(650, async function () {
+          await wordPrompt;
+          if (flow.dead || finished) return;
           a.classList.add('matched'); b.classList.add('matched');
           matched++; ctx.dots.set(matched);
           var t0 = Date.now(), fr = FX.correct(b, { hud: ctx.dots, lisa: ctx.lisa, first: true });
@@ -293,15 +308,15 @@ UI.screens.memory = function (flow, root, p) {
     if (p.path) { chosen.forEach(function (id) { Path.note(lang, id, 'first', true); }); Path.finishStep(flow); return; }
     finish(flow, p, mistakes);
   }
-  flow.after(400, function () { Core.sayRu(flow, 'memory'); });
+  flow.after(400, function () { sayInstruction(flow, 'memory'); });
   UI.idle(flow, { visualMs: 9000, speakMs: 20000, active: function () { return !finished; },
     visual: function () { UI.pulse(ctx.speaker); UI.pulse(ctx.help); },
-    speak: function () { Snd.say([Core.ruUrl('memory')]); } });
+    speak: function () { flow.sayAfterPrompt([Core.ruUrl('memory')]); } });
   Core.$('.dots', root).classList.add('dots-memory');
   ctx.dots.set(0);
   /* help: briefly flip one still-hidden matching pair (silent), then flip it back */
   function memHelp() {
-    if (finished) return;
+    if (finished || flow.promptActive()) return;
     closeOpen();
     var left = {};
     deck.forEach(function (id, i) { var c = grid.children[i]; if (!c.classList.contains('matched')) (left[id] = left[id] || []).push(c); });
@@ -309,7 +324,7 @@ UI.screens.memory = function (flow, root, p) {
     var pair = left[ids[0]];
     pair.forEach(function (c) { c.classList.add('flipped'); c.classList.add('peek'); });
     UI.pulse(ctx.help); ctx.lisa.react('point');
-    Snd.say([Core.url.w(lang, ids[0])]);
+    flow.prompt(ctx.area, [Core.url.w(lang, ids[0])], pair);
     flow.after(1800, function () { pair.forEach(function (c) { c.classList.remove('peek'); if (!c.classList.contains('matched')) c.classList.remove('flipped'); }); });
   }
   UI.memory = { help: memHelp, pairsLeft: function () { return pairs - matched; } };

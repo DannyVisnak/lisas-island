@@ -100,14 +100,14 @@ MG.register({
     ctx.onHelp(function () { if (cur) ctx.wiggle(cur.nodes[cur.item], 'mgpeek'); });
 
     async function onTap(id, node) {
-      if (!active || !cur) return;
+      if (!active || !cur || ctx.prompting()) return;
       if (id === cur.item) { active = false; ctx.setTargetNode(null); if (onRight) onRight(node); return; }
       /* errorless: the sign says its own name, the bus honks softly */
       wrongs++;
       ctx.wiggle(node, 'mgwig'); honk(); bump();
       var other = ctx.other(node, id);
       await other;
-      if (cur && active) { await flow.wait(250); if (active && cur) ctx.ask(cur.item); }
+      if (cur && active) { var promptGen = ctx.promptGen(); await flow.wait(250); if (active && cur && !ctx.prompting() && ctx.promptGen() === promptGen) ctx.ask(cur.item); }
     }
 
     async function ride(item, i) {
@@ -118,6 +118,7 @@ MG.register({
         var n = makeStop(id, xs[k]); nodes[id] = n; stopsBox.appendChild(n); n.dataset.x = xs[k];
         tap(n, function () { onTap(id, n); }, { nopress: true });
       });
+      ctx.setPromptTargets(ids.map(function (id) { return nodes[id]; }));
       cur = { item: item, nodes: nodes, xs: xs, ids: ids };
       stopsBox.style.transform = 'translateX(' + OFF_X + 'rem)';
       go(true);

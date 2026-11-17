@@ -23,12 +23,23 @@ async function run(lib) {
   const nodeFor = (id) => lib.center('.mg-dress .mgd-cloth[data-id="' + id + '"]');
   await ready(); await sleep(300);
   await lib.shot('dress_start');
+  const dressBefore = await lib.gameState();
+  await lib.holdAudio();
+  await lib.tapSel('.mg-dress .mgd-cloth');
+  await page.waitForFunction(() => MG.cur.prompting(), null, { timeout: 3000 }).catch(() => lib.fail('dress: tapped cloth did not start a prompt'));
+  const dressOther = (await page.evaluate(() => __mgTest.state().left)).find((k) => k !== dressBefore.target);
+  const dressTap = await nodeFor(dressOther);
+  await lib.dragMouse(dressTap, await lisaC(), 8);
+  const dressAfter = await lib.gameState();
+  lib.expect(dressAfter.done === dressBefore.done && dressAfter.others === dressBefore.others, 'dress: drop during word prompt is rejected without progress or other count');
+  await lib.releaseAudio();
   for (let i = 0; i < 6; i++) {
     await ready();
     let s = await lib.gameState();
     if (i === 1) {
       const other = (await page.evaluate(() => __mgTest.state().left)).find((k) => k !== s.target);
       const o0 = s.others, a = await nodeFor(other), l = await lisaC();
+      await lib.waitPromptFree();
       await lib.dragMouse(a, l, 8);
       await page.waitForFunction((n) => __mgTest.state().others === n + 1, o0, { timeout: 8000 }).catch(() => lib.fail('dress: wrong piece should count as other'));
       await sleep(150); await lib.shot('dress_wrong');
@@ -39,6 +50,7 @@ async function run(lib) {
       lib.expect(s.done === i, 'dress: a wrong piece must not advance');
     }
     const a = await nodeFor(s.target), l = await lisaC();
+    await lib.waitPromptFree();
     await lib.dragMouse(a, l, 8);
     await page.waitForFunction((n) => __mgTest.state().done > n || __mgTest.state().finished, i, { timeout: 12000 }).catch(() => lib.fail('dress: correct piece #' + i + ' did not count'));
     const wornState = await page.evaluate((id) => ({ target: document.querySelectorAll('.mgd-wear-' + id + ' .mgd-on').length,

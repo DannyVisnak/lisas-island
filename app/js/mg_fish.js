@@ -59,6 +59,7 @@ MG.register({
         p1: Math.random() * 6.28, p2: Math.random() * 6.28, t: Math.random() * 20, x: s[0], y: s[1], sp: 1, held: false, caught: false, dir: 1 };
       fishes.push(f); byId[id] = f; place(f, 0);
     });
+    ctx.setPromptTargets(fishes.map(function (f) { return f.inner; }));
     function place(f, dt) {
       var a = f.w1 * f.t + f.p1, bb = f.w2 * f.t + f.p2;
       f.x = f.cx + f.ax * Math.sin(a); f.y = f.cy + f.ay * Math.sin(bb);
@@ -130,10 +131,11 @@ MG.register({
     var cur = null, busy = false, roundDone = null, askT = 0, stage = 'idle';
     function repeatAsk() {
       var my = ++askT;
-      setTimeout(function () { if (my === askT && stage === 'ask' && cur && !busy && !flow.dead) ctx.ask(cur); }, 1000 / Core.speed);
+      var promptGen = ctx.promptGen();
+      setTimeout(function () { if (my === askT && stage === 'ask' && cur && !busy && !flow.dead && !ctx.prompting() && ctx.promptGen() === promptGen) ctx.ask(cur); }, 1000 / Core.speed);
     }
     async function onFish(f) {
-      if (busy || stage !== 'ask' || f.caught || ctx.finished) return;
+      if (busy || ctx.prompting() || stage !== 'ask' || f.caught || ctx.finished) return;
       if (f.id !== cur) {
         if (f.jumping) return; f.jumping = true; setTimeout(function () { f.jumping = false; }, 800 / Core.speed);
         if (f.wrap.animate) { try { f.wrap.animate([{ translate: '0 0' }, { translate: '0 -5.5rem', offset: .45 }, { translate: '0 0' }], { duration: 800 / Core.speed, easing: 'ease-in-out' }); } catch (x) { /* none */ } }

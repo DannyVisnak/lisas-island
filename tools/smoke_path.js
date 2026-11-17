@@ -10,6 +10,7 @@ const { boot, sleep, SHOTS } = require('./mg_lib');
 
 const VIEWPORTS = [{ width: 1128, height: 752 }, { width: 1920, height: 1080 }];
 const ev = (lib, fn, arg) => lib.page.evaluate(fn, arg);
+const waitPromptFree = (lib, timeout = 22000) => lib.page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
 const sess = (lib) => ev(lib, () => { const S = Path.session(Core.curLang()); return S ? JSON.parse(JSON.stringify(S)) : null; });
 
 /* ---------- one solver per screen type; every solver does ONE wrong tap first, then answers correctly until the screen changes ---------- */
@@ -29,14 +30,14 @@ async function solveListen(lib, st) {
       st.wrong.done = true;
       const w = q.ch.find((c) => c !== q.id);
       const o = await ev(lib, () => __test.wrongsNow());
-      await lib.tapSel('.choices .card[data-id="' + w + '"]'); await sleep(250);
+      await waitPromptFree(lib); await lib.tapSel('.choices .card[data-id="' + w + '"]'); await sleep(250);
       const o2 = await ev(lib, () => __test.wrongsNow());
       lib.expect(o2 === o + 1, 'listen: a wrong tap should be counted (' + o + ' -> ' + o2 + ')');
       lib.expect(await ev(lib, () => __test.correctId()) === q.id, 'listen: the same question stays after a wrong tap');
     }
     const n0 = await ev(lib, () => document.querySelectorAll('.choices .card').length);
     lib.expect(n0 >= 2 && n0 <= 4, 'listen: 2 to 4 choices, got ' + n0);
-    await lib.tapSel('.choices .card[data-id="' + q.id + '"]');
+    await waitPromptFree(lib); await lib.tapSel('.choices .card[data-id="' + q.id + '"]');
     await sleep(350);
   }
   void wrongDone;
@@ -52,7 +53,7 @@ async function solveMemory(lib, st) {
   const ids = await ev(lib, () => [...document.querySelectorAll('.mcard')].map((c) => c.dataset.id));
   const uniq = [...new Set(ids)];
   const idxOf = (id) => ids.map((x, i) => (x === id ? i : -1)).filter((i) => i >= 0);
-  const tapCard = async (i) => { const c = await ev(lib, (k) => { const b = document.querySelectorAll('.mcard')[k].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await page.touchscreen.tap(c.x, c.y); };
+  const tapCard = async (i) => { const c = await ev(lib, (k) => { const b = document.querySelectorAll('.mcard')[k].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await waitPromptFree(lib); await page.touchscreen.tap(c.x, c.y); };
   if (uniq.length >= 2) {
     await tapCard(idxOf(uniq[0])[0]); await sleep(140); await tapCard(idxOf(uniq[1])[0]);
     lib.expect(await ev(lib, () => { const open = [...document.querySelectorAll('.mcard.flipped:not(.matched)')]; return open.length === 2 && [...document.querySelectorAll('.memory-label')].every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'mismatched memory labels stay hidden while both wrong fronts are face-up');
@@ -87,27 +88,27 @@ async function solveMemory(lib, st) {
   }
 }
 const MGS = {
-  async feed(lib, s) { const mouth = await lib.center('.mg-feed .mgf-mouth'); const a = await lib.center('.mg-feed .mgf-food[data-id="' + s.target + '"]'); await lib.dragMouse(a, mouth, 8); },
-  async dress(lib, s) { const l = await lib.center('.mg-dress .mgd-lisa'); const a = await lib.center('.mg-dress .mgd-cloth[data-id="' + s.target + '"]'); await lib.dragMouse(a, l, 8); },
+  async feed(lib, s) { const mouth = await lib.center('.mg-feed .mgf-mouth'); const a = await lib.center('.mg-feed .mgf-food[data-id="' + s.target + '"]'); await waitPromptFree(lib); await lib.dragMouse(a, mouth, 8); },
+  async dress(lib, s) { const l = await lib.center('.mg-dress .mgd-lisa'); const a = await lib.center('.mg-dress .mgd-cloth[data-id="' + s.target + '"]'); await waitPromptFree(lib); await lib.dragMouse(a, l, 8); },
   async paint(lib, s) {
-    if (s.stage === 'pot') await lib.tapSel('.mg-paint .pt-pot[data-id="' + s.target + '"]');
-    else if (s.stage === 'paint') await lib.tapSel('.mg-paint .pt-shape:not(.painted) .pt-base');
+    if (s.stage === 'pot') { await waitPromptFree(lib); await lib.tapSel('.mg-paint .pt-pot[data-id="' + s.target + '"]'); }
+    else if (s.stage === 'paint') { await waitPromptFree(lib); await lib.tapSel('.mg-paint .pt-shape:not(.painted) .pt-base'); }
   },
-  async fish(lib, s) { if (s.stage === 'ask') await lib.tapSel('.mg-fish .fh-fish[data-id="' + s.target + '"]'); },
-  async bus(lib, s) { await lib.tapSel('.mg-bus .mgbus-stop[data-id="' + s.target + '"]'); },
-  async body(lib, s) { const c = await ev(lib, (t) => __mgTest.partPos(t, 0), s.target); await lib.page.touchscreen.tap(c.x, c.y); },
+  async fish(lib, s) { if (s.stage === 'ask') { await waitPromptFree(lib); await lib.tapSel('.mg-fish .fh-fish[data-id="' + s.target + '"]'); } },
+  async bus(lib, s) { await waitPromptFree(lib); await lib.tapSel('.mg-bus .mgbus-stop[data-id="' + s.target + '"]'); },
+  async body(lib, s) { const c = await ev(lib, (t) => __mgTest.partPos(t, 0), s.target); await waitPromptFree(lib); await lib.page.touchscreen.tap(c.x, c.y); },
   async market(lib, s) {
     const f = await lib.center('.mg-market .mgm-fruit:not(.mgm-gone)'); const b = await lib.center('.mg-market .mgm-basket');
-    await lib.dragMouse(f, { x: b.x, y: b.y - 20 }, 10);
+    await waitPromptFree(lib); await lib.dragMouse(f, { x: b.x, y: b.y - 20 }, 10);
   }
 };
 const WRONG = {   /* one errorless wrong action per game (only where cheap and generic) */
-  async feed(lib, s) { const o = s.left.find((k) => k !== s.target); if (!o) return; const a = await lib.center('.mg-feed .mgf-food[data-id="' + o + '"]'), m = await lib.center('.mg-feed .mgf-mouth'); await lib.dragMouse(a, m, 8); },
-  async dress(lib, s) { const o = s.left.find((k) => k !== s.target); if (!o) return; const a = await lib.center('.mg-dress .mgd-cloth[data-id="' + o + '"]'), l = await lib.center('.mg-dress .mgd-lisa'); await lib.dragMouse(a, l, 8); },
-  async paint(lib, s) { const o = s.pots.find((p) => p !== s.target); if (s.stage === 'pot' && o) await lib.tapSel('.mg-paint .pt-pot[data-id="' + o + '"]'); },
-  async fish(lib, s) { const o = s.ids.find((p) => p !== s.target); if (s.stage === 'ask' && o) await lib.tapSel('.mg-fish .fh-fish[data-id="' + o + '"]'); },
-  async bus(lib, s) { const o = s.stops.find((p) => p !== s.target); if (o) await lib.tapSel('.mg-bus .mgbus-stop[data-id="' + o + '"]'); },
-  async body(lib, s) { const parts = await ev(lib, () => __mgTest.parts()); const o = parts.find((p) => p !== s.target && p !== 'tooth' && p !== 'face'); const c = await ev(lib, (t) => __mgTest.partPos(t, 0), o); await lib.page.touchscreen.tap(c.x, c.y); },
+  async feed(lib, s) { const o = s.left.find((k) => k !== s.target); if (!o) return; const a = await lib.center('.mg-feed .mgf-food[data-id="' + o + '"]'), m = await lib.center('.mg-feed .mgf-mouth'); await waitPromptFree(lib); await lib.dragMouse(a, m, 8); },
+  async dress(lib, s) { const o = s.left.find((k) => k !== s.target); if (!o) return; const a = await lib.center('.mg-dress .mgd-cloth[data-id="' + o + '"]'), l = await lib.center('.mg-dress .mgd-lisa'); await waitPromptFree(lib); await lib.dragMouse(a, l, 8); },
+  async paint(lib, s) { const o = s.pots.find((p) => p !== s.target); if (s.stage === 'pot' && o) { await waitPromptFree(lib); await lib.tapSel('.mg-paint .pt-pot[data-id="' + o + '"]'); } },
+  async fish(lib, s) { const o = s.ids.find((p) => p !== s.target); if (s.stage === 'ask' && o) { await waitPromptFree(lib); await lib.tapSel('.mg-fish .fh-fish[data-id="' + o + '"]'); } },
+  async bus(lib, s) { const o = s.stops.find((p) => p !== s.target); if (o) { await waitPromptFree(lib); await lib.tapSel('.mg-bus .mgbus-stop[data-id="' + o + '"]'); } },
+  async body(lib, s) { const parts = await ev(lib, () => __mgTest.parts()); const o = parts.find((p) => p !== s.target && p !== 'tooth' && p !== 'face'); const c = await ev(lib, (t) => __mgTest.partPos(t, 0), o); await waitPromptFree(lib); await lib.page.touchscreen.tap(c.x, c.y); },
   async market() { /* the drop-beside-the-basket case is covered by smoke_mg_market */ }
 };
 async function solveMinigame(lib, st) {
@@ -149,9 +150,9 @@ async function solveScene(lib, st) {
     if (!wrong) {
       wrong = true;
       const o = items.find((i) => i.id !== s.target && !s.found.includes(i.id));
-      if (o) { const r = await center(o.id); await page.touchscreen.tap(r.x, r.y); await sleep(250); st.sceneWrong = (await ev(lib, () => __sceneTest.state().others)); }
+      if (o) { const r = await center(o.id); await waitPromptFree(lib); await page.touchscreen.tap(r.x, r.y); await sleep(250); st.sceneWrong = (await ev(lib, () => __sceneTest.state().others)); }
     }
-    const r = await center(s.target); await page.touchscreen.tap(r.x, r.y);
+    const r = await center(s.target); await waitPromptFree(lib); await page.touchscreen.tap(r.x, r.y);
     await sleep(500);
   }
 }
@@ -171,8 +172,8 @@ async function solveRun(lib, st) {
     if (s.state === 'gate') {
       const q = await ev(lib, () => ({ id: __test.correctId(), ch: __test.choiceIds() }));
       if (!q.id) { await sleep(120); continue; }
-      if (!wrong) { wrong = true; const w = q.ch.find((c) => c !== q.id); await lib.tapSel('.gatechoices .card[data-id="' + w + '"]'); await sleep(350); st.runWrong = true; }
-      await lib.tapSel('.gatechoices .card[data-id="' + q.id + '"]');
+      if (!wrong) { wrong = true; const w = q.ch.find((c) => c !== q.id); await waitPromptFree(lib); await lib.tapSel('.gatechoices .card[data-id="' + w + '"]'); await sleep(350); st.runWrong = true; }
+      await waitPromptFree(lib); await lib.tapSel('.gatechoices .card[data-id="' + q.id + '"]');
       await sleep(500); continue;
     }
     await sleep(150);
@@ -185,7 +186,7 @@ async function solveLesson(lib, st) {
     const s = await ev(lib, () => (window.__lessonTest ? __lessonTest.state() : null));
     if (!s) { await sleep(100); continue; }
     if (s.phase === 'prompt' && s.picks.length === tapped) {
-      const c = await lib.center('.ls-tile'); await lib.page.touchscreen.tap(c.x, c.y); tapped++; st.lessonTaps = tapped; await sleep(500); continue;
+      const c = await lib.center('.ls-tile'); await waitPromptFree(lib); await lib.page.touchscreen.tap(c.x, c.y); tapped++; st.lessonTaps = tapped; await sleep(500); continue;
     }
     await sleep(120);
   }

@@ -54,6 +54,9 @@ Workstation, Firefox. Everything works with NO network. Research basis: `researc
   (the question, e.g. "Onde está o gato?"); Russian gloss `audio/ru/<id>.ogg`. UI lines `audio/ui/<lang>_<key>.ogg`.
   For phrases the question audio equals the phrase.
 
+### Prompt playback input gate
+Target-word and question playback that asks the child to answer uses the owning screen's `Flow.prompt(host, list, targets)` gate. It is acquired synchronously before audio starts, including scheduled initial prompts and replay/help chains. While held, answer handlers ignore input and the answer targets dim slightly; a small decorative ear marks playback. At 4 seconds, the watchdog releases immediately if owned playback is no longer active; while the same playback chain remains active, it rechecks every 350 ms. The per-clip safety timer settles that chain. An absolute 20-second cap releases input without stopping audio. Ordinary Lisa/personality chatter remains on `Snd.say` and does not gate answers. Reward and transition locks remain independent.
+
 ## Audio generation (`tools/gen_audio.py`)
 Piper TTS, already installed: `tools/.venv` (`piper` package), models in `tools/voices/`:
 pt = `pt_PT-tugão-medium`, en = `en_GB-jenny_dioco-medium`, de = `de_DE-thorsten-medium`, ru = `ru_RU-irina-medium`.

@@ -73,9 +73,9 @@ MG.register({
       st.appendChild(n); nodes[id] = n;
       var h = MG.drag(n, {
         targets: [lisa], pad: 2 * remPx, lift: 1.05,
-        onTap: function () { if (!busy) ctx.say(id); },
+        onTap: function () { if (!busy && !ctx.prompting()) ctx.prompt([ctx.wordUrl(id)]); },
         onDrop: function (t) {
-          if (!t || busy) return false;
+          if (!t || busy || ctx.prompting()) return false;
           return drop(id, n, h);
         }
       });
@@ -106,6 +106,7 @@ MG.register({
 
     await ctx.intro();
     return ctx.run({ targets: targets, intro: false, play: async function (id, i) {
+      ctx.setPromptTargets(Object.keys(nodes).filter(function (k) { return nodes[k].style.display !== 'none'; }).map(function (k) { return nodes[k]; }));
       ctx.setTargetNode(nodes[id]);
       await new Promise(function (res) { resolveRound = res; });
       if (i === targets.length - 1) { lisa.pose('dance'); await flow.wait(2400); lisa.pose('idle'); }

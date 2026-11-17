@@ -90,6 +90,7 @@ UI.idle = function (flow, o) {
 UI.idleReset = function (flow) { (flow.idles || []).forEach(function (h) { h.reset(); }); };
 /* help button: round light bulb, icon only */
 UI.helpBtn = function (fn) { var b = UI.btn('b-help', '<span class="ic">' + Lisa.ico.bulb + '</span>', fn, { nopress: true }); return b; };
+UI.prompt = function (flow, host, list, targets) { return flow.prompt(host, list, targets); };
 /* parental gate: press and hold 3 seconds */
 UI.holdGate = function (host, onOpen, o) {
   o = o || {}; var ms = o.ms || 3000;

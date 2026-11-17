@@ -26,6 +26,7 @@ window.__test = {
   params: function () { return UI.p; },
   correctId: function () { return window.Q && Q.cur ? Q.cur.target : null; },
   choiceIds: function () { return window.Q && Q.cur ? Q.cur.choices.slice() : []; },
+  quizBusy: function () { return !!(window.Q && Q.cur && Q.cur.busy && Q.cur.busy()); },
   wrongsNow: function () { return window.Q && Q.cur ? Q.cur.wrongs() : 0; },
   speedUp: function (n) { Core.speed = n || 8; Core.fast = true; },
   dayShift: function (d) { Core.dayShift = d; },

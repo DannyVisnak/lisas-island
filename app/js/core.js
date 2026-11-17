@@ -331,6 +331,7 @@ Snd.retryBlocked = function () {
 function Flow() { this.dead = false; this.timers = []; this.cbs = []; }
 Flow.prototype.kill = function () {
   this.dead = true;
+  if (this._promptRelease) this._promptRelease(true);
   this.timers.forEach(clearTimeout); this.timers = [];
   this.cbs.forEach(function (f) { try { f(); } catch (e) {} }); this.cbs = [];
 };
@@ -356,6 +357,69 @@ Flow.prototype.say = async function (list, opts) {
   var r = await Snd.say(list, opts);
   if (this.dead) await NEVER;
   return r;
+};
+/* Mark only target/question audio. The watchdog covers pauses and every clip in the chain. */
+Flow.prototype.prompt = function (host, list, targets) {
+  var self = this, owner = (this._promptOwner || 0) + 1;
+  if (this.dead) return Promise.resolve(false);
+  if (this._promptRelease) this._promptRelease(false);
+  this._promptOwner = owner;
+  /* querySelectorAll/HTMLCollections are array-like but are not nested targets. */
+  var nodes = targets && typeof targets !== 'string' && typeof targets.length === 'number' ? Array.prototype.slice.call(targets) : [].concat(targets || []);
+  nodes = nodes.filter(Boolean);
+  this._promptNodes = nodes;
+  var ear = null, settled = false, timer, playback, finish, p, started = Date.now();
+  function visuals(on) {
+    try { if (host) host.classList.toggle('prompt-playing', on); } catch (e) {}
+    nodes.forEach(function (n) { try { n.classList.toggle('prompt-choice', on); } catch (e) {} });
+  }
+  function release(stop) {
+    if (settled) return; settled = true; clearTimeout(timer);
+    if (stop && playback && Snd.chainTok === playback.token) Snd.stop();
+    if (self._promptOwner === owner) { self._promptRelease = null; self.prompting = false; visuals(false); }
+    if (ear && ear.parentNode) ear.parentNode.removeChild(ear);
+    if (finish) finish(false);
+  }
+  function watchdog() {
+    if (settled) return;
+    var elapsed = Date.now() - started, active = playback && Snd.chainTok === playback.token && Snd.busy();
+    if (!active || elapsed >= 20000) { release(false); return; }
+    timer = setTimeout(watchdog, Math.min(350, 20000 - elapsed));
+  }
+  this.prompting = true;
+  this._promptRelease = release;
+  try {
+    visuals(true);
+    if (host) {
+      ear = Core.el('span', 'prompt-ear', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 12H2v5h4v-5H4zm16 0h2v5h-4v-5h2zm-2 6c-.6 2-2 3-4 3h-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+      ear.setAttribute('aria-hidden', 'true'); host.appendChild(ear);
+    }
+    p = Snd.say(list); playback = { token: Snd.token }; this._promptPlaybackToken = playback.token;
+  } catch (e) { release(false); return Promise.resolve(false); }
+  var promptResult = new Promise(function (resolve) {
+    finish = resolve;
+    if (Core.fast) release(false);
+    else timer = setTimeout(watchdog, 4000);
+    p.then(function (v) { if (!settled) { release(false); resolve(v); } }, function () { if (!settled) { release(false); resolve(false); } });
+  });
+  this._promptPromise = promptResult;
+  return promptResult;
+};
+Flow.prototype.promptActive = function () { return !!this.prompting; };
+/* Ordinary instruction speech must not use Snd.say's interrupting semantics over a marked prompt. */
+Flow.prototype.sayAfterPrompt = async function (list) {
+  while (!this.dead && (this.promptActive() || (this._promptPlaybackToken === Snd.chainTok && Snd.busy()))) {
+    var pending = this._promptPromise;
+    if (this.promptActive() && pending) await pending;
+    else await this.wait(100);
+  }
+  if (this.dead) await NEVER;
+  return this.say(list);
+};
+Flow.prototype.promptAddTarget = function (node) {
+  if (!node || !this.prompting || !this._promptNodes) return;
+  if (this._promptNodes.indexOf(node) < 0) this._promptNodes.push(node);
+  node.classList.add('prompt-choice');
 };
 Flow.prototype.guard = async function (p) { var r = await p; if (this.dead) await NEVER; return r; };
 Core.Flow = Flow;

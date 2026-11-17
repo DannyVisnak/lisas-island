@@ -80,7 +80,7 @@ MG.drag = function (node, o) {
     return best;
   }
   function onDown(e) {
-    if (h.disabled || st) return;
+    if (h.disabled || st || (MG.cur && MG.cur.prompting && MG.cur.prompting())) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault(); e.stopPropagation(); Snd.unlock();
     st = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
@@ -108,6 +108,7 @@ MG.drag = function (node, o) {
     var s = st; st = null;
     var i = info(e, s);
     if (e.type === 'pointercancel') { if (s.moved) snap(); return; }
+    if (s.promptBlocked || (MG.cur && MG.cur.prompting && MG.cur.prompting())) { snap(); return; }
     if (!s.moved) { if (o.onTap) o.onTap(i); return; }
     var cx, cy;
     if (o.point === 'pointer') { cx = e.clientX; cy = e.clientY; } else { var r = node.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; }
@@ -154,6 +155,17 @@ function makeCtx(def, lang, p, flow, root) {
   var ctx = { id: id, def: def, lang: lang, world: world, flow: flow, root: root, MG: MG, ui: null, dots: null, lisa: null, speaker: null, helpBtn: null, total: 0,
     target: null, targetNode: null, stats: { helps: 0, others: 0, correct: 0 }, done: 0, finished: false, locked: false, frozen: false };
   var helpedNow = false, helpPresses = 0, othersSince = 0, saidOther = {}, idleMs = 0, seq = Core.inputSeq, peeked = false, assisted = false, idleOn = false;
+  var promptTargets = [];
+  var promptGeneration = 0;
+  ctx.prompting = function () { return flow.promptActive(); };
+  ctx.promptGen = function () { return promptGeneration; };
+  ctx.prompt = function (list, targets) { promptGeneration++; return flow.prompt(root, list, targets || promptTargets); };
+  /* Prompt dimming shows the active answer surface; targetNode remains the separate hint/glow target. */
+  ctx.setPromptTargets = function (nodes) {
+    promptTargets = (nodes || []).filter(Boolean);
+    if (flow.promptActive()) promptTargets.forEach(function (node) { flow.promptAddTarget(node); });
+  };
+  ctx.input = function (fn) { return function () { if (flow.promptActive() || ctx.locked || ctx.finished) return; return fn.apply(this, arguments); }; };
   var hooks = { peek: null, assist: null, help: null }, extra = {}, glowNode = null, idx = 0;
 
   /* ----- keys / audio ----- */
@@ -163,7 +175,7 @@ function makeCtx(def, lang, p, flow, root) {
   ctx.ru = function (k, extraList) { var u = ctx.ruUrl(k), l = [].concat(u || [], extraList || []); return l.length ? flow.say(l) : flow.wait(150); };
   ctx.askUrl = function (item) { return Core.url.q(lang, item); };
   ctx.wordUrl = function (item) { return Core.url.w(lang, item); };
-  ctx.ask = function (item) { return flow.say([ctx.askUrl(item)]); };                /* "where is the X" / "what is it" clip in the current language */
+  ctx.ask = function (item) { return ctx.prompt([ctx.askUrl(item)]); };               /* "where is the X" / "what is it" clip in the current language */
   ctx.say = function (item) { return flow.say([ctx.wordUrl(item)]); };               /* the bare word */
   ctx.praise = function (milestone) { return FX.voiceFor('yes', milestone) || Core.praiseUrl(lang); };
   ctx.quiet = async function (maxMs) { var w = 0; maxMs = maxMs || 7000; while (Snd.busy() && w < maxMs) { await flow.wait(200); w += 200; } };
@@ -194,14 +206,17 @@ function makeCtx(def, lang, p, flow, root) {
     return l;
   };
   ctx.progress = function (n) { ctx.done = n; if (ctx.dots) ctx.dots.set(n); };
-  ctx.replay = function () { if (ctx.target && !ctx.locked) { ctx.ask(ctx.target); if (ctx.speaker) UI.pulse(ctx.speaker); } };
+  ctx.replay = function () { if (ctx.target && !ctx.locked && !ctx.prompting()) { ctx.ask(ctx.target); if (ctx.speaker) UI.pulse(ctx.speaker); } };
 
   /* ----- target + idle help ----- */
   ctx.setTarget = function (item, node) {
     ctx.target = item; ctx.targetNode = node || null; helpedNow = false; helpPresses = 0; othersSince = 0; peeked = false; assisted = false; idleMs = 0; seq = Core.inputSeq;
     ctx.clearGlow(); ctx.locked = !item; if (item) startIdle();
   };
-  ctx.setTargetNode = function (node) { ctx.targetNode = node || null; };
+  ctx.setTargetNode = function (node) {
+    ctx.targetNode = node || null;
+    if (node) flow.promptAddTarget(node);
+  };
   ctx.lock = function (on) { ctx.locked = on == null ? true : !!on; idleMs = 0; };
   ctx.freeze = function (on) { ctx.frozen = !!on; idleMs = 0; };                     /* pauses idle help (tests, long animations) */
   ctx.helped = function () { return helpedNow; };
@@ -219,9 +234,9 @@ function makeCtx(def, lang, p, flow, root) {
   }
   ctx.assist = assist;
   function onHelp() {
-    if (!ctx.target || ctx.locked) return;
+    if (!ctx.target || ctx.locked || flow.promptActive()) return;
     helpPresses++; idleMs = 0;
-    Snd.say([ctx.ruUrl('help'), 300, ctx.askUrl(ctx.target)]); if (ctx.lisa && ctx.lisa.react) ctx.lisa.react('point');
+    ctx.prompt([ctx.ruUrl('help'), 300, ctx.askUrl(ctx.target)]); if (ctx.lisa && ctx.lisa.react) ctx.lisa.react('point');
     if (hooks.help) hooks.help(helpPresses);
     if (helpPresses >= 2) assist();                      /* the second press on the same target gives a real hint; that answer counts as helped */
   }
@@ -294,7 +309,7 @@ function makeCtx(def, lang, p, flow, root) {
       var u = ctx.ruUrl(o.ru);
       if (u) { saidOther[o.ru] = true; list.push(250, u); if (o.replay !== false && ctx.target) list.push(350, ctx.askUrl(ctx.target)); }
     }
-    return Snd.say(list);
+    return ctx.prompt(list);
   };
 
   /* ----- a standard round loop: intro, then for each target: setTarget -> ask -> await play(item, i) (resolves on the correct answer), then finish.

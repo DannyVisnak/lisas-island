@@ -38,6 +38,10 @@ tools/.venv/bin/python tools/check_assets.py     # confirms every file data.js r
 ```
 Existing audio is skipped, so to change a spoken text, delete its .ogg or use `--force`.
 
+### Prompt/audio race prevention
+
+Question and target-word prompts must use `Flow.prompt` so the answer gate is active before playback or a scheduled replay begins. At 4 seconds, the watchdog checks whether the same playback chain is still active; if so, it rechecks every 350 ms, without stopping audio. Missing or inactive playback releases immediately. A separate 20-second absolute cap releases input without stopping audio. The per-clip safety timer settles playback. Do not use global `Snd.busy()` for answer gating: it includes personality speech and feedback. Regression coverage should hold real audio pending, attempt an answer, then finish or fail playback and verify the answer is accepted once afterward.
+
 ## Licences
 - Emoji pictures: Noto Emoji (Google), Apache-2.0. Flags: region-flags (bundled in noto-emoji). See `app/img/LICENSES.md`.
 - Speech: generated offline with Piper TTS (MIT). Voice dataset licences per the official model cards

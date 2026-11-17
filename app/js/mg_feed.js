@@ -37,10 +37,10 @@ MG.register({
       var h = MG.drag(n, {
         targets: [mouth], pad: 3 * remPx, lift: .72,
         onStart: function () { lisa.classList.add('mgf-open'); root.classList.add('mgf-dragging'); },
-        onTap: function () { if (!busy) ctx.say(id); },
+        onTap: function () { if (!busy && !ctx.prompting()) ctx.prompt([ctx.wordUrl(id)]); },
         onDrop: function (t) {
           lisa.classList.remove('mgf-open'); root.classList.remove('mgf-dragging');
-          if (!t || busy) return false;
+          if (!t || busy || ctx.prompting()) return false;
           return eat(id, n, h);
         }
       });
@@ -79,6 +79,7 @@ MG.register({
     await ctx.intro();
     if (D.items.hungry && D.items.hungry[ctx.lang]) { lisa.react('tilt'); await ctx.say('hungry'); }
     return ctx.run({ targets: targets, intro: false, play: function (id) {
+      ctx.setPromptTargets(Object.keys(nodes).filter(function (k) { return nodes[k].style.display !== 'none'; }).map(function (k) { return nodes[k]; }));
       ctx.setTargetNode(nodes[id]);
       return new Promise(function (res) { resolveRound = res; });
     } });
