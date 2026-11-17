@@ -51,16 +51,29 @@ MG.register({
     function wig(n, cls) { if (!n) return; n.classList.remove(cls); void n.offsetWidth; n.classList.add(cls); }
     function alive() { return pile.filter(function (n) { return !n.classList.contains('mgm-gone'); }); }
 
-    var pile = [], handles = [], count = 0, target = 0, extras = 0, round = 0, solved = false, waiter = null, fruit = null;
+    var pile = [], handles = [], count = 0, target = 0, extras = 0, round = 0, solved = false, waiter = null, fruit = null, inputVersion = 0, playbackToken = 0;
     var fruits = Core.shuffle(FRUITS.filter(function (f) { return D.items[f]; }));
     fruits.push(fruits[0]);
 
-    ctx.onPeek(function () {
-      if (!target) return;
-      if (count > 0 && count < target) { ctx.ru('more').then(function () { if (!solved) ctx.say('n' + target); }); return; }
-      ctx.say('n' + target); var f = alive()[0]; if (f) ctx.wiggle(f, 'mgpeek');
-    });
-    ctx.onAssist(function () { var f = alive()[0]; if (f) ctx.glow(f); ctx.say('n' + target); });
+    function remind(partial) {
+      var thisRound = round, goal = target, thisInput = inputVersion, thisPlayback = ++playbackToken;
+      function current() { return !flow.dead && !ctx.finished && !solved && !ctx.locked && ctx.target === 'n' + goal && round === thisRound && target === goal; }
+      if (!goal || !current()) return;
+      var f = alive()[0];
+      if (f) { if (partial) ctx.glow(f); else ctx.wiggle(f, 'mgpeek'); }
+      if (count > 0 && count < goal) {
+        var cue = ctx.ru('more'), cueSoundToken = Core.Snd.token;
+        cue.then(function () {
+          /* Missing cues leave this token unchanged; canceled or superseded cues lose ownership. */
+          if (current() && inputVersion === thisInput && thisPlayback === playbackToken && Core.Snd.token === cueSoundToken)
+            flow.say([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
+        });
+        return;
+      }
+      flow.say([ctx.ruUrl('help'), ctx.wordUrl('n' + goal)].filter(Boolean));
+    }
+    ctx.onPeek(function () { remind(false); });
+    ctx.onAssist(function () { remind(true); });
     ctx.onHelp(function () { var f = alive()[0]; if (f && count === 0) ctx.wiggle(f, 'mgpeek'); });
 
     function buildPile() {
@@ -81,6 +94,7 @@ MG.register({
     function onDrop(n, t) {
       if (!t) return false;                                         /* beside the basket: back to the stall, no sound, no judgement */
       if (solved || count >= target) { extras++; Snd.sfx('boop'); wig(badge, 'mgm-pop'); return 'back'; }   /* one too many: it hops back out */
+      inputVersion++;
       count++; n.classList.add('mgm-gone');
       var slot = BASKET_SLOTS[count - 1], c = el('div', 'mgm-infruit'); c.style.left = slot[0] + 'rem'; c.style.top = slot[1] + 'rem';
       c.appendChild(Core.Pic.el(Core.item(fruit))); inLayer.appendChild(c);

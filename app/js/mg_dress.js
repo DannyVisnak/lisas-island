@@ -46,6 +46,7 @@ MG.register({
     });
     function wear(id) {
       var w = WEAR[id], g = layers[id];
+      if (id === 'coat' || id === 'dress') layers[id === 'coat' ? 'dress' : 'coat'].innerHTML = '';
       w.parts.forEach(function (p) {
         var im = document.createElementNS(NS, 'image'), host = g;
         im.setAttribute('href', D.items[id].pic.src);

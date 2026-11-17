@@ -77,9 +77,63 @@ async function centerOn(id) {
         const d = Math.hypot(items[a].x - items[b].x, items[a].y - items[b].y);
         if (d < 100) fail(S.id + ': ' + items[a].id + ' and ' + items[b].id + ' centres only ' + Math.round(d) + ' apart');
       }
-      /* screenshots across the whole picture */
-      await page.evaluate(() => __sceneTest.freeze(true)); await page.evaluate(() => __sceneTest.setCam(0)); await sleep(200);
-      for (const [n, c] of [['cam0', 0], ['cam1', Math.round(s0.max / 2)], ['cam2', s0.max]]) { await page.evaluate((x) => __sceneTest.setCam(x), c); await sleep(250); await shot(S.id + '_' + n); }
+      /* screenshots, arrow geometry, endpoint handling and exact pan distance at all target layouts */
+      await page.evaluate(() => __sceneTest.freeze(true));
+      for (const [vw, vh] of [[1128, 752], [1366, 768], [1920, 1080]]) {
+       await page.setViewportSize({ width: vw, height: vh });
+       for (const [n, c] of [['cam0', 0], ['cam1', Math.round(s0.max / 2)], ['cam2', s0.max]]) {
+        await page.evaluate((x) => __sceneTest.setCam(x), c);
+        const arrowState = await page.evaluate(() => ['.sar-l', '.sar-r'].map((sel) => {
+          const a = document.querySelector(sel), r = a.getBoundingClientRect(), s = getComputedStyle(a);
+          return { shown: a.classList.contains('shown'), opacity: s.opacity, pointerEvents: s.pointerEvents,
+            rect: { left: r.left, right: r.right, top: r.top, bottom: r.bottom }, camera: __sceneTest.state().cam };
+        }));
+        for (let j = 0; j < arrowState.length; j++) {
+          const a = arrowState[j];
+          if (a.shown) {
+            expect(a.opacity === '1' && a.pointerEvents === 'auto', S.id + '/' + n + ': shown arrow must be visible and tappable');
+            expect(a.rect.left >= 0 && a.rect.top >= 0 && a.rect.right <= vw && a.rect.bottom <= vh, S.id + '/' + n + '/' + vw + ': arrow stays inside frame');
+            const overlap = await page.evaluate((rect) => {
+              const hit = __sceneTest.items().some((item) => {
+                const r = __sceneTest.rect(item.id);
+                return r.x + r.w / 2 > rect.left && r.x - r.w / 2 < rect.right && r.y + r.h / 2 > rect.top && r.y - r.h / 2 < rect.bottom;
+              });
+              const controls = [...document.querySelectorAll('.topbar > :not(.sarrow)')].some((node) => {
+                const r = node.getBoundingClientRect();
+                return r.width && r.height && r.left < rect.right && r.right > rect.left && r.top < rect.bottom && r.bottom > rect.top;
+              });
+              return { hit, controls };
+            }, a.rect);
+            expect(!overlap.hit, S.id + '/' + n + '/' + vw + ': arrow avoids searchable hit areas');
+            expect(!overlap.controls, S.id + '/' + n + '/' + vw + ': arrow avoids top controls');
+          }
+        }
+        if (n === 'cam0') {
+          const hidden = await page.evaluate(() => { const a = document.querySelector('.sar-l'), r = a.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, pe: getComputedStyle(a).pointerEvents }; });
+          const beforeHidden = (await st()).cam;
+          await page.touchscreen.tap(hidden.x, hidden.y);
+          expect(hidden.pe === 'none' && (await st()).cam === beforeHidden, S.id + '/' + vw + ': hidden endpoint arrow cannot intercept input');
+        }
+        const direction = n === 'cam2' ? '.sar-l' : '.sar-r';
+        const beforeArrow = (await st()).cam, beforeAnswers = (await st()).found.length;
+        const ar = await page.evaluate((sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, direction);
+        await page.touchscreen.tap(ar.x, ar.y);
+        const expectedCam = Math.max(0, Math.min(s0.max, beforeArrow + (direction === '.sar-r' ? 760 : -760)));
+        await waitFor((target) => Math.abs(__sceneTest.state().cam - target) <= 2, expectedCam, 5000, S.id + '/' + n + '/' + vw + ': arrow pan settles at ' + expectedCam);
+        const afterArrow = await st();
+        expect(afterArrow.cam === Math.round(expectedCam), S.id + '/' + n + '/' + vw + ': real arrow tap reaches exact clamped pan distance');
+        expect(afterArrow.found.length === beforeAnswers, S.id + '/' + n + '/' + vw + ': arrow tap must not count an answer');
+        await page.evaluate((x) => __sceneTest.setCam(x), c); await shot(S.id + '_' + n + '_' + vw);
+       }
+       await page.evaluate((x) => __sceneTest.setCam(Math.max(0, x - 400)), s0.max);
+       const rightEndpoint = await page.evaluate(() => { const a = document.querySelector('.sar-r'), r = a.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, shown: a.classList.contains('shown') }; });
+       await page.touchscreen.tap(rightEndpoint.x, rightEndpoint.y);
+       await waitFor((target) => __sceneTest.state().cam === target, s0.max, 5000, S.id + '/' + vw + ': arrow clamps to camera endpoint');
+       expect(rightEndpoint.shown && (await st()).cam === s0.max, S.id + '/' + vw + ': final arrow pan clamps exactly at endpoint');
+       const hiddenEnd = await page.evaluate(() => { const a = document.querySelector('.sar-r'), r = a.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, pe: getComputedStyle(a).pointerEvents }; });
+       await page.touchscreen.tap(hiddenEnd.x, hiddenEnd.y);
+       expect(hiddenEnd.pe === 'none' && (await st()).cam === s0.max, S.id + '/' + vw + ': hidden arrow at final endpoint cannot intercept input');
+      }
       await page.evaluate(() => { __sceneTest.setCam(0); __sceneTest.freeze(false); }); await sleep(150);
 
       /* drag + inertia with the mouse (finger and mouse share pointer events) */

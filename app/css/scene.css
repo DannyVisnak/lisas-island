@@ -18,10 +18,14 @@
 .shit { position: absolute; pointer-events: none; opacity: 0; }
 .sglow { position: absolute; pointer-events: none; border-radius: 50%; background: radial-gradient(circle, rgba(255,244,150,.85) 0%, rgba(255,230,90,.55) 38%, rgba(255,230,90,0) 70%); animation: sglow 1.3s ease-in-out infinite; }
 .scn-lisa { pointer-events: none; z-index: 4 !important; }
-.sarrow { position: absolute !important; top: 34rem; width: 12rem; height: 12rem; background: rgba(126,87,194,.72); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 5 !important; }
-.sarrow.shown { opacity: 1; pointer-events: auto; animation: sarrow 1.6s ease-in-out infinite; }
-.sar-l { left: 1.2rem; } .sar-r { right: 1.2rem; }
-.sar-l.shown { animation-name: sarrowl; }
+/* Keep the five fixed-size controls inside the band; only the HUD track shrinks. */
+.scn .topbar { z-index: 5; }
+.scn .topbar .hud { flex: 1; min-width: 0; }
+.scn .topbar .hud .pbar { flex: 1; min-width: 0; }
+.scn .topbar .sarrow { position: relative !important; top: .8rem; left: auto; right: auto; flex: 0 0 12rem; width: 12rem; height: 12rem; margin: 0 .5rem; background: rgba(126,87,194,.72); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 5 !important; }
+.scn .topbar .sarrow.shown { opacity: 1; pointer-events: auto; transition: none; animation: sarrow 1.6s ease-in-out infinite; }
+.scn .topbar .sar-l { margin-left: 1rem; } .scn .topbar .sar-r { margin-right: 1rem; }
+.scn .topbar .sar-l.shown { animation-name: sarrowl; }
 @keyframes sarrow { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-.8rem); } }
 @keyframes sarrowl { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(.8rem); } }
 @keyframes swig { 0%, 100% { transform: rotate(0) scale(1); } 15% { transform: rotate(-12deg) scale(1.12); } 35% { transform: rotate(11deg) scale(1.12); } 55% { transform: rotate(-8deg) scale(1.06); } 75% { transform: rotate(6deg) scale(1.03); } }

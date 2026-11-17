@@ -82,7 +82,7 @@ UI.screens.scene = function (flow, root, p) {
   var lisa = Lisa.make({ cls: 'corner-lisa scn-lisa' }); root.appendChild(lisa);
   var arrL = UI.btn('sarrow sar-l', '<span class="ic">' + Lisa.ico.back + '</span>', function () { panTo(cam - 760, 700); }, { nopress: true });
   var arrR = UI.btn('sarrow sar-r', '<span class="ic">' + Lisa.ico.next + '</span>', function () { panTo(cam + 760, 700); }, { nopress: true });
-  root.appendChild(arrL); root.appendChild(arrR);
+  bar.appendChild(arrL); bar.appendChild(arrR);
 
   /* --- camera: position in units, drag + inertia + tweens --- */
   var cam = 0, vel = 0, raf = 0, tween = null, dragging = false, lastT = 0;
@@ -116,6 +116,7 @@ UI.screens.scene = function (flow, root, p) {
   /* --- pointer handling on the scene: drag to pan, small movement = tap --- */
   var down = null, samples = [];
   root.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('.sarrow')) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     if (down) return;
     down = { id: e.pointerId, x: e.clientX, y: e.clientY, cam: cam, t: performance.now(), moved: false };

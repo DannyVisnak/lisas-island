@@ -7,6 +7,15 @@ async function run(lib) {
   await page.setViewportSize({ width: 1128, height: 752 }); await sleep(200);
   await lib.openGame('fish');
   const st = () => page.evaluate(() => Object.assign({}, __mgTest.state()));
+  for (const [width, height] of [[1128, 752], [1920, 1080]]) {
+    await page.setViewportSize({ width, height });
+    const layout = await page.evaluate(() => [...document.querySelectorAll('.mg-fish .fh-fish')].map((n) => {
+      const r = n.getBoundingClientRect(), rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      return { visible: getComputedStyle(n).display !== 'none', large: Math.min(r.width, r.height) >= 9 * rem };
+    }));
+    lib.expect(layout.length === 6 && layout.every((f) => f.visible && f.large), 'fish: all six tappable choices fit at ' + width + 'x' + height);
+  }
+  await page.setViewportSize({ width: 1128, height: 752 });
   lib.expect(await page.evaluate(() => document.querySelectorAll('.mg-fish .fh-fish').length) === 6, 'fish: 6 fish');
   const small = await page.evaluate(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize); return [...document.querySelectorAll('.mg-fish .fh-fish')].filter((n) => { const b = n.getBoundingClientRect(); return Math.min(b.width, b.height) < 9 * rem; }).length; });
   lib.expect(small === 0, 'fish: every fish tap area is at least 9 rem (' + small + ' too small)');
@@ -21,6 +30,8 @@ async function run(lib) {
   for (let round = 0; round < 6; round++) {
     await page.waitForFunction(() => window.__mgTest && __mgTest.state().target && __mgTest.state().stage === 'ask', null, { timeout: 15000 }).catch(() => lib.fail('fish: round ' + round + ' never asked a colour'));
     const s = await st();
+    const readyFish = await page.evaluate(() => [...document.querySelectorAll('.mg-fish .fh-fish')].filter((n) => getComputedStyle(n).display !== 'none').length);
+    lib.expect(readyFish === 6, 'fish: question ' + (round + 1) + ' has all six swimmers available (' + readyFish + ')');
     if (round === 0) {
       const wrong = s.ids.find((i) => i !== s.target), o0 = s.others;
       const c = await center(wrong); await lib.tapAt(c.x, c.y); await sleep(200);
@@ -29,9 +40,16 @@ async function run(lib) {
       await lib.shot('fish_wrong');
       await sleep(500);
     }
+    if (round === 5) await lib.shot('fish_final_question');
     const c = await center(s.target); await lib.tapAt(c.x, c.y);
+    /* A second tap during the catch animation must not collect this fish twice. */
+    await lib.tapAt(c.x, c.y);
     if (round === 2) { await sleep(180); await lib.shot('fish_hook'); await sleep(80); await lib.shot('fish_swing'); }
     await page.waitForFunction((n) => __mgTest.state().caught === n + 1, round, { timeout: 15000 }).catch(() => lib.fail('fish: round ' + round + ' fish was not caught'));
+    lib.expect((await st()).caught === round + 1, 'fish: duplicate taps add exactly one bucket fish and one catch');
+    if (round < 5) {
+      await page.waitForFunction(() => [...document.querySelectorAll('.mg-fish .fh-fish')].every((n) => getComputedStyle(n).display !== 'none'), null, { timeout: 3000 }).catch(() => lib.fail('fish: caught swimmer was not restored for next question'));
+    }
     if (round === 5) { await sleep(60); await lib.shot('fish_full'); }
   }
   await page.waitForFunction(() => __test.screen() === 'result', null, { timeout: 15000 }).catch(() => lib.fail('fish: no result screen after the last fish'));
