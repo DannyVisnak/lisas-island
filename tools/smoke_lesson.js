@@ -31,6 +31,20 @@ async function playLesson(lib, id, vp, firstRun) {
       if (!shots.prompt) { await sleep(500); await shot('prompt'); shots.prompt = 1; }
       const n = await page.evaluate(() => document.querySelectorAll('.ls-tile').length);
       expect(n === 2, id + ': a prompt needs exactly 2 outcome tiles, got ' + n);
+      await page.waitForFunction(() => new Promise((resolve) => {
+        const started = performance.now();
+        let previousWidth;
+        const check = () => {
+          const el = document.querySelector('.ls-tile');
+          if (!el || performance.now() - started >= 3000) return resolve(false);
+          const running = el.getAnimations({ subtree: true }).some((animation) => animation.playState === 'running');
+          const width = el.getBoundingClientRect().width;
+          if (!running && previousWidth === width) return resolve(true);
+          previousWidth = width;
+          requestAnimationFrame(check);
+        };
+        requestAnimationFrame(check);
+      }), null, { timeout: 3000 }).catch(() => {});
       const r = await page.evaluate(() => { const t = document.querySelector('.ls-tile').getBoundingClientRect(); const e = document.elementFromPoint(t.left + t.width / 2, t.top + t.height / 2); return { w: t.width, h: t.height, hit: !!(e && e.closest('.ls-tile')) }; });
       expect(r.w >= 150 && r.hit, id + ': tile too small or not tappable ' + JSON.stringify(r));
       const c = await page.evaluate(() => { const t = document.querySelectorAll('.ls-tile')[0].getBoundingClientRect(); return { x: t.left + t.width / 2, y: t.top + t.height / 2 }; });
