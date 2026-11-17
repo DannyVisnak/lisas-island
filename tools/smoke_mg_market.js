@@ -18,7 +18,8 @@ async function run(lib) {
   try {
   for (const [width, height] of [[1128, 752], [1920, 1080]]) {
     await page.setViewportSize({ width, height });
-    const fruitSize = await page.evaluate(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), b = document.querySelector('.mg-market .mgm-fruit').getBoundingClientRect(); return [b.width / rem, b.height / rem]; });
+    /* layout size: transforms (pop-in, glow) must not shrink the measured target */
+    const fruitSize = await page.evaluate(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), e = document.querySelector('.mg-market .mgm-fruit'); return [e.offsetWidth / rem, e.offsetHeight / rem]; });
     lib.expect(fruitSize[0] >= 9 && fruitSize[1] >= 9, 'market: fruit target remains at least 9rem at ' + width + 'x' + height);
   }
   await page.setViewportSize({ width: 1128, height: 752 });
@@ -60,7 +61,7 @@ async function run(lib) {
         lib.expect(fs.existsSync(path.join(__dirname, '..', 'app', 'audio', lang, 'n' + s.goal + '.ogg')), 'market: requested number file exists for ' + lang);
       }
     }
-    const sz = await page.evaluate(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), b = document.querySelector('.mg-market .mgm-fruit').getBoundingClientRect(); return [b.width / rem, b.height / rem]; });
+    const sz = await page.evaluate(() => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), e = document.querySelector('.mg-market .mgm-fruit'); return [e.offsetWidth / rem, e.offsetHeight / rem]; });
     lib.expect(sz[0] >= 9 && sz[1] >= 9, 'market: fruit touch target >= 9rem');
     if (r === 0) await lib.shot('market_ask');
     if (r === 2) {
