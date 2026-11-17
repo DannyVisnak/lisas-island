@@ -94,6 +94,9 @@ UI.screens.parent = function (flow, root, p) {
 
   /* sound and screen */
   var ss = section(wrap, 'Sound and screen');
+  var subt = row(ss, 'Subtitles');
+  subt.parentNode.dataset.setting = 'subtitles';
+  toggle(subt, !!S.subtitles, function (on) { S.subtitles = on; Core.persist(); });
   var cv = row(ss, 'Volume');
   var vol = el('input', 'pvol'); vol.type = 'range'; vol.min = '0.1'; vol.max = '1'; vol.step = '0.05'; vol.value = String(S.volume == null ? 0.9 : S.volume);
   vol.addEventListener('input', function () { S.volume = parseFloat(vol.value); Snd.setVolume(S.volume); Core.persist(); });
