@@ -1,4 +1,6 @@
 /* Lisa's Island - styles. 1rem = 10 logical px on a 1366x768 frame; the frame is letterboxed and scaled. */
+@font-face { font-family: Andika; src: url('../fonts/Andika-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: Andika; src: url('../fonts/Andika-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 html { font-size: min(0.7321vw, 1.3021vh); }
 html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #8fd3ff; }
 body { font-family: "Nunito", "Baloo 2", "Trebuchet MS", "Segoe UI", system-ui, sans-serif; color: #3b2f4a;
@@ -173,6 +175,14 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .meetgrid.n3 { grid-template-columns: repeat(3, 28rem); } .meetgrid.n4 { grid-template-columns: repeat(4, 26rem); }
 .meetgrid.n5, .meetgrid.n6 { grid-template-columns: repeat(3, 22rem); gap: 3rem 4rem; }
 .meetgrid .card { width: 100%; aspect-ratio: 1; height: auto; }
+.card.meet { display: flex; flex-direction: column; align-items: stretch; }
+.card.meet > .pic { height: auto; min-height: 0; flex: 1 1 auto; }
+.vocab-label { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; min-width: 0; font-family: Andika, system-ui, sans-serif; font-weight: 700; line-height: 1.08; text-align: center; overflow-wrap: anywhere; }
+.vocab-word { display: block; }
+.vocab-gloss { display: block; margin-top: .2rem; color: #777; font-size: 1.65rem; line-height: 1.1; font-weight: 400; }
+.meet-label { min-height: 5.5rem; flex: 0 0 auto; font-size: 3.2rem; visibility: hidden; }
+.meet-label.revealed:not(.subtitles-off) { visibility: visible; }
+.meet-label.subtitles-off, .memory-label.subtitles-off { visibility: hidden !important; }
 .card .check { position: absolute; top: -2.4rem; right: -2.4rem; width: 7.4rem; height: 7.4rem; transform: scale(0); transition: transform .35s cubic-bezier(.3,1.8,.5,1); }
 .card .check svg { width: 100%; height: 100%; display: block; }
 .card.seen .check { transform: scale(1); }
@@ -196,7 +206,10 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .mback, .mface { position: absolute; inset: 0; border-radius: 2.8rem; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 .9rem 0 rgba(0,0,0,.16), 0 1.4rem 2rem rgba(0,0,0,.14); }
 .mback { background: linear-gradient(135deg, #9575cd, #7e57c2); border: .8rem solid #fff; display: flex; align-items: center; justify-content: center; }
 .mback svg { width: 56%; height: 56%; }
-.mface { background: #fff; transform: rotateY(180deg); border: .8rem solid #fff; padding: 12%; }
+.mface { background: #fff; transform: rotateY(180deg); border: .8rem solid #fff; padding: 12%; display: flex; flex-direction: column; align-items: stretch; }
+.mface > .pic { height: auto; min-height: 0; flex: 1 1 auto; }
+.memory-label { min-height: 3rem; flex: 0 0 auto; padding: .2rem 0; font-size: 1.8rem; visibility: hidden; }
+.mcard.matched .memory-label:not(.subtitles-off) { visibility: visible; }
 .mcard.matched .mface { border-color: #66bb6a; animation: rightbounce .6s ease-out; }
 .mcard.matched { opacity: .92; }
 .dots-memory { gap: 1.2rem; }

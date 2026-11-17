@@ -188,11 +188,36 @@ async function waitScreenAfterCelebrations(want) {
   page.setDefaultTimeout(15000);
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text() + ' [after: ' + phase + '] ' + JSON.stringify(m.location())); });
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
+  const externalRequests = [];
+  page.on('request', (r) => { if (/^https?:/.test(r.url())) externalRequests.push(r.url()); });
 
   try {
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.__test && __test.screen() === 'home');
     await page.evaluate(() => __test.speedUp(8));
+    const fontState = await page.evaluate(async () => {
+      const faces = await document.fonts.load('700 16px Andika');
+      const label = document.createElement('span'); label.className = 'vocab-label'; document.body.appendChild(label);
+      const family = getComputedStyle(label).fontFamily; label.remove();
+      return { loaded: faces.some((f) => f.family === 'Andika' && f.status === 'loaded'), check: document.fonts.check('700 16px Andika'), family };
+    });
+    expect(fontState.loaded && fontState.check, 'bundled Andika TTF loads from the local file:// stylesheet');
+    expect(/Andika/.test(fontState.family) && /system-ui/.test(fontState.family) && /sans-serif/.test(fontState.family), 'subtitle CSS retains readable system sans-serif fallbacks if Andika is unavailable');
+    expect(externalRequests.length === 0, 'app boot makes no HTTP requests');
+    const subtitles = await page.evaluate(() => {
+      const label = (lang, word) => Core.vocabLabel(lang, { [lang]: { word } });
+      return {
+        de: ['der Hund', 'die Katze', 'das Pferd', 'die Freunde'].map((w) => label('de', w)),
+        pt: ['o gato', 'os amigos', 'a casa', 'as meias'].map((w) => label('pt', w)),
+        en: label('en', 'The dog!'), neutral: label('de', 'Apfel'),
+        token: label('de', 'dermal')
+      };
+    });
+    expect(await page.evaluate(() => Core.save.settings.subtitles) === true, 'subtitles default on');
+    expect(subtitles.de.map((x) => x.color).join() === '#1565c0,#c62828,#2e7d32,#c62828', 'German article colours use complete leading tokens');
+    expect(subtitles.pt.map((x) => x.color).join() === '#1565c0,#1565c0,#c62828,#c62828', 'Portuguese article colours include plurals');
+    expect(subtitles.en.text === 'The dog!' && subtitles.en.color === '#263238', 'English label remains verbatim and neutral');
+    expect(subtitles.neutral.text === 'Apfel' && subtitles.neutral.color === '#263238' && subtitles.token.color === '#263238', 'article-free words and partial tokens remain neutral');
     /* count every speech call (Snd.say) so idle behaviour can be asserted */
     await page.evaluate(() => { window.__says = 0; window.__saylog = []; const S = Core.Snd, o = S.say; S.say = function (l) { window.__says++; window.__saylog.push(Math.round(performance.now()) + ' ' + JSON.stringify(l).slice(0, 80) + ' @' + (Core.screen || '')); return o.apply(this, arguments); }; });
     expect(await page.evaluate(() => __test.worlds()) === D.worlds.length, 'world count mismatch');
@@ -241,9 +266,10 @@ async function waitScreenAfterCelebrations(want) {
     log('L1 meet');
     await tapSel('.lvnode.lv0');
     await waitScreen('meet'); await sleep(900);
+    expect(await page.evaluate(() => { const e = document.querySelector('.meet-label'); return e && getComputedStyle(e).visibility === 'hidden'; }), 'free-play Meet label is hidden before first word playback');
     await shot('meet'); await checkTargets('meet'); await checkOverlap('meet'); await checkInside('meet');
     const nm = await page.evaluate(() => document.querySelectorAll('.meetgrid .card').length);
-    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm; i++) { await tapSel('.meetgrid .card', i); await sleep(rep === 0 && i === 0 ? 350 : 120); if (rep === 0 && i === 0) await shot('meet-tapped'); }
+    for (let rep = 0; rep < 2; rep++) for (let i = 0; i < nm; i++) { await tapSel('.meetgrid .card', i); if (rep === 0 && i === 0) expect(await page.evaluate(() => { const c = document.querySelector('.meetgrid .card'), e = c.querySelector('.meet-label'), it = Core.item(c.dataset.id); return e.classList.contains('revealed') && e.querySelector('.vocab-word').textContent === it[Core.curLang()].word && e.querySelector('.vocab-gloss') && e.querySelector('.vocab-gloss').textContent === it.ru && getComputedStyle(e).visibility === 'visible'; }), 'free-play Meet reveals exact vocabulary and first-exposure Russian gloss on first word playback'); await sleep(rep === 0 && i === 0 ? 350 : 120); if (rep === 0 && i === 0) await shot('meet-tapped'); }
     await sleep(300);
     await shot('meet-seen');
     await waitFor(() => !document.querySelector('.meetgrid'), null, 15000, 'meet grid replaced by questions');
@@ -388,14 +414,21 @@ async function waitScreenAfterCelebrations(want) {
     await page.waitForFunction(() => __runState.lisa.onGround, null, { timeout: 2500 }).catch(() => {});
     /* Prove the fixture scrolls with the Run listener removed, then prove Run prevents it. */
     await page.evaluate(() => __test.go('map')); await waitScreen('map');
-    const scrollStyles = await page.evaluate(() => {
+    const scrollStyles = await page.evaluate(async () => {
       const html = document.documentElement, body = document.body;
-      const old = { htmlStyle: html.getAttribute('style'), bodyStyle: body.getAttribute('style') };
-      html.style.height = '220vh'; html.style.overflow = 'auto'; body.style.height = '220vh'; body.style.minHeight = '220vh'; body.style.overflow = 'auto'; window.scrollTo(0, 0);
+      const old = { htmlStyle: html.getAttribute('style'), bodyStyle: body.getAttribute('style'), htmlTabIndex: html.getAttribute('tabindex') };
+      html.style.height = '220vh'; html.style.overflow = 'auto'; body.style.height = '220vh'; body.style.minHeight = '220vh'; body.style.overflow = 'visible'; window.scrollTo(0, 0);
+      /* Choose the viewport scroll target instead of inheriting touch focus.
+         Flush layout and allow a paint before testing native Space scrolling. */
+      html.setAttribute('tabindex', '-1'); html.focus({ preventScroll: true });
+      html.getBoundingClientRect();
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       return old;
     });
     try {
+      expect(await page.evaluate(() => document.activeElement === document.documentElement && document.scrollingElement.scrollHeight > innerHeight), 'temporary fixture has a focused, scrollable viewport');
       await page.keyboard.press('Space');
+      expect(await page.evaluate(() => __kbAudit && __kbAudit.target === document.documentElement && !__kbAudit.defaultPrevented), 'outside Run, fixture Space reaches the viewport without default prevention');
       expect(await waitFor(() => scrollY > 0, null, 1000, 'unhandled Space scrolls the temporary fixture'), 'temporary fixture must scroll for unhandled Space');
       /* Let the native smooth Space scroll finish before resetting the fixture. */
       await page.evaluate(() => { window.__kbScrollSettle = { y: scrollY, since: performance.now() }; });
@@ -410,7 +443,7 @@ async function waitScreenAfterCelebrations(want) {
       await waitFor(() => __runState.state === 'ready', null, 1000, 'Run ready for handled Space scroll check');
       await page.evaluate(() => {
         document.documentElement.style.height = '220vh'; document.documentElement.style.overflow = 'auto';
-        document.body.style.height = '220vh'; document.body.style.minHeight = '220vh'; document.body.style.overflow = 'auto'; window.scrollTo(0, 0);
+        document.body.style.height = '220vh'; document.body.style.minHeight = '220vh'; document.body.style.overflow = 'visible'; window.scrollTo(0, 0);
         window.__kbAudit = null;
       });
       await page.keyboard.press('Space');
@@ -428,6 +461,8 @@ async function waitScreenAfterCelebrations(want) {
         const html = document.documentElement, body = document.body;
         if (old.htmlStyle === null) html.removeAttribute('style'); else html.setAttribute('style', old.htmlStyle);
         if (old.bodyStyle === null) body.removeAttribute('style'); else body.setAttribute('style', old.bodyStyle);
+        html.blur();
+        if (old.htmlTabIndex === null) html.removeAttribute('tabindex'); else html.setAttribute('tabindex', old.htmlTabIndex);
         window.scrollTo(0, 0);
       }, scrollStyles);
     }
@@ -643,6 +678,35 @@ async function waitScreenAfterCelebrations(want) {
     /* toggle German on, 15 min, scroll */
     const toggles = await page.evaluate(() => document.querySelectorAll('.ptoggle').length);
     expect(toggles >= 4, 'parent area shows toggles');
+    await page.evaluate(() => document.querySelector('[data-setting="subtitles"] .ptoggle').click());
+    await page.evaluate(() => Core.flushNow());
+    expect(await page.evaluate(() => __test.save().settings.subtitles === false), 'parent Subtitles toggle saves off before reload');
+    await page.reload(); await page.waitForFunction(() => window.__test && __test.screen() === 'home'); await page.evaluate(() => __test.speedUp(8));
+    await page.evaluate(() => __test.go('parent')); await waitScreen('parent');
+    expect(await page.evaluate(() => __test.save().settings.subtitles === false && !document.querySelector('[data-setting="subtitles"] .ptoggle').classList.contains('on')), 'Subtitles OFF survives reload and Parent reopen');
+    await page.evaluate(() => __test.go('meet', { lang: 'pt', world: 'animals', level: 1, part: 0 })); await waitScreen('meet');
+    const meetCardOff = await page.evaluate(() => { const b = document.querySelector('.meetgrid .card').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+    await page.touchscreen.tap(meetCardOff.x, meetCardOff.y);
+    await page.waitForFunction(() => { const e = document.querySelector('.meet-label'); return e && e.classList.contains('revealed'); }, null, { timeout: 5000 });
+    expect(await page.evaluate(() => { const es = [...document.querySelectorAll('.meet-label')]; return es.length > 0 && es[0].classList.contains('revealed') && es.every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'Subtitles OFF keeps a revealed free-play Meet label hidden');
+    await page.evaluate(() => __test.go('memory', { lang: 'pt', world: 'animals', level: 3 })); await waitScreen('memory');
+    const memIds = await page.evaluate(() => [...document.querySelectorAll('.mcard')].map((e) => e.dataset.id));
+    const pairId = memIds[0], pairIdx = memIds.map((id, i) => id === pairId ? i : -1).filter((i) => i >= 0);
+    for (const i of pairIdx) { const r = await page.evaluate((n) => { const b = document.querySelectorAll('.mcard')[n].getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }, i); await page.touchscreen.tap(r.x, r.y); await sleep(120); }
+    await page.waitForFunction((id) => document.querySelectorAll('.mcard.matched[data-id="' + id + '"]').length === 2, pairId, { timeout: 5000 });
+    expect(await page.evaluate(() => { const es = [...document.querySelectorAll('.memory-label')]; return es.length > 0 && document.querySelectorAll('.mcard.matched').length > 0 && es.every((e) => getComputedStyle(e).visibility === 'hidden'); }), 'Subtitles OFF keeps labels hidden on a completed memory match');
+    await page.evaluate(() => __test.go('parent')); await waitScreen('parent');
+    await page.evaluate(() => document.querySelector('[data-setting="subtitles"] .ptoggle').click());
+    await page.evaluate(() => Core.flushNow());
+    await page.reload(); await page.waitForFunction(() => window.__test && __test.screen() === 'home'); await page.evaluate(() => __test.speedUp(8));
+    await page.evaluate(() => __test.go('parent')); await waitScreen('parent');
+    expect(await page.evaluate(() => __test.save().settings.subtitles === true && document.querySelector('[data-setting="subtitles"] .ptoggle').classList.contains('on')), 'Subtitles ON survives reload and Parent reopen');
+    await page.evaluate(() => __test.go('meet', { lang: 'pt', world: 'animals', level: 1, part: 0 })); await waitScreen('meet');
+    const meetCardOn = await page.evaluate(() => { const b = document.querySelector('.meetgrid .card').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+    await page.touchscreen.tap(meetCardOn.x, meetCardOn.y);
+    await page.waitForFunction(() => { const e = document.querySelector('.meet-label'); return e && e.classList.contains('revealed'); }, null, { timeout: 5000 });
+    expect(await page.evaluate(() => { const e = document.querySelector('.meet-label'); return document.querySelectorAll('.meet-label').length > 0 && e.classList.contains('revealed') && getComputedStyle(e).visibility === 'visible'; }), 'Subtitles ON shows a revealed free-play Meet label');
+    await page.evaluate(() => __test.go('parent')); await waitScreen('parent');
     await page.evaluate(() => { const t = [...document.querySelectorAll('.ptoggle')][2]; t.click(); });
     await page.evaluate(() => { [...document.querySelectorAll('.pseg-b')].find((b) => b.dataset.v === '15').click(); });
     expect(await page.evaluate(() => __test.save().settings.enabled.de === true && __test.save().settings.sessionMin === 15), 'parent settings persist (de on, 15 min)');
@@ -879,13 +943,21 @@ async function rewards() {
   expect(after.xp.days.length >= 1 && after.xp.met === (after.xp.day >= 45), 'goal days kept; goal met flag consistent with the new target');
   phase = 'rw: an old save (no XP fields';
   /* an old save (no XP fields) loads safely */
-  await page.evaluate(() => { Core.persist = Core.flushNow = function () {}; const k = 'lisa-island-v1', s = JSON.parse(localStorage.getItem(k)); delete s.xp; delete s.daily; delete s.goalDays; delete s.crowns; delete s.settings.dailyGoal; localStorage.setItem(k, JSON.stringify(s)); });
+  await page.evaluate(() => { Core.persist = Core.flushNow = function () {}; const k = 'lisa-island-v1', s = JSON.parse(localStorage.getItem(k)); delete s.xp; delete s.daily; delete s.goalDays; delete s.crowns; delete s.settings.dailyGoal; delete s.settings.subtitles; localStorage.setItem(k, JSON.stringify(s)); });
   await page.reload();
   await page.waitForFunction(() => window.__test && __test.screen() === 'home');
   await page.evaluate(() => __test.speedUp(8));
   const mig = await page.evaluate(() => ({ xp: __test.xp(), crown: __test.crown('pt', 'animals'), stars: __test.save().stars }));
   expect(mig.xp.total === 0 && mig.xp.goal === 30 && mig.xp.day === 0 && mig.stars === before.stars, 'old save without XP fields migrates (goal 30, xp 0, stars kept): ' + JSON.stringify(mig));
   expect(mig.crown >= 1, 'crown is derived from finished levels for old saves');
+  expect(await page.evaluate(() => __test.save().settings.subtitles === true), 'old save without subtitles setting migrates to on');
+  await page.evaluate(() => { Core.save.settings.subtitles = 'invalid'; Core.flushNow(); });
+  await page.reload(); await page.waitForFunction(() => window.__test && __test.screen() === 'home');
+  expect(await page.evaluate(() => __test.save().settings.subtitles === true), 'invalid saved subtitle value migrates to on');
+  await page.evaluate(() => { Core.save.settings.subtitles = false; Core.flushNow(); });
+  await page.reload(); await page.waitForFunction(() => window.__test && __test.screen() === 'home');
+  expect(await page.evaluate(() => __test.save().settings.subtitles === false), 'explicitly saved subtitle OFF survives reload');
+  await page.evaluate(() => { Core.save.settings.subtitles = true; Core.flushNow(); }); /* restore default so later Parent toggle tests start from ON */
   await page.evaluate(() => { window.__says = 0; const S = Core.Snd, o = S.say; S.say = function () { window.__says++; return o.apply(this, arguments); }; });
   await shot('home-after-reload');
   await page.evaluate(() => { Core.lang = 'pt'; __test.go('map'); }); await waitScreen('map'); await sleep(500);

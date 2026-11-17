@@ -162,16 +162,18 @@ UI.screens.meet = function (flow, root, p) {
   var ctx = chrome(flow, root, p, p.part === 0 ? 3 : 6, 'explore');
   ctx.dots.classList.add('hidden'); ctx.help.classList.add('hidden');
   var grid = el('div', 'meetgrid n' + words.length); ctx.area.appendChild(grid);
-  var counts = {}, cards = {}, finished = false;
+  var counts = {}, cards = {}, labels = {}, firstExposure = {}, finished = false;
   words.forEach(function (id, i) {
     var c = el('div', 'card meet'); c.dataset.id = id; c.style.animationDelay = (i * 90) + 'ms';
     c.appendChild(Core.Pic.el(Core.item(id)));
+    firstExposure[id] = SRS.peek(lang, id).box < 1;
+    labels[id] = Core.vocabLabelEl(lang, Core.item(id), firstExposure[id] && Core.save.settings.ruHelp ? Core.item(id).ru : '', 'vocab-label meet-label'); c.appendChild(labels[id]);
     c.appendChild(el('span', 'check', Lisa.ico.check));
     cards[id] = c; counts[id] = 0;
     tap(c, function () {
       if (finished) return;
       c.classList.remove('zoom'); void c.offsetWidth; c.classList.add('zoom');
-      counts[id]++; SRS.intro(lang, id);
+      counts[id]++; labels[id].classList.add('revealed'); SRS.intro(lang, id);
       if (counts[id] >= 2) c.classList.add('seen');
       ctx.lisa.react('cheer');
       var list = [Core.url.w(lang, id)];
@@ -250,7 +252,9 @@ UI.screens.memory = function (flow, root, p) {
   deck.forEach(function (id, i) {
     var c = el('div', 'mcard'); c.dataset.id = id; c.style.animationDelay = (i * 60) + 'ms';
     c.innerHTML = '<div class="in"><div class="mback"><svg viewBox="0 0 100 100"><circle cx="50" cy="64" r="20" fill="#fff" opacity=".85"/><circle cx="26" cy="40" r="9" fill="#fff" opacity=".85"/><circle cx="42" cy="26" r="9" fill="#fff" opacity=".85"/><circle cx="58" cy="26" r="9" fill="#fff" opacity=".85"/><circle cx="74" cy="40" r="9" fill="#fff" opacity=".85"/></svg></div><div class="mface"></div></div>';
-    c.querySelector('.mface').appendChild(Core.Pic.el(Core.item(id)));
+    var face = c.querySelector('.mface');
+    face.appendChild(Core.Pic.el(Core.item(id)));
+    face.appendChild(Core.vocabLabelEl(lang, Core.item(id), '', 'vocab-label memory-label'));
     tap(c, function () { flip(c, id); }, { silent: true, nopress: true });
     grid.appendChild(c);
   });
