@@ -73,3 +73,30 @@
 .hcard .hcpic { width: 82%; height: 82%; pointer-events: none; }
 .hcard .hcpic > * { width: 100%; height: 100%; object-fit: contain; display: block; }
 .house-tray.choose { gap: 7rem; }
+
+/* ---------- style pickers + brush (Opus 5.5 phase 2, 18.11.26). Child targets 14rem = 115.6 px at 1128x752 (floor 13.32rem). ---------- */
+.house-tray.pickstage, .house-tray.pickstyle, .house-tray.styler { gap: 4.4rem; }
+.hvar { position: relative; width: 14rem; height: 14rem; flex: none; border-radius: 3rem; background: #fff; box-shadow: 0 .7rem 0 rgba(0,0,0,.16), 0 1.2rem 2.2rem rgba(0,0,0,.16); display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation; }
+.hvar.hvpop { animation: hcardpop .45s cubic-bezier(.3,1.5,.5,1) both; }
+.hvpic { width: 82%; height: 82%; pointer-events: none; }
+.hvpic > svg, .hvpic > .pic, .hvpic img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.hvar .hcheck { position: absolute; right: -.6rem; bottom: -.6rem; width: 4.4rem; height: 4.4rem; display: none; pointer-events: none; }
+.hvar .hcheck svg { width: 100%; height: 100%; display: block; }
+.hvar.hsel { outline: .6rem solid #ffd54f; outline-offset: .2rem; }
+.hvar.hsel .hcheck { display: block; }
+.hvar.nudge { animation: hvnudge .9s ease-in-out 1; }
+.hdone { position: relative; width: 14rem; height: 14rem; flex: none; border-radius: 50%; background: #fff; box-shadow: 0 .5rem 0 rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation; }
+.hdone svg { width: 70%; height: 70%; display: block; pointer-events: none; }
+.house-tray.styler .hstep.hpart { width: 14rem; height: 14rem; cursor: pointer; touch-action: manipulation; }
+.house-tray.styler .hstep.hpart.off { opacity: .45; filter: grayscale(1); cursor: default; pointer-events: none; }
+.hitem.hstyle-ok::before { content: ''; position: absolute; inset: -1.2rem; }
+.hitem.hstyle-ok::after { content: ''; position: absolute; inset: 0; border-radius: 2rem; border: .5rem dashed #ffd54f; pointer-events: none; }
+.topbar .b-hstyle { background: #fff; width: 13.6rem; height: 13.6rem; align-self: flex-start; margin-top: -1.4rem; }
+.topbar:has(> .b-hstyle:not(.hidden)) > .btn { width: 13.6rem; height: 13.6rem; align-self: flex-start; margin-top: -1.4rem; }
+.b-hstyle .ic { width: 70%; height: 70%; }
+.b-hstyle.on { box-shadow: 0 0 0 .8rem #ffd54f, 0 .7rem 0 rgba(0,0,0,.18); }
+.b-hstyle.off { opacity: .45; pointer-events: none; }
+@keyframes hvnudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08) rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .hvar.hvpop, .hvar.nudge, .house-stage .hs.hs-pop, .hitem.hland .hpic { animation: none !important; }
+}

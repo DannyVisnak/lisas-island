@@ -54,7 +54,8 @@ test('market reminder sequences instruction and goal with stale-state guards', a
   const context = { Core: { Snd: snd }, flow: { dead: false, say: (urls) => { sequences.push(urls); return Promise.resolve(true); } }, ctx: {
     finished: false, locked: false, target: 'n3', ruUrl: (key) => key === 'help' ? 'ru-help' : null,
     wordUrl: (key) => 'audio/' + (context.language || 'pt') + '/' + key + '.ogg', ru: (key) => { cues.push(key); return Promise.resolve(true); },
-    wiggles: 0, glows: 0, wiggle() { this.wiggles++; }, glow() { this.glows++; }
+    wiggles: 0, glows: 0, wiggle() { this.wiggles++; }, glow() { this.glows++; },
+    prompt(urls) { sequences.push(urls); }
   }, get round() { return state.round; }, get target() { return state.target; }, get count() { return state.count; },
     get solved() { return state.solved; }, alive: () => [{}], inputVersion: 0, playbackToken: 0 };
   const remind = vm.runInNewContext('(' + functionSource(market, 'remind') + ')', context);

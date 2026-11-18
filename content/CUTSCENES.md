@@ -58,7 +58,7 @@ Status: v1 (scripts 1, 2, 5 revised after research §10). Draft for the parent r
 3. Где яблок больше? Нажми на корзинку! → tap (if the smaller one: "Давай посчитаем вместе!")
 4. [count aloud, apples hop] Раз, два, три. И раз. Три — это больше, чем один!
 5. [one more apple flies to the right basket] А если я положу сюда ещё одно? Раз, два. Всё равно меньше!
-6. [two more] А теперь? Раз, два, три! Поровну! Одинаково!
+6. [one more] А теперь? Раз, два, три! Поровну! Одинаково!
 7. Больше, меньше и поровну. Ты теперь это знаешь! → word card: number 3
 
 ### 5. Камушки-числа (maths, number line 1–10, word: number 4) — strongest evidence (Ramani & Siegler 2008)

@@ -1,0 +1,80 @@
+/* LISA-06 money shop - looks only. Every selector is under .screen.mg-shop. Frame 136.6 x 76.8 rem; 1rem = 10px at 1366x768 and 8.258px at 1128x752. Money hit cell 13.6rem = 112.3px at 1128x752. Money nodes live in .mgs-layer (frame coordinates) so a dragged coin always rises above the panels. Design: Opus 5.5, 17.11.26. */
+.screen.mg-shop { --ink: #3b2f4a; --due: #ffb300; --due-d: #e09b00; --extra: #ff7043; --extra-d: #e64a19; --back: #43a047; --back-d: #2e7d32; }
+.screen.mg-shop .mgs-counter { position: absolute; left: 0; right: 0; top: 45.6rem; bottom: 0; background: #d6a467; box-shadow: inset 0 .8rem 0 #9c6b38; z-index: 1; pointer-events: none; }
+/* Lisa stays at her inline position, above the counter (z1) and below the panels (z3) and money layer (z5). Specificity 0,4,0 beats the global .screen > *:not(.scene) rule (0,2,0). */
+.screen.mg-shop > .lisa.mg-lisa { z-index: 2; }
+/* shop chrome at 13.6rem like the money (112.3 px at 1128x752); grows upward to y 0.2-13.8rem */
+.screen.mg-shop .btn.b-back, .screen.mg-shop .btn.b-speaker, .screen.mg-shop .btn.b-help { width: 13.6rem; height: 13.6rem; align-self: flex-start; margin-top: -1.4rem; }
+.screen.mg-shop .mgs-basket { position: absolute; left: 3rem; top: 15rem; width: 30rem; height: 30rem; z-index: 3; pointer-events: none; }
+.screen.mg-shop .mgs-bback, .screen.mg-shop .mgs-bfront { position: absolute; left: 0; top: 11rem; width: 30rem; height: 19rem; pointer-events: none; }
+.screen.mg-shop .mgs-bback { z-index: 1; }
+.screen.mg-shop .mgs-bfront { z-index: 3; }
+.screen.mg-shop .mgs-in { position: absolute; left: 0; top: 0; width: 30rem; height: 30rem; z-index: 2; pointer-events: none; }
+.screen.mg-shop .mgs-inslot { position: absolute; left: 8rem; top: 4rem; width: 14rem; height: 14rem; }
+.screen.mg-shop .mgs-inmini { position: absolute; width: 9rem; height: 9rem; }
+.screen.mg-shop .mgs-bback svg, .screen.mg-shop .mgs-bfront svg, .screen.mg-shop .mgs-shelf > svg, .screen.mg-shop .mgs-tillart svg, .screen.mg-shop .mgs-ic svg, .screen.mg-shop .mgs-bell svg { width: 100%; height: 100%; display: block; }
+.screen.mg-shop .mgs-shelf { position: absolute; left: 35rem; top: 15rem; width: 98.6rem; height: 30rem; z-index: 3; display: none; }
+.screen.mg-shop.mgs-ph-basket .mgs-shelf { display: block; }
+.screen.mg-shop .mgs-good { position: absolute; top: 5rem; width: 17rem; height: 17rem; padding: 1.6rem; box-sizing: border-box; border-radius: 3rem; background: rgba(255,255,255,.92); box-shadow: 0 .6rem 0 rgba(0,0,0,.14); touch-action: none; cursor: pointer; z-index: 2; }
+.screen.mg-shop .mgs-good.mgs-taken { visibility: hidden; pointer-events: none; }
+.screen.mg-shop .mgs-good:focus-visible, .screen.mg-shop .mgs-money:focus-visible, .screen.mg-shop .mgs-bell:focus-visible { outline: .6rem solid #1e88e5; outline-offset: -.6rem; }
+.screen.mg-shop .mgs-board { position: absolute; left: 35rem; top: 15rem; width: 44rem; height: 30rem; border-radius: 3rem; background: #fff; box-shadow: inset 0 0 0 .8rem #ffd54f, 0 .8rem 0 rgba(0,0,0,.16); z-index: 3; pointer-events: none; }
+.screen.mg-shop .mgs-bitem { position: absolute; left: 2rem; top: 2rem; width: 12rem; height: 12rem; display: flex; align-items: center; justify-content: center; }
+.screen.mg-shop .mgs-bitem .mgs-art, .screen.mg-shop .mgs-bitem .mgs-card { position: relative; left: auto; top: auto; translate: none; }
+.screen.mg-shop .mgs-num { position: absolute; left: 15rem; top: 2rem; width: 27rem; height: 12rem; display: flex; align-items: baseline; justify-content: center; gap: .8rem; padding-top: 1.2rem; box-sizing: border-box; font-family: Andika, sans-serif; font-weight: 700; color: var(--ink); }
+.screen.mg-shop .mgs-num b { font-size: 8.4rem; line-height: 1; }
+.screen.mg-shop .mgs-num i { font-style: normal; font-size: 4.8rem; line-height: 1; color: #6d4c41; }
+.screen.mg-shop .mgs-frames { position: absolute; left: 2.2rem; top: 15.4rem; width: 39.4rem; height: 13rem; }
+.screen.mg-shop .mgs-frame { position: absolute; top: 0; width: 19rem; height: 13rem; }
+.screen.mg-shop .mgs-frame[data-f='price'] { left: 0; }
+.screen.mg-shop .mgs-frame[data-f='back'] { left: 20.4rem; display: none; }
+.screen.mg-shop .mgs-frame[data-f='back'].on { display: block; }
+.screen.mg-shop .mgs-ic { position: absolute; left: 0; top: 0; width: 4.4rem; height: 4.4rem; }
+.screen.mg-shop .mgs-dots { position: absolute; left: 0; top: 5.6rem; display: grid; grid-template-columns: repeat(5, 3rem); grid-auto-rows: 3rem; gap: .6rem; }
+.screen.mg-shop .mgs-dot { width: 3rem; height: 3rem; border-radius: 50%; box-sizing: border-box; border: .45rem solid #bcaaa4; background: #fff; transition: background .2s, border-color .2s; }
+.screen.mg-shop .mgs-dot.on { background: var(--due); border-color: var(--due-d); }
+.screen.mg-shop .mgs-dot.due { animation: mgsdue 1s ease-in-out 3; }
+.screen.mg-shop .mgs-dot.extra { background: var(--extra); border-color: var(--extra-d); }
+.screen.mg-shop .mgs-dot.owe { border-style: dashed; border-color: var(--back); }
+.screen.mg-shop .mgs-dot.owe.on { background: var(--back); border-style: solid; border-color: var(--back-d); }
+.screen.mg-shop .mgs-dot.count { animation: mgscount .5s ease-out 1; }
+@keyframes mgsdue { 0%, 100% { scale: 1; } 50% { scale: 1.2; } }
+@keyframes mgscount { 0% { scale: 1; } 40% { scale: 1.35; box-shadow: 0 0 0 .6rem rgba(255,213,79,.7); } 100% { scale: 1; } }
+.screen.mg-shop .mgs-till { position: absolute; left: 81rem; top: 15rem; width: 52.6rem; height: 30rem; z-index: 3; pointer-events: none; }
+.screen.mg-shop .mgs-tillart { position: absolute; inset: 0; transition: opacity .3s; }
+.screen.mg-shop .mgs-drawer { position: absolute; left: 3.4rem; top: .6rem; width: 42.4rem; height: 28.4rem; border-radius: 2.2rem; background: #e8eaf6; box-shadow: inset 0 0 0 .6rem #3949ab; visibility: hidden; }
+.screen.mg-shop .mgs-till.mgs-open .mgs-drawer { visibility: visible; animation: mgsopen .35s ease-out 1; }
+.screen.mg-shop .mgs-till.mgs-open .mgs-tillart { opacity: .3; }
+@keyframes mgsopen { from { translate: 0 3rem; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+.screen.mg-shop .mgs-bell { position: absolute; left: 19.5rem; top: 8.2rem; width: 13.6rem; height: 13.6rem; border-radius: 50%; background: #ffb300; box-shadow: inset 0 0 0 .8rem #fff, 0 .8rem 0 rgba(0,0,0,.18); padding: 2.6rem; box-sizing: border-box; display: none; pointer-events: auto; cursor: pointer; }
+.screen.mg-shop.mgs-ph-pay.mgs-l7 .mgs-till:not(.mgs-open) .mgs-bell { display: block; }
+.screen.mg-shop .mgs-bell.mgs-ring { animation: mgwig .85s ease-in-out 1; }
+.screen.mg-shop .mgs-pay, .screen.mg-shop .mgs-change, .screen.mg-shop .mgs-wallet { position: absolute; height: 14.4rem; border-radius: 2.4rem; z-index: 3; pointer-events: none; }
+.screen.mg-shop .mgs-pay { left: 3rem; top: 47rem; background: #fff8e7; box-shadow: inset 0 0 0 .5rem #bca27a; }
+.screen.mg-shop .mgs-change { top: 47rem; background: #eef8ee; box-shadow: inset 0 0 0 .5rem #81c784; display: none; }
+.screen.mg-shop .mgs-change.on { display: block; }
+.screen.mg-shop .mgs-wallet { left: 3rem; top: 62rem; width: 113.2rem; background: #8d6e63; box-shadow: inset 0 0 0 .5rem #5d4037; }
+.screen.mg-shop .mgs-pay.mgs-tray { background: #4e342e; box-shadow: inset 0 0 0 .8rem #c62828, inset 0 0 0 1.3rem #8e2420; }
+.screen.mg-shop.mgs-ph-basket .mgs-pay, .screen.mg-shop.mgs-ph-basket .mgs-change, .screen.mg-shop.mgs-ph-basket .mgs-board, .screen.mg-shop.mgs-ph-basket .mgs-till { visibility: hidden; }
+.screen.mg-shop.mgs-ph-basket .mgs-wallet, .screen.mg-shop.mgs-ph-basket .mgs-layer { opacity: .35; }
+.screen.mg-shop.mgs-ph-basket .mgs-money, .screen.mg-shop.mgs-ph-price .mgs-money, .screen.mg-shop.mgs-ph-done .mgs-money { pointer-events: none; }
+.screen.mg-shop .mgs-layer { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.screen.mg-shop .mgs-money { position: absolute; width: 13.6rem; height: 13.6rem; pointer-events: auto; touch-action: none; cursor: grab; border-radius: 2rem; }
+.screen.mg-shop .mgs-money.mgs-hide { visibility: hidden; pointer-events: none; }
+.screen.mg-shop .mgs-money.mgs-land { animation: mgsland .3s ease-out 1; }
+@keyframes mgsland { 0% { scale: 1.15; } 100% { scale: 1; } }
+.screen.mg-shop .mgs-art { position: absolute; left: 50%; top: 6.2rem; width: var(--d, 10rem); height: var(--d, 10rem); translate: -50% -50%; pointer-events: none; filter: drop-shadow(0 .4rem 0 rgba(0,0,0,.2)); }
+.screen.mg-shop .mgs-art svg { width: 100%; height: 100%; display: block; }
+.screen.mg-shop .mgs-vd { position: absolute; left: 0; right: 0; bottom: .4rem; height: 1rem; display: flex; justify-content: center; gap: .35rem; pointer-events: none; }
+.screen.mg-shop .mgs-vd i { width: 1rem; height: 1rem; border-radius: 50%; background: #ffe082; box-shadow: 0 0 0 .2rem #5d4037; }
+.screen.mg-shop.mgs-nodots .mgs-vd { display: none; }
+.screen.mg-shop .mgs-card { position: absolute; left: 1rem; top: .8rem; width: 11.6rem; height: 11.6rem; border-radius: 2rem; background: #fffaf0; box-shadow: inset 0 0 0 .6rem var(--pc, #5c6bc0), 0 .4rem 0 rgba(0,0,0,.16); pointer-events: none; font-family: Andika, sans-serif; font-weight: 700; color: var(--ink); }
+.screen.mg-shop .mgs-card-chip { position: absolute; right: .9rem; top: .9rem; width: 3.6rem; height: 3.6rem; }
+.screen.mg-shop .mgs-card-chip svg { width: 100%; height: 100%; display: block; }
+.screen.mg-shop .mgs-card-n { position: absolute; left: 0; right: 0; top: 4.4rem; text-align: center; font-size: 4.8rem; line-height: 1; }
+.screen.mg-shop .mgs-card-u { position: absolute; left: 0; right: 0; top: 9.1rem; text-align: center; font-style: normal; font-size: 2rem; line-height: 1; color: var(--pc, #5c6bc0); }
+/* LISA-06 €5 note delta, Opus 5.5 18.11.26: two-cell span 27.6 x 13.6rem (227.9 x 112.3 px at 1128x752). Aspect 120:62 kept; the note is not drawn to coin scale. */
+.screen.mg-shop .mgs-money.mgs-notecell { width: 27.6rem; }
+.screen.mg-shop .mgs-note { position: absolute; left: 50%; top: 6.2rem; width: 23.2rem; height: auto; aspect-ratio: 300 / 155; translate: -50% -50%; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 .4rem 0 rgba(0,0,0,.2)); }
+.screen.mg-shop .mgs-bitem .mgs-note { position: relative; left: auto; top: auto; translate: none; width: 12rem; }
+@media (prefers-reduced-motion: reduce) { .screen.mg-shop .mgs-dot.due, .screen.mg-shop .mgs-dot.count, .screen.mg-shop .mgs-money.mgs-land, .screen.mg-shop .mgs-till.mgs-open .mgs-drawer, .screen.mg-shop .mgs-bell.mgs-ring { animation: none; } }

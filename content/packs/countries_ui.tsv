@@ -1,0 +1,68 @@
+# key	lang	text   (written by Opus 5.5 16.11.26 for LISA-13 "Countries pack". Russian Lisa lines: feminine for Lisa, masculine for the child. Merge verbatim into content/ui.tsv.)
+# Country-name rule: the form a native speaker uses when naming the country on its own. PT-PT (AO90 spelling) keeps the definite article it always takes with that country (a Rússia, o Japão, os Estados Unidos), and Portugal has none. EN and DE are bare names except the USA, which takes the article in both (the USA, die USA). England is England, never the UK (PT a Inglaterra, not o Reino Unido). USA is the country, never 'America' (RU intro says Соединённые Штаты Америки).
+# Note for controller: LISA-06 lisa_cur_usd says 'В Америке'. LISA-13 uses the full country name on purpose; align LISA-06 later if wanted.
+lisa_country_choose	ru	Куда полетим в следующий раз? Если хочешь, нажми на картинку.
+lisa_country_board	ru	Садись ко мне в самолётик. Полетели!
+lisa_country_postcard	ru	Смотри, это открытка! Я назову слово, а ты найди картинку.
+lisa_country_done	ru	Мы всё нашли на открытке! Ты внимательно слушал и искал.
+lisa_country_album	ru	Я собрала тут наши открытки. Нажми на картинку и послушай слово.
+# lisa_country_intro_pt: Lisbon's Carris city trams are yellow (separate red tourist trams exist, so the line says 'ездят жёлтые', not 'all trams'). Draft 'тёплое море' dropped: the Atlantic off Portugal is cool. Source checked: https://www.visitportugal.com/en/content/lisbon-by-tram ; https://www.aportugueseaffair.com/yellow-trams/
+lisa_country_intro_pt	ru	Мы в Португалии! В Лиссабоне по улицам ездят жёлтые трамвайчики.
+# lisa_country_intro_ru: Matryoshka = Russian set of wooden dolls that fit one inside another (Priberam: 'bonecas ... que se encaixam umas dentro das outras'). Replaces draft 'зимой много-много снега' (weather generalisation over a huge country). Source checked: https://en.wikipedia.org/wiki/Matryoshka_doll ; https://dicionario.priberam.org/matriosca
+lisa_country_intro_ru	ru	Мы в России! Внутри большой матрёшки прячется матрёшка поменьше.
+# lisa_country_intro_de: Germany has many old castles (estimates ~20,000 incl. ruins; no number used in the line). Source checked: https://www.nationalgeographic.com/travel/article/best-castles-germany
+lisa_country_intro_de	ru	Мы в Германии! Здесь есть старые замки с высокими башнями.
+# lisa_country_intro_eng: London's TfL buses are painted red; double-deckers are the iconic type. Replaces draft 'часто идёт дождик, поэтому все берут зонтик' ('all people do Y' + weather stereotype). Source checked: https://www.londonmuseum.org.uk/collections/london-stories/london-buses-red-iconic-double-decked/
+lisa_country_intro_eng	ru	Мы в Англии! В Лондоне ездят красные автобусы с двумя этажами.
+# lisa_country_intro_it: The gondola is the flat-bottomed boat of Venice's canals and lagoon (Britannica). Replaces draft 'Здесь придумали пиццу' (origin claim). Source checked: https://www.britannica.com/technology/gondola-boat
+lisa_country_intro_it	ru	Мы в Италии! В Венеции по каналам плавают лодки-гондолы.
+# lisa_country_intro_fr: UNESCO: baguettes are baked throughout the day in bakeries and are the most popular bread in France. Replaces draft sensory prompt 'Понюхай...' (no fact). Source checked: https://ich.unesco.org/en/RL/artisanal-know-how-and-culture-of-baguette-bread-01883
+lisa_country_intro_fr	ru	Мы во Франции! Здесь в пекарнях пекут длинный хрустящий хлеб, багет.
+# lisa_country_intro_jp: JNTO: sakura bloom across Japan from late March to early May 'in subtle shades of pink'. Source checked: https://www.japan.travel/en/see-and-do/cherry-blossom-forecast/
+lisa_country_intro_jp	ru	Мы в Японии! Весной тут цветёт сакура, у неё нежные розовые цветочки.
+# lisa_country_intro_br: Portuguese is Brazil's official and most widely spoken language; Brazilian Portuguese differs from PT-PT (e.g. o bonde vs o elétrico, see LISA-15 RESEARCH). Kept from draft, softened with 'чуть-чуть по-другому' so the pt-BR greeting does not confuse the PT-PT voice. Source checked: https://www.cia.gov/the-world-factbook/countries/brazil/summaries
+lisa_country_intro_br	ru	Мы в Бразилии! Здесь тоже говорят по-португальски, только чуть-чуть по-другому.
+# lisa_country_intro_cn: Wild giant pandas live in mountain bamboo forests of central China; bamboo is ~99% of their diet. Source checked: https://wwf.ca/species/giant-pandas/ ; https://www.nationalgeographic.com/animals/mammals/facts/giant-panda
+lisa_country_intro_cn	ru	Мы в Китае! Здесь в горных лесах живут панды и жуют бамбук.
+# lisa_country_intro_eg: The Giza/Saqqara/Dahshur pyramid fields (UNESCO site 86) are stone pyramids on the desert edge. Draft 'Тут жарко' dropped (weather generalisation); no age/date given. Source checked: https://whc.unesco.org/en/list/86/
+lisa_country_intro_eg	ru	Мы в Египте! Здесь в пустыне стоят огромные пирамиды из камня.
+# lisa_country_intro_au: Australian Museum: the joey 'is raised in the pouch until it can survive outside'. 'Здесь живут' is not an exclusivity claim. Source checked: https://australian.museum/learn/animals/mammals/eastern-grey-kangaroo/
+lisa_country_intro_au	ru	Мы в Австралии! Здесь мама-кенгуру носит малыша в кармашке на животе.
+# lisa_country_intro_us: New York City has hundreds of skyscrapers (300+ over 150 m). Replaces draft hyperbole 'достают до облаков' and the name 'Америка' (continent vs country). Source checked: https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_New_York_City
+lisa_country_intro_us	ru	Мы в Соединённых Штатах Америки! В Нью-Йорке много-много высоких домов, небоскрёбов.
+country_name_pt	pt	Portugal
+country_name_pt	en	Portugal
+country_name_pt	de	Portugal
+country_name_ru	pt	a Rússia
+country_name_ru	en	Russia
+country_name_ru	de	Russland
+country_name_de	pt	a Alemanha
+country_name_de	en	Germany
+country_name_de	de	Deutschland
+country_name_eng	pt	a Inglaterra
+country_name_eng	en	England
+country_name_eng	de	England
+country_name_it	pt	a Itália
+country_name_it	en	Italy
+country_name_it	de	Italien
+country_name_fr	pt	a França
+country_name_fr	en	France
+country_name_fr	de	Frankreich
+country_name_jp	pt	o Japão
+country_name_jp	en	Japan
+country_name_jp	de	Japan
+country_name_br	pt	o Brasil
+country_name_br	en	Brazil
+country_name_br	de	Brasilien
+country_name_cn	pt	a China
+country_name_cn	en	China
+country_name_cn	de	China
+country_name_eg	pt	o Egito
+country_name_eg	en	Egypt
+country_name_eg	de	Ägypten
+country_name_au	pt	a Austrália
+country_name_au	en	Australia
+country_name_au	de	Australien
+country_name_us	pt	os Estados Unidos
+country_name_us	en	the USA
+country_name_us	de	die USA

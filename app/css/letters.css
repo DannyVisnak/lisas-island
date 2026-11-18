@@ -1,0 +1,64 @@
+/* LISA-18 letters screen. Scoped to .s-letters. 1rem = 10 logical px of the 1366x768 frame. Every interactive target >= 14rem (115.6 px at 1128x752). Reuses .btn .card .b-skip hintglow bob from style.css; only transform/opacity animate here. */
+.s-letters{position:absolute;left:0;top:0;width:136.6rem;height:76.8rem;overflow:hidden;font-family:'Andika',sans-serif;color:#3b2f4a;user-select:none;-webkit-user-select:none}
+.s-letters .lt-el{position:absolute;box-sizing:border-box}
+.s-letters .lt-hit{touch-action:none;cursor:pointer}
+.s-letters .lt-inert{pointer-events:none}
+.s-letters .btn.lt-btn{position:absolute;width:14rem;height:14rem;margin:0}
+.s-letters .lt-back{left:2rem;top:1.6rem}
+.s-letters .lt-speaker{left:18rem;top:1.6rem}
+.s-letters .lt-help{left:120.6rem;top:1.6rem}
+.s-letters .lt-next{left:120.6rem;top:60.8rem}
+.s-letters .lt-next.lt-off{opacity:0;pointer-events:none}
+.s-letters .lt-flag{position:absolute;left:34rem;top:4.1rem;width:9rem;height:9rem;border-radius:50%;overflow:hidden;background:#fff;box-shadow:0 .4rem 0 rgba(0,0,0,.16);pointer-events:none}
+.s-letters .lt-flag img,.s-letters .lt-flag svg{display:block;width:100%;height:100%;object-fit:cover}
+.s-letters .lt-dots{position:absolute;left:68.3rem;top:6.6rem;height:2.4rem;display:flex;gap:1.6rem;transform:translateX(-50%);pointer-events:none}
+.s-letters .lt-dots i{display:block;width:2.4rem;height:2.4rem;border-radius:50%;background:rgba(59,47,74,.18)}
+.s-letters .lt-dots i.lt-past{background:rgba(126,87,194,.45)}
+.s-letters .lt-dots i.lt-now{background:#7e57c2;transform:scale(1.25)}
+.s-letters .lt-sound{left:55.3rem;top:21.4rem;width:26rem;height:26rem;border-radius:50%;background:#26a69a;box-shadow:0 1rem 0 rgba(0,0,0,.16),0 1.6rem 2.6rem rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center}
+.s-letters .lt-sound svg{width:12rem;height:12rem;fill:#fff}
+.s-letters .card.lt-pic{width:30rem;height:30rem;padding:2rem;display:flex;align-items:center;justify-content:center}
+.s-letters .card.lt-pic img,.s-letters .card.lt-pic svg{max-width:100%;max-height:100%}
+.s-letters .lt-pic.lt-mid{left:53.3rem;top:19.4rem}
+.s-letters .lt-pic.lt-side{left:18.3rem;top:20rem}
+.s-letters .lt-word{left:52.3rem;top:22.1rem;width:64rem;height:15rem;display:flex;align-items:center;gap:3.2rem;font-size:9.6rem;font-weight:700;line-height:1;color:#263238;white-space:nowrap}
+.s-letters .lt-art{font-weight:400;color:#8a8296}
+.s-letters .lt-t{position:relative;display:inline-block}
+.s-letters .lt-t::after{content:'';position:absolute;left:-.4rem;right:-.4rem;bottom:-1.6rem;height:1.2rem;border-radius:.6rem;background:#ffb300}
+.s-letters .lt-t.lt-pulse{animation:lt-pulse .6s ease-in-out 2}
+.s-letters .card.lt-choice{top:26rem;width:30rem;height:30rem;display:flex;align-items:center;justify-content:center;font-size:20rem;font-weight:400;line-height:1;color:#263238;transition:opacity .25s}
+.s-letters .lt-choice.lt-l{left:34.3rem}
+.s-letters .lt-choice.lt-r{left:72.3rem}
+.s-letters .lt-choice.lt-soft{opacity:.55}
+.s-letters .lt-choice.lt-ok{animation:lt-pulse .5s ease-in-out 1}
+.s-letters .card.lt-form{left:44.3rem;top:17rem;width:48rem;height:48rem;padding:2rem}
+.s-letters .lt-form svg{display:block;width:44rem;height:44rem;touch-action:none}
+.s-letters .lt-rule{fill:none;stroke:#e8e3ef;stroke-width:3}
+.s-letters .lt-rule.lt-base{stroke:#cfc8d8;stroke-width:4}
+.s-letters .lt-guide{fill:none;stroke:#ece8f2;stroke-width:40;stroke-linecap:round;stroke-linejoin:round}
+.s-letters .lt-demo{fill:none;stroke:#7e57c2;stroke-width:28;stroke-linecap:round;stroke-linejoin:round}
+.s-letters .lt-ink{fill:none;stroke:#7e57c2;stroke-width:24;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.s-letters .lt-done-glyph{fill:none;stroke:#263238;stroke-width:28;stroke-linecap:round;stroke-linejoin:round}
+.s-letters .lt-start{fill:#43a047}
+.s-letters .card.lt-tapalt{left:98.3rem;top:33rem;width:16rem;height:16rem;display:flex;align-items:center;justify-content:center;font-size:11rem;line-height:1;color:#263238}
+.s-letters .lt-case{left:43.3rem;top:18rem;width:50rem;height:16rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.s-letters .lt-case-low{width:16rem;height:16rem;display:flex;align-items:center;justify-content:center;font-size:12rem;line-height:1;color:#263238}
+.s-letters .lt-case-arrow{width:10rem;height:6rem;fill:#7e57c2}
+.s-letters .lt-key{display:flex;align-items:center;justify-content:center;background:#fff;border:.6rem solid #cfc8d8;border-radius:2.4rem;box-shadow:0 .8rem 0 #b8b0c4;font-weight:700;line-height:1;color:#263238;transition:transform .08s}
+.s-letters .lt-key.lt-cap{position:relative;width:16rem;height:16rem;font-size:8.4rem}
+.s-letters .lt-key.lt-crop{top:45rem;width:15rem;height:15rem;font-size:8rem}
+.s-letters .lt-k0{left:35.3rem}
+.s-letters .lt-k1{left:52.3rem}
+.s-letters .lt-k2{left:69.3rem}
+.s-letters .lt-k3{left:86.3rem}
+.s-letters .lt-key.lt-down{transform:translateY(.6rem)}
+.s-letters .card.lt-tray{left:105.3rem;top:45rem;width:14rem;height:15rem;display:flex;align-items:center;justify-content:center;font-size:10rem;line-height:1;color:#263238;pointer-events:none}
+.s-letters .lt-tray b{font-weight:400;animation:lt-print .35s ease-out 1}
+.s-letters .card.lt-tray.lt-phys{left:60.3rem;top:56rem;width:16rem;height:14rem}
+.s-letters .lt-key.lt-big{left:57.3rem;top:19rem;width:22rem;height:22rem;font-size:13rem;border-radius:3.2rem;pointer-events:none}
+.s-letters .lt-arrow{left:63.3rem;top:44rem;width:10rem;height:10rem;fill:#7e57c2;pointer-events:none;animation:bob 1.4s ease-in-out infinite}
+.s-letters .lt-key.lt-touchalt{left:100.3rem;top:25rem;width:16rem;height:16rem;font-size:8.4rem}
+.s-letters .lt-glow{animation:hintglow 1.2s ease-in-out infinite}
+@keyframes lt-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes lt-print{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.s-letters *,.s-letters *::after{animation:none!important;transition:none!important}}

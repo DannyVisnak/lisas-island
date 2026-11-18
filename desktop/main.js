@@ -2,6 +2,7 @@
 const { app, BrowserWindow, Menu, session, globalShortcut } = require('electron');
 const path = require('path');
 const { pathToFileURL } = require('url');
+const IS_MAC = process.platform === 'darwin';
 
 app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -22,12 +23,17 @@ let win = null;
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
 function createWindow() {
-  Menu.setApplicationMenu(null);
+  if (IS_MAC) Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { label: app.name, submenu: [{ role: 'hide' }, { role: 'hideOthers' }, { role: 'unhide' }, { type: 'separator' }, { role: 'quit' }] },
+    { label: 'View', submenu: [{ role: 'togglefullscreen' }] },
+    { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'close' }, { type: 'separator' }, { role: 'front' }] }
+  ])); else Menu.setApplicationMenu(null);
   win = new BrowserWindow({
     title: "Lisa's Island",
     icon: path.join(GAME_DIR, 'icon', 'lisa.png'),
     fullscreen: true,
-    kiosk: true,
+    kiosk: !IS_MAC,
+    ...(IS_MAC ? { fullscreenable: true, minimizable: true, width: 1366, height: 768, minWidth: 1128, minHeight: 752, useContentSize: true } : {}),
     autoHideMenuBar: true,
     backgroundColor: '#ffffff',
     show: false,
@@ -42,8 +48,10 @@ function createWindow() {
       backgroundThrottling: false
     }
   });
-  win.removeMenu();
-  win.setMenuBarVisibility(false);
+  if (!IS_MAC) {
+    win.removeMenu();
+    win.setMenuBarVisibility(false);
+  }
   win.once('ready-to-show', () => win.show());
   const wc = win.webContents;
   wc.on('did-finish-load', () => {
@@ -63,6 +71,8 @@ function createWindow() {
   wc.on('before-input-event', (e, input) => {
     if (input.type !== 'keyDown') return;
     const k = (input.key || '').toLowerCase();
+    if (IS_MAC && input.meta && !input.alt && !input.shift && ['q', 'w', 'm', 'h'].includes(k)) return;
+    if (IS_MAC && input.meta && input.control && k === 'f') return;
     const ctrl = input.control || input.meta;
     if (input.alt && k === 'f4') { e.preventDefault(); app.quit(); return; }
     if (k === 'f5' || k === 'f11' || k === 'f12') { e.preventDefault(); return; }
@@ -70,6 +80,38 @@ function createWindow() {
     if (ctrl && input.shift && ['i', 'j', 'c', 'r'].includes(k)) e.preventDefault();
     if (input.alt && (k === 'arrowleft' || k === 'arrowright')) e.preventDefault();
   });
+
+  if (IS_MAC) {
+    const window = win;
+    let pendingFlush = null;
+    let closing = false;
+    let allowClose = false;
+    const flush = () => {
+      if (pendingFlush) return pendingFlush;
+      if (window.isDestroyed()) return Promise.resolve();
+      let timer;
+      const cap = new Promise(resolve => { timer = setTimeout(resolve, 500); });
+      const renderer = Promise.resolve().then(() => wc.executeJavaScript(
+        'try{window.Core&&Core.flushNow&&Core.flushNow()}catch(e){}', true
+      )).catch(() => {});
+      pendingFlush = Promise.race([renderer, cap]).finally(() => {
+        clearTimeout(timer);
+        pendingFlush = null;
+      });
+      return pendingFlush;
+    };
+    window.on('close', e => {
+      if (allowClose) return;
+      e.preventDefault();
+      if (closing) return;
+      closing = true;
+      flush().then(() => {
+        allowClose = true;
+        if (!window.isDestroyed()) window.close();
+      });
+    });
+    ['minimize', 'hide', 'blur', 'leave-full-screen'].forEach(name => window.on(name, () => { flush(); }));
+  }
 
   // The game quits via window.close(); closing the only window quits the app.
   win.on('closed', () => { win = null; app.quit(); });

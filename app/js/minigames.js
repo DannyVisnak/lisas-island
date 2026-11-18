@@ -65,7 +65,7 @@ MG.pathNodes = function (root, lang, wid, g) {
    - h.disable(true|false), h.reset() (offset back to 0, no animation), h.destroy(). info = { node, x, y, dx, dy, target }. */
 MG.drag = function (node, o) {
   o = o || {};
-  var h = { disabled: false }, st = null, minMove = o.minMove || 9;
+  var h = { disabled: false }, st = null, minMove = o.minMove || 9, snapTimer = null, destroyed = false;
   node.classList.add('mgdrag-able');
   function list() { var t = typeof o.targets === 'function' ? o.targets() : o.targets; return [].concat(t || []).filter(Boolean); }
   function setOff(dx, dy, s) { node.style.translate = dx + 'px ' + dy + 'px'; node.style.scale = s || '1'; }
@@ -80,7 +80,7 @@ MG.drag = function (node, o) {
     return best;
   }
   function onDown(e) {
-    if (h.disabled || st || (MG.cur && MG.cur.prompting && MG.cur.prompting())) return;
+    if (destroyed || h.disabled || st || (MG.cur && MG.cur.prompting && MG.cur.prompting())) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault(); e.stopPropagation(); Snd.unlock();
     st = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
@@ -99,8 +99,10 @@ MG.drag = function (node, o) {
     if (o.onMove) o.onMove(info(e));
   }
   function snap() {
+    if (destroyed) return;
     node.classList.add('mgback'); setOff(0, 0, '1');
-    setTimeout(function () { node.classList.remove('mgback', 'mgdragging'); }, 320 / Core.speed + 30);
+    if (snapTimer !== null) clearTimeout(snapTimer);
+    snapTimer = setTimeout(function () { snapTimer = null; if (!destroyed) node.classList.remove('mgback', 'mgdragging'); }, 320 / Core.speed + 30);
   }
   async function onUp(e) {
     if (!st || e.pointerId !== st.id) return;
@@ -115,12 +117,13 @@ MG.drag = function (node, o) {
     var t = pick(cx, cy); i.target = t;
     var keep = false;
     if (o.onDrop) { var r2 = o.onDrop(t, i); if (r2 && typeof r2.then === 'function') r2 = await r2; keep = !!t && r2 !== false && r2 !== 'back'; } else keep = false;
+    if (destroyed) return;
     if (keep) node.classList.remove('mgdragging'); else snap();
   }
   node.addEventListener('pointerdown', onDown);
   h.disable = function (on) { h.disabled = on == null ? true : !!on; node.classList.toggle('mgfrozen', h.disabled); };
   h.reset = function () { node.classList.remove('mgback', 'mgdragging'); node.style.translate = ''; node.style.scale = ''; };
-  h.destroy = function () { node.removeEventListener('pointerdown', onDown); node.classList.remove('mgdrag-able'); h.reset(); st = null; };
+  h.destroy = function () { destroyed = true; node.removeEventListener('pointerdown', onDown); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); window.removeEventListener('pointercancel', onUp); if (snapTimer !== null) clearTimeout(snapTimer); snapTimer = null; node.classList.remove('mgdrag-able'); h.reset(); st = null; };
   return h;
 };
 
@@ -170,7 +173,7 @@ function makeCtx(def, lang, p, flow, root) {
 
   /* ----- keys / audio ----- */
   /* ctx.key('help') -> 'mg_<id>_help'; a key that already starts with mg_ or exists in the RU ui table is used as is */
-  function key(k) { return (k.indexOf('mg_') === 0 || (D.ui.ru && D.ui.ru[k])) ? k : 'mg_' + id + '_' + k; }
+  function key(k) { return (k.indexOf('mg_') === 0 || Core.baseText(k)) ? k : 'mg_' + id + '_' + k; }
   ctx.ruUrl = function (k) { return Core.ruUrl(key(k)); };                          /* url or null (parent switch off) */
   ctx.ru = function (k, extraList) { var u = ctx.ruUrl(k), l = [].concat(u || [], extraList || []); return l.length ? flow.say(l) : flow.wait(150); };
   ctx.askUrl = function (item) { return Core.url.q(lang, item); };
@@ -319,14 +322,17 @@ function makeCtx(def, lang, p, flow, root) {
     if (!ctx.dots) ctx.chrome({ total: targets.length });
     if (o.intro !== false) await ctx.intro();
     for (var i = 0; i < targets.length; i++) {
+      if (flow.dead) return;
       if (p.path && i > 0 && Path.shouldStop()) break;
       idx = i; ctx.setTarget(targets[i], null); ctx.progress(i);
       await ctx.quiet(7000);
+      if (flow.dead) return;
       if (o.ask !== false) ctx.ask(targets[i]);
       await o.play(targets[i], i);
+      if (flow.dead) return;
       ctx.lock(true);
     }
-    return ctx.finish();
+    if (!flow.dead) return ctx.finish();
   };
 
   /* ----- finish: mg_<id>_done + Lisa line, stars (3 / 2 / 1 from how many answers needed help), then the normal result screen ----- */

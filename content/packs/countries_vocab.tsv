@@ -1,0 +1,46 @@
+# world	id	emoji_or_color	en	pt	de	ru	q_en	q_pt	q_de
+# written by Opus 5.5 16.11.26 for LISA-13. Same 10-column schema as content/vocab.tsv; world = countries. EN bare noun (as existing rows), PT-PT/DE with article; plurals use 'Where are'/'Onde estão'/'Wo sind' like socks/gloves.
+# Emoji column is only a picture-type marker (build_data.py ignores the character and loads app/img/<id>.svg); every row needs its original SVG. Do NOT let fetch_images.py leave Noto placeholders for: custard_tart (🥧 is a pie), gondola (🛶 is a canoe), eiffel_tower (🗼 is Tokyo Tower), pyramid (🔺 is a red triangle), sausage (🌭 is a hot dog; draw a plain sausage), cowboy_hat (🤠 is a face; draw the hat only), camel (draw ONE hump, Egyptian dromedary), clock (clock face must dominate, e.g. Big Ben dial).
+# Distractor pairs to keep off the same question (same picture idea or near-identical word): country_sardine~fish (both 🐟), country_football~ball (both ⚽; PT a bola / a bola de futebol), country_cherry_blossom~flower (both 🌸), country_bear~teddy (PT o urso / o ursinho, DE Bär / Teddybär), country_forest~tree, country_forest~country_rainforest (DE Wald / Regenwald, PT floresta / floresta tropical), country_gondola~boat, country_baguette~bread, country_custard_tart~cake, country_rice_ball~ball (PT a bola de arroz), country_eiffel_tower~country_skyscraper (both tall towers).
+# Word choices: castle = die Burg (fortified castle, same as LISA-15 RESEARCH), tram = o elétrico/die Straßenbahn (LISA-15), Russian doll = British term (Cambridge: UK 'Russian doll', US 'nesting doll'), PT a matriosca (Priberam entry), dumplings = os dumplings (current PT-PT usage per Time Out Lisboa; alt 'os raviólis chineses'), arranha-céus = masc. invariable (Priberam), pasta = PT a massa / DE die Nudeln (everyday child words), custard tart DE das Puddingtörtchen (descriptive; 'Pastel de Nata' also used in DE shops).
+countries	country_sardine	🐟	sardine	a sardinha	die Sardine	сардинка	Where is the sardine?	Onde está a sardinha?	Wo ist die Sardine?
+countries	country_tram	🚋	tram	o elétrico	die Straßenbahn	трамвай	Where is the tram?	Onde está o elétrico?	Wo ist die Straßenbahn?
+countries	country_custard_tart	🥧	custard tart	o pastel de nata	das Puddingtörtchen	пирожное с кремом	Where is the custard tart?	Onde está o pastel de nata?	Wo ist das Puddingtörtchen?
+countries	country_nesting_doll	🪆	Russian doll	a matriosca	die Matroschka	матрёшка	Where is the Russian doll?	Onde está a matriosca?	Wo ist die Matroschka?
+countries	country_pancakes	🥞	pancakes	as panquecas	die Pfannkuchen	блины	Where are the pancakes?	Onde estão as panquecas?	Wo sind die Pfannkuchen?
+countries	country_bear	🐻	bear	o urso	der Bär	медведь	Where is the bear?	Onde está o urso?	Wo ist der Bär?
+countries	country_snow	❄️	snow	a neve	der Schnee	снег	Where is the snow?	Onde está a neve?	Wo ist der Schnee?
+countries	country_pretzel	🥨	pretzel	o pretzel	die Brezel	крендель	Where is the pretzel?	Onde está o pretzel?	Wo ist die Brezel?
+countries	country_castle	🏰	castle	o castelo	die Burg	замок	Where is the castle?	Onde está o castelo?	Wo ist die Burg?
+countries	country_sausage	🌭	sausage	a salsicha	die Wurst	сосиска	Where is the sausage?	Onde está a salsicha?	Wo ist die Wurst?
+countries	country_forest	🌲	forest	a floresta	der Wald	лес	Where is the forest?	Onde está a floresta?	Wo ist der Wald?
+countries	country_tea	☕	tea	o chá	der Tee	чай	Where is the tea?	Onde está o chá?	Wo ist der Tee?
+countries	country_clock	🕰️	clock	o relógio	die Uhr	часы	Where is the clock?	Onde está o relógio?	Wo ist die Uhr?
+countries	country_umbrella	☂️	umbrella	o guarda-chuva	der Regenschirm	зонтик	Where is the umbrella?	Onde está o guarda-chuva?	Wo ist der Regenschirm?
+countries	country_pizza	🍕	pizza	a pizza	die Pizza	пицца	Where is the pizza?	Onde está a pizza?	Wo ist die Pizza?
+countries	country_pasta	🍝	pasta	a massa	die Nudeln	макароны	Where is the pasta?	Onde está a massa?	Wo sind die Nudeln?
+countries	country_gondola	🛶	gondola	a gôndola	die Gondel	гондола	Where is the gondola?	Onde está a gôndola?	Wo ist die Gondel?
+countries	country_baguette	🥖	baguette	a baguete	das Baguette	багет	Where is the baguette?	Onde está a baguete?	Wo ist das Baguette?
+countries	country_croissant	🥐	croissant	o croissant	das Croissant	круассан	Where is the croissant?	Onde está o croissant?	Wo ist das Croissant?
+countries	country_eiffel_tower	🗼	Eiffel Tower	a Torre Eiffel	der Eiffelturm	Эйфелева башня	Where is the Eiffel Tower?	Onde está a Torre Eiffel?	Wo ist der Eiffelturm?
+countries	country_sushi	🍣	sushi	o sushi	das Sushi	суши	Where is the sushi?	Onde está o sushi?	Wo ist das Sushi?
+countries	country_mountain	🗻	mountain	a montanha	der Berg	гора	Where is the mountain?	Onde está a montanha?	Wo ist der Berg?
+countries	country_cherry_blossom	🌸	cherry blossom	a flor de cerejeira	die Kirschblüte	сакура	Where is the cherry blossom?	Onde está a flor de cerejeira?	Wo ist die Kirschblüte?
+countries	country_rice_ball	🍙	rice ball	a bola de arroz	das Reisbällchen	рисовый шарик	Where is the rice ball?	Onde está a bola de arroz?	Wo ist das Reisbällchen?
+countries	country_football	⚽	football	a bola de futebol	der Fußball	футбольный мяч	Where is the football?	Onde está a bola de futebol?	Wo ist der Fußball?
+countries	country_parrot	🦜	parrot	o papagaio	der Papagei	попугай	Where is the parrot?	Onde está o papagaio?	Wo ist der Papagei?
+countries	country_rainforest	🌴	rainforest	a floresta tropical	der Regenwald	тропический лес	Where is the rainforest?	Onde está a floresta tropical?	Wo ist der Regenwald?
+countries	country_panda	🐼	panda	o panda	der Panda	панда	Where is the panda?	Onde está o panda?	Wo ist der Panda?
+countries	country_dumplings	🥟	dumplings	os dumplings	die Teigtaschen	китайские пельмени	Where are the dumplings?	Onde estão os dumplings?	Wo sind die Teigtaschen?
+countries	country_chopsticks	🥢	chopsticks	os pauzinhos	die Essstäbchen	палочки для еды	Where are the chopsticks?	Onde estão os pauzinhos?	Wo sind die Essstäbchen?
+countries	country_dragon	🐉	dragon	o dragão	der Drache	дракон	Where is the dragon?	Onde está o dragão?	Wo ist der Drache?
+countries	country_pyramid	🔺	pyramid	a pirâmide	die Pyramide	пирамида	Where is the pyramid?	Onde está a pirâmide?	Wo ist die Pyramide?
+countries	country_camel	🐪	camel	o camelo	das Kamel	верблюд	Where is the camel?	Onde está o camelo?	Wo ist das Kamel?
+countries	country_desert	🏜️	desert	o deserto	die Wüste	пустыня	Where is the desert?	Onde está o deserto?	Wo ist die Wüste?
+countries	country_kangaroo	🦘	kangaroo	o canguru	das Känguru	кенгуру	Where is the kangaroo?	Onde está o canguru?	Wo ist das Känguru?
+countries	country_koala	🐨	koala	o coala	der Koala	коала	Where is the koala?	Onde está o coala?	Wo ist der Koala?
+countries	country_boomerang	🪃	boomerang	o bumerangue	der Bumerang	бумеранг	Where is the boomerang?	Onde está o bumerangue?	Wo ist der Bumerang?
+countries	country_burger	🍔	burger	o hambúrguer	der Burger	бургер	Where is the burger?	Onde está o hambúrguer?	Wo ist der Burger?
+countries	country_statue_liberty	🗽	Statue of Liberty	a Estátua da Liberdade	die Freiheitsstatue	статуя Свободы	Where is the Statue of Liberty?	Onde está a Estátua da Liberdade?	Wo ist die Freiheitsstatue?
+countries	country_skyscraper	🏙️	skyscraper	o arranha-céus	der Wolkenkratzer	небоскрёб	Where is the skyscraper?	Onde está o arranha-céus?	Wo ist der Wolkenkratzer?
+countries	country_cowboy_hat	🤠	cowboy hat	o chapéu de cowboy	der Cowboyhut	ковбойская шляпа	Where is the cowboy hat?	Onde está o chapéu de cowboy?	Wo ist der Cowboyhut?

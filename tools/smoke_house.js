@@ -4,10 +4,10 @@
    (level / mini-game / review; the scene case lives in smoke_scene.js), the gift box -> two cards -> pick -> flies to its slot -> persists across a reload,
    an exhausted catalog is a quiet no-op, an old purse-draft save migrates. Screenshots at 1128x752 and 1920x1080 -> tools/shots/house_*.png.
    smoke.js wipes tools/shots, so run the whole chain in order: smoke.js, smoke_scene.js, smoke_mg.js, smoke_house.js. */
-const path = require('path');
-const { boot, sleep, SHOTS } = require('./mg_lib');
+const { boot, sleep } = require('./mg_lib');
+const H = require('./house_smoke_helpers');
 
-const shotTo = (lib, name) => lib.page.screenshot({ path: path.join(SHOTS, 'house_' + name + '.png') });
+const shotTo = (lib, name) => lib.shot('house_' + name);
 const waitPromptFree = (lib, timeout = 22000) => lib.page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
 const hs = (lib) => lib.page.evaluate(() => (window.__houseTest ? __houseTest.state() : null));
 const lang = (lib) => lib.page.evaluate(() => Core.curLang());
@@ -58,6 +58,7 @@ async function run(lib) {
   expect(await page.evaluate(() => !!document.querySelector('.b-house.news .hspark')), 'a due stage should sparkle on the map button (no number)');
   expect(await page.evaluate(() => !/\d/.test(document.querySelector('.b-house').textContent)), 'the house button must show no number');
   await lib.tapSel('.b-house');
+  await H.classicStage(lib, 1);
   await waitHouse(() => window.__houseTest && __houseTest.state().stage === 1, null, 'stage 1 should be built once the house is opened at 3 stars');
   await sleep(900);
   await shotTo(lib, 'build1_1128');
@@ -73,6 +74,7 @@ async function run(lib) {
   for (const step of [{ add: 5, stage: 2 }, { add: 8, stage: 3 }, { add: 12, stage: 4 }]) {
     await page.evaluate((n) => Core.addStars(n), step.add);
     await openFromMap();
+    await H.classicStage(lib, step.stage);
     await waitHouse((stage) => window.__houseTest && __houseTest.state().stage === stage, step.stage, 'exterior stage ' + step.stage + ' appears at its milestone');
     await expectSingleBuildSun(lib, 'stage ' + step.stage);
     await shotTo(lib, 'build' + step.stage + '_1128');
@@ -84,6 +86,7 @@ async function run(lib) {
   const hatsB = await page.evaluate(() => JSON.stringify(Core.save.hats.unlocked));
   expect(hatsB === '["cap","sunglasses"]', 'hats at 42 stars should be cap + sunglasses, got ' + hatsB);
   await page.evaluate(() => __test.go('house', { from: 'map' }));
+  await H.classicStage(lib, 5);
   await waitHouse(() => window.__houseTest && __houseTest.state().stage === 5 && __houseTest.state().mode === 'room', null, 'the finished house should open into the room');
   await sleep(1200);
   s = await hs(lib);
@@ -143,7 +146,10 @@ async function run(lib) {
   const heard0 = await page.evaluate(([l, i]) => Core.SRS.peek(l, i).heard || 0, [L, pick1]);
   await page.evaluate(() => { window.__cw = 0; });
   await waitPromptFree(lib);
-  await lib.tapSel('.hcard[data-id="' + pick1 + '"]');
+  await H.tapStable(lib, '.hcard[data-id="' + pick1 + '"]');
+  await H.waitHouse(lib, (s, id) => s.picker === 'style' && s.pickerKey === id && !s.busy, pick1);
+  expect(await g() === s.gifts && !(await hs(lib)).owned.includes(pick1), 'noun choice waits for style before using any gift');
+  await H.classicGiftStyle(lib, pick1, { wait: false });
   await sleep(250);
   await shotTo(lib, 'gift_flying_1128');
   await waitHouse(([p]) => __houseTest.state().owned.indexOf(p) >= 0, [pick1], 'the picked item should be owned');
@@ -163,7 +169,11 @@ async function run(lib) {
   const pick2 = s.cards[1];
   const from = await lib.center('.hcard[data-id="' + pick2 + '"]'), to = await lib.center('.house-stage');
   await waitPromptFree(lib);
+  await H.originalTarget(page, '.hcard[data-id="' + pick2 + '"]');
   await lib.dragMouse(from, to, 8);
+  await H.waitHouse(lib, (s, id) => s.picker === 'style' && s.pickerKey === id && !s.busy, pick2);
+  expect(await g() === s.gifts && !(await hs(lib)).owned.includes(pick2), 'dragging the noun waits for style before using any gift');
+  await H.classicGiftStyle(lib, pick2, { wait: false });
   await waitHouse(([p]) => __houseTest.state().owned.indexOf(p) >= 0, [pick2], 'dragging a card onto the room should place it');
   await sleep(1500);
   s = await hs(lib);
@@ -228,9 +238,10 @@ async function big() {
   try {
     const { page } = lib;
     /* mid-build exterior, a half-furnished room, and the gift cards at 1920x1080 */
-    await page.evaluate(() => { Core.save.stars = 20; Core.save.house = { stage: 3, gifts: 0, owned: [], placed: {}, reviewDay: -1 }; Core.persist(); __test.go('house', { from: 'map' }); });
+    await page.evaluate(() => { Core.save.stars = 20; Core.save.house = { stage: 3, gifts: 0, owned: [], placed: {}, reviewDay: -1, look: {} }; Core.persist(); __test.go('house', { from: 'map' }); });
     await sleep(1500); await shotTo(lib, 'build3_1920');
     await page.evaluate(() => { Core.save.stars = 60; __test.go('house', { from: 'map' }); });
+    await H.classicStage(lib, 4); await H.classicStage(lib, 5);
     await page.waitForFunction(() => window.__houseTest && __houseTest.state().mode === 'room', null, { timeout: 30000 }).catch(() => lib.fail('1920: room should open'));
     await sleep(1800); await shotTo(lib, 'room_empty_1920');
     await page.evaluate(() => { const H = Core.save.house; H.owned = ['bed', 'ball', 'car', 'chair', 'backpack', 'tv', 'cake', 'book', 'teddy', 'balloon', 'flower']; H.owned.forEach((i) => { H.placed[i] = i; }); H.gifts = 1; Core.persist(); __test.go('house', { from: 'map' }); });

@@ -1,0 +1,163 @@
+{
+  "countries": [
+    {
+      "id": "pt",
+      "ids": [
+        "country_sardine",
+        "country_tram",
+        "country_custard_tart",
+        "sea"
+      ],
+      "food": [
+        "country_sardine",
+        "country_custard_tart"
+      ],
+      "greetingSrc": "audio/pt/hello.ogg"
+    },
+    {
+      "id": "ru",
+      "ids": [
+        "country_nesting_doll",
+        "country_pancakes",
+        "country_bear",
+        "country_snow"
+      ],
+      "food": [
+        "country_pancakes"
+      ],
+      "greetingSrc": "audio/ru/hello.ogg"
+    },
+    {
+      "id": "de",
+      "ids": [
+        "country_pretzel",
+        "country_castle",
+        "country_sausage",
+        "country_forest"
+      ],
+      "food": [
+        "country_pretzel",
+        "country_sausage"
+      ],
+      "greetingSrc": "audio/de/hello.ogg"
+    },
+    {
+      "id": "eng",
+      "ids": [
+        "bus",
+        "country_tea",
+        "country_clock",
+        "country_umbrella"
+      ],
+      "food": [
+        "country_tea"
+      ],
+      "greetingSrc": "audio/en/hello.ogg"
+    },
+    {
+      "id": "it",
+      "ids": [
+        "country_pizza",
+        "country_pasta",
+        "icecream",
+        "country_gondola"
+      ],
+      "food": [
+        "country_pizza",
+        "country_pasta",
+        "icecream"
+      ],
+      "greetingSrc": "audio/countries/country_hello_it.ogg"
+    },
+    {
+      "id": "fr",
+      "ids": [
+        "country_baguette",
+        "country_croissant",
+        "cheese",
+        "country_eiffel_tower"
+      ],
+      "food": [
+        "country_baguette",
+        "country_croissant",
+        "cheese"
+      ],
+      "greetingSrc": "audio/countries/country_hello_fr.ogg"
+    },
+    {
+      "id": "jp",
+      "ids": [
+        "country_sushi",
+        "country_mountain",
+        "country_cherry_blossom",
+        "country_rice_ball"
+      ],
+      "food": [
+        "country_sushi",
+        "country_rice_ball"
+      ],
+      "greetingSrc": "audio/countries/country_hello_jp.ogg"
+    },
+    {
+      "id": "br",
+      "ids": [
+        "country_football",
+        "country_parrot",
+        "banana",
+        "country_rainforest"
+      ],
+      "food": [
+        "banana"
+      ],
+      "greetingSrc": "audio/countries/country_hello_br.ogg"
+    },
+    {
+      "id": "cn",
+      "ids": [
+        "country_panda",
+        "country_dumplings",
+        "country_chopsticks",
+        "country_dragon"
+      ],
+      "food": [
+        "country_dumplings"
+      ],
+      "greetingSrc": "audio/countries/country_hello_cn.ogg"
+    },
+    {
+      "id": "eg",
+      "ids": [
+        "country_pyramid",
+        "country_camel",
+        "country_desert",
+        "sun"
+      ],
+      "food": [],
+      "greetingSrc": "audio/countries/country_hello_eg.ogg"
+    },
+    {
+      "id": "au",
+      "ids": [
+        "country_kangaroo",
+        "country_koala",
+        "beach",
+        "country_boomerang"
+      ],
+      "food": [],
+      "greetingSrc": "audio/en/hello.ogg"
+    },
+    {
+      "id": "us",
+      "ids": [
+        "country_burger",
+        "country_statue_liberty",
+        "country_skyscraper",
+        "country_cowboy_hat"
+      ],
+      "food": [
+        "country_burger"
+      ],
+      "greetingSrc": "audio/en/hello.ogg"
+    }
+  ]
+}

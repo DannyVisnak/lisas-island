@@ -1,0 +1,6 @@
+# LISA-15 vocab rows, written by the controller (Opus 5.5) 17.11.26. Same 10 columns as content/vocab.tsv. azulejo: emoji is only a fallback, the builder draws app/img/azulejo.svg.
+home	castle	🏰	castle	o castelo	die Burg	замок	Where is the castle?	Onde está o castelo?	Wo ist die Burg?
+home	azulejo	🔷	tile	o azulejo	die Fliese	плитка	Where is the tile?	Onde está o azulejo?	Wo ist die Fliese?
+transport	tram	🚋	tram	o elétrico	die Straßenbahn	трамвай	Where is the tram?	Onde está o elétrico?	Wo ist die Straßenbahn?
+transport	ship	🚢	ship	o navio	das Schiff	корабль	Where is the ship?	Onde está o navio?	Wo ist das Schiff?
+toys	doll	🪆	doll	a boneca	die Puppe	кукла	Where is the doll?	Onde está a boneca?	Wo ist die Puppe?

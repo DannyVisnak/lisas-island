@@ -43,6 +43,27 @@
 .ls-stone .ls-lit { position: absolute; left: -10%; top: -20%; width: 120%; height: 120%; border-radius: 50%; background: radial-gradient(circle, rgba(255,235,90,.95) 0%, rgba(255,235,90,0) 68%); opacity: 0; }
 .ls-flow { will-change: transform; }
 
+.ls-hist-bg, .ls-hist-actors { z-index: 1; }
+.ls-hist-object { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
+.ls-hist-feature { position:absolute; z-index:2; opacity:0; will-change:transform,opacity; pointer-events:none; }
+.ls-hist-feature svg { display:block; width:100%; height:100%; overflow:visible; filter:drop-shadow(0 .5rem .3rem rgba(50,35,20,.2)); }
+.ls-hist-castle-feature-a { left:22rem; top:20rem; width:10rem; height:15rem; }
+.ls-hist-castle-feature-b { left:38rem; top:42rem; width:18rem; height:10rem; }
+.ls-hist-ship-feature-a, .ls-hist-ship-feature-b { left:39rem; top:19rem; width:14rem; height:19rem; }
+.ls-hist-ship-feature-b { left:56.5rem; top:21rem; }
+.ls-hist-tram-feature-a { left:33.5rem; top:33rem; width:13rem; height:16rem; }
+.ls-hist-tram-feature-b { left:50rem; top:24rem; width:20rem; height:32rem; }
+.ls-hist-tiles-feature-a, .ls-hist-tiles-feature-b { left:63rem; top:20rem; width:12rem; height:12rem; }
+.ls-hist-tiles-feature-b { left:14.5rem; top:28.6rem; width:9rem; height:11.4rem; }
+.ls-hist-doll-feature-a { left:18rem; top:27rem; width:13rem; height:16rem; }
+.ls-hist-doll-feature-b { left:28rem; top:27rem; width:13rem; height:16rem; }
+.ls-hist-print-feature-a { left:10rem; top:20rem; width:16rem; height:12rem; }
+.ls-hist-print-feature-b { left:75rem; top:17rem; width:16rem; height:12rem; }
+.ls-hist-tiles-feature-a[data-state="complete"] { filter:drop-shadow(0 0 1.2rem #fff1a6); }
+.ls-hist-ship-feature-a svg path:last-child, .ls-hist-ship-feature-b svg path:last-child { transition: fill .3s; }
+.ls-hist-object[data-inspect="a"] ~ .ls-hist-ship-feature-a svg path:last-child, .ls-hist-object[data-inspect="b"] ~ .ls-hist-ship-feature-b svg path:last-child { fill:#f4a259; }
+.ls-hist-tile > svg { width:100%; height:100%; display:block; }
+
 /* prediction tiles: two big outcome pictures */
 .ls-prompt { position: absolute; z-index: 5; }
 .ls-tile { position: absolute; top: 0; border-radius: 3rem; background: #fff; border: .9rem solid #fff; box-shadow: 0 .8rem 0 rgba(0,0,0,.2), 0 1.4rem 2.4rem rgba(0,0,0,.18); overflow: hidden; touch-action: manipulation; cursor: pointer;
@@ -68,3 +89,15 @@
 .ls-cardword { font-size: 6rem; font-weight: 800; color: #5a3d99; line-height: 1; }
 @keyframes lscard { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes lsrays { to { transform: rotate(360deg); } }
+
+/* Repka and basket lesson artwork */
+.ls-repka .ls-rp-turnip { filter: drop-shadow(0 .5rem .45rem rgba(80,55,20,.22)); will-change: transform, opacity; }
+.ls-repka .ls-rp-turnip svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ls-repka .ls-rp-count { filter: drop-shadow(0 0 1rem rgba(255,224,75,.9)); }
+.ls-more .ls-more-basket { will-change: transform, opacity; }
+.ls-more .ls-more-basket[data-count] { transition: filter .2s; }
+.ls-more .ls-more-basket[data-count="3"] { filter: drop-shadow(0 0 .7rem rgba(255,235,80,.8)); }
+.ls-more .ls-a { will-change: transform, opacity; }
+.ls-more .ls-more-lit { filter: drop-shadow(0 0 .8rem rgba(255,230,60,.95)); }
+.ls-repka .ls-prompt, .ls-more .ls-prompt { z-index: 7; }
+.ls-repka .ls-tile, .ls-more .ls-tile { min-height: 20rem; }

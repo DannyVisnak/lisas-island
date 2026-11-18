@@ -1,0 +1,131 @@
+{
+  "formationCorrection": {
+    "otherExactEdits": [
+      {
+        "newValue": {
+          "viewBox": "0 0 400 400",
+          "fontRef": {
+            "family": "Andika",
+            "weight": 400,
+            "fontSize": 300,
+            "textAnchor": "middle",
+            "x": 200,
+            "baseline": 300,
+            "note": "Strokes are centrelines of the bundled Andika-Regular glyph at font-size 300 in this viewBox. The font is not rendered in the formation SVG."
+          },
+          "rules": {
+            "ascender": 65,
+            "xHeight": 150,
+            "baseline": 300,
+            "descender": 372,
+            "x1": 20,
+            "x2": 380,
+            "classes": "lt-rule for ascender/xHeight/descender, lt-rule lt-base for baseline"
+          },
+          "strokeWidth": 28,
+          "glyphs": {
+            "p": {
+              "strokes": [
+                "M150 160 L150 358",
+                "M150 196 C164 172 186 159 210 159 C242 159 260 190 260 225 C260 262 240 291 210 291 C186 291 166 282 150 266"
+              ],
+              "start": [
+                [
+                  150,
+                  160
+                ],
+                [
+                  150,
+                  196
+                ]
+              ],
+              "order": "stem down, then bowl clockwise"
+            },
+            "a": {
+              "strokes": [
+                "M236 166 C224 161 212 159 200 159 C168 159 145 196 145 234 C145 268 164 291 188 291 C202 291 209 277 212 262 L236 196",
+                "M248 160 L253 286"
+              ],
+              "start": [
+                [
+                  236,
+                  166
+                ],
+                [
+                  248,
+                  160
+                ]
+              ],
+              "order": "bowl counterclockwise from top right, then stem down",
+              "shape": "single-storey Andika a: flat bowl top meeting the stem, diagonal return into the stem"
+            },
+            "m": {
+              "strokes": [
+                "M114 160 L114 286",
+                "M114 196 C124 172 142 160 162 160 C188 160 202 178 202 208 L202 286",
+                "M202 196 C212 172 228 160 247 160 C272 160 287 178 287 208 L287 286"
+              ],
+              "start": [
+                [
+                  114,
+                  160
+                ],
+                [
+                  114,
+                  196
+                ],
+                [
+                  202,
+                  196
+                ]
+              ],
+              "order": "stem down, first arch, second arch"
+            },
+            "o": {
+              "strokes": [
+                "M200 158 C168 158 143 188 143 225 C143 262 168 292 200 292 C232 292 257 262 257 225 C257 188 232 158 200 158"
+              ],
+              "start": [
+                [
+                  200,
+                  158
+                ]
+              ],
+              "order": "from the top, counterclockwise, back to the top"
+            },
+            "l": {
+              "strokes": [
+                "M200 80 L200 286"
+              ],
+              "start": [
+                [
+                  200,
+                  80
+                ]
+              ],
+              "order": "one stroke straight down",
+              "variant": "straight; the bundled Andika l has no tail (overlay 17.11.26)"
+            },
+            "v": {
+              "strokes": [
+                "M146 160 L200 290 L254 160"
+              ],
+              "start": [
+                [
+                  146,
+                  160
+                ]
+              ],
+              "order": "one stroke: down to the point, then up"
+            }
+          },
+          "verify": "Render Andika 400 at font-size 300, text-anchor middle, x200, baseline y300 in the same 400x400 SVG, and overlay the strokes. Each glyph's centreline fractionInside must be >= 0.90. Return the PNG and JSON to Opus for visual acceptance; no path tuning outside Opus."
+        }
+      },
+      {
+        "oldString": "<path class=\"lt-rule\" d=\"M20 40H380 M20 156H380\"/>",
+        "newString": "<path class=\"lt-rule\" d=\"M20 65H380 M20 150H380 M20 372H380\"/>"
+      }
+    ]
+  }
+}

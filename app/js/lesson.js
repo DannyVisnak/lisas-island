@@ -13,7 +13,7 @@ var Snd = function () { return window.Core && Core.Snd; };
 
 Lesson.list = function () {
   var d = DATA();
-  return d.order.map(function (id) { var l = d.lessons[id]; return { id: id, word: l.word, scene: l.scene, beats: l.beats.length }; });
+  return d.order.map(function (id) { var l = d.lessons[id]; return { id: id, word: l.word, scene: l.scene, domain: l.domain || 'other', beats: l.beats.length }; });
 };
 Lesson.word = function (id) { var l = DATA().lessons[id]; return l ? l.word : null; };
 Lesson.seen = function (lang, id) {
@@ -21,8 +21,25 @@ Lesson.seen = function (lang, id) {
 };
 
 /* ---------- small helpers ---------- */
-function uiText(key) { var u = window.Core && Core.D && Core.D.ui && Core.D.ui.ru; return (u && u[key]) || ''; }
-function uiUrl(key) { return Core.url.ui('ru', key); }
+function uiText(key) { return Core.baseText(key); }
+function uiUrl(key) { return Core.baseUrl(key); }
+/* Existing cue words name positions in RU narration; use their faithful EN equivalents. */
+function cueWord(word, key) {
+  if (Core.baseLang() !== 'en') return word;
+  // Per-line references select the narrated occurrence without changing source RU anchors.
+  var lines = {
+    cs_repka_7: { 'дед': 'Grandpa, Grandma', 'бабка': 'Grandma, the granddaughter', 'внучка': 'the granddaughter, Zhuchka', 'Жучка': 'Zhuchka, the cat', 'кошка': 'the cat, the mouse', 'мышка': 'the mouse. Six!' },
+    cs_more_4: { 'Раз': 'One, two', 'два': 'two, three', 'три': 'three. And', 'И раз': 'And one.', 'один': 'Three is more than one!' },
+    cs_more_5: { 'Раз': 'One, two', 'два': 'two.', 'меньше': 'fewer!' },
+    cs_more_6: { 'Раз': 'One, two', 'два': 'two, three', 'три': 'three!', 'Поровну': "They're equal!" },
+    cs_more_7: { 'Больше': 'More', 'меньше': 'fewer', 'поровну': 'the same' }
+  };
+  if (lines[key] && lines[key][word]) return lines[key][word];
+  var words = { 'Плюх': 'Splash', 'Большое': 'Big', 'маленькое': 'small', 'А утром': 'And in the morning',
+    'Утро': 'Morning', 'день': 'daytime', 'вечер': 'evening', 'ночь': 'night',
+    'Раз': 'One', 'два': 'two', 'три': 'three', 'Пять': 'Five', 'шесть': 'six', 'семь': 'seven', 'восемь': 'eight', 'девять': 'nine', 'десять': 'ten' };
+  return words[word] || word;
+}
 /* wanted time of a cue inside a spoken line (0..1), from the position of its word in the text; TTS speed is roughly even */
 function cueFrac(text, word) {
   var i = text.indexOf(word);
@@ -62,37 +79,44 @@ Lesson.play = function (id, root, onDone, opts) {
   if (def.edge) document.body.style.background = def.edge;
 
   var st = { id: id, lang: lang, beat: -1, beats: def.beats.length, phase: 'start', picks: [], lineKey: null, promptKey: null, promptOpen: false,
-             tiles: 0, pulsed: false, repeated: false, done: false, stopped: false, card: false, wordPlays: 0, cues: 0 };
+             tiles: 0, pulsed: false, repeated: false, done: false, stopped: false, card: false, wordPlays: 0, cues: 0,
+             selectedChoice: null, attemptCount: 0, resolvedBranch: null };
   var S = LessonArt.stage(box, flow, st);
   var scene = LessonArt.scenes[def.scene](S);
   var finished = false;
 
   function stop(early) {
     if (st.stopped) return; st.stopped = true;
-    if (ownFlow) flow.kill();
+    flow.kill();
     if (S && S.dispose) S.dispose();
     if (box.parentNode) box.parentNode.removeChild(box);
     if (early && !finished && onDone) { finished = true; onDone(false); }
   }
   var handle = { flow: flow, stop: function () { stop(true); }, state: function () { return JSON.parse(JSON.stringify(st)); },
-    replay: function () { if (st.promptOpen && st.promptKey && !flow.promptActive()) { flow.prompt(box, [uiUrl(st.promptKey)], box.querySelectorAll('.ls-tile')); } return st.promptOpen; }, S: S };
+    replay: function () {
+      var url = st.promptKey && uiUrl(st.promptKey);
+      if (st.promptOpen && url && !flow.promptActive()) { flow.prompt(box, [url], box.querySelectorAll('.ls-tile')); }
+      return st.promptOpen;
+    }, S: S };
   if (ownFlow) flow.every(1000, function () { if (!box.isConnected) stop(true); });
 
   /* ----- voice: plays a line, schedules cues by word position, pads the time when the audio file is missing ----- */
   async function speak(key, cues) {
     var text = uiText(key), url = uiUrl(key), est = Math.max(900, text.length * Lesson.MS_PER_CHAR);
     st.lineKey = key;
-    var real = await loadDuration(url), dur = real != null ? real : est;
+    var real = url ? await loadDuration(url) : null;
+    if (st.stopped || flow.dead) return;
+    var dur = real != null ? real : est;
     var waits = [];
     (cues || []).forEach(function (c) {
-      var t = cueFrac(text, c.word) * dur;
+      var t = cueFrac(text, cueWord(c.word, key)) * dur;
       st.cues++;
       waits.push(new Promise(function (res) {
         flow.after(t, function () { runAnim(c.anim).then(res, res); });
       }));
     });
     var t0 = Date.now();
-    var ok = await flow.say([url]);
+    var ok = url ? await flow.say([url]) : false;
     if (!ok && !Core.fast) await flow.wait(Math.max(0, est - (Date.now() - t0) * Core.speed));   /* missing/blocked audio: keep reading time */
     await Promise.all(waits);
   }
@@ -110,7 +134,9 @@ Lesson.play = function (id, root, onDone, opts) {
   async function runPrompt(b, i) {
     var P = b.prompt, qkey = P.q || b.line;
     st.phase = 'ask'; st.promptKey = qkey;
-    if (P.q) await flow.prompt(box, [uiUrl(P.q)], []);
+    var questionUrl = P.q && uiUrl(P.q);
+    if (questionUrl) await flow.prompt(box, [questionUrl], []);
+    if (st.stopped || flow.dead) return null;
     st.phase = 'prompt';
     var wrap = el('div', 'ls-prompt'), pos = (scene.promptBox || { x: 683, y: 540, size: 280, gap: 40 });
     var size = pos.size, gap = pos.gap, left = pos.x - size - gap / 2, top = pos.y - size / 2;
@@ -120,41 +146,57 @@ Lesson.play = function (id, root, onDone, opts) {
       var ch = P.choices[k], t = el('div', 'ls-tile');
       t.dataset.choice = ch.id; t.dataset.slot = slot;
       t.style.left = (slot * (size + gap)) / 10 + 'rem'; t.style.width = size / 10 + 'rem'; t.style.height = size / 10 + 'rem';
-      t.style.animationDelay = (slot * 140) + 'ms';
-      t.appendChild(scene.tile(ch.tile, size));
-      wrap.appendChild(t);
-      return t;
+      t.style.animationDelay = (slot * 140) + 'ms'; t.appendChild(scene.tile(ch.tile, size)); wrap.appendChild(t); return t;
     });
-    box.appendChild(wrap);
-    st.tiles = tiles.length; st.promptOpen = true; st.pulsed = false; st.repeated = false;
+    box.appendChild(wrap); st.tiles = tiles.length; st.promptOpen = true; st.pulsed = false; st.repeated = false;
     var picked = null, auto = false, resolveFn, done = new Promise(function (r) { resolveFn = r; });
-    tiles.forEach(function (t) {
-      Core.tap(t, function () { if (picked || flow.promptActive()) return; picked = t.dataset.choice; resolveFn(); }, { nopress: true });
-    });
+    tiles.forEach(function (t) { Core.tap(t, function () {
+      if (picked || flow.promptActive() || st.stopped) return;
+      picked = t.dataset.choice; resolveFn();
+    }, { nopress: true }); });
     var idle = 0, seq = Core.inputSeq;
     var timer = flow.every(500, function () {
-      if (picked) return;
+      if (picked || flow.promptActive()) return;
       if (seq !== Core.inputSeq) { seq = Core.inputSeq; idle = 0; wrap.classList.remove('ls-pulse'); st.pulsed = false; return; }
       if (Snd().busy()) return;
       idle += 500;
       if (idle >= Lesson.PEEK_MS && !st.pulsed) {
         st.pulsed = true; wrap.classList.add('ls-pulse');
-        if (!st.repeated && !flow.promptActive()) { st.repeated = true; flow.prompt(box, [uiUrl(qkey)], tiles); }
+        var repeatUrl = uiUrl(qkey);
+        if (repeatUrl && !st.repeated) { st.repeated = true; flow.prompt(box, [repeatUrl], tiles); }
       }
       if (idle >= Lesson.AUTO_MS) { picked = 'auto'; auto = true; resolveFn(); }
     });
-    await done;
-    clearInterval(timer);
+    await done; clearInterval(timer);
+    if (st.stopped || flow.dead) return null;
     st.promptOpen = false; st.phase = 'check';
-    st.picks.push({ beat: i, choice: auto ? null : picked, auto: auto });
+    st.attemptCount = (st.attemptCount || 0) + 1;
+    var choice = auto ? (P.retry ? P.retry.match : P.defaultChoice || P.choices[0].id) : picked;
+    st.selectedChoice = choice; st.resolvedBranch = choice;
+    st.picks.push({ beat: i, choice: auto ? null : choice, auto: auto, attempt: st.attemptCount });
     wrap.classList.remove('ls-pulse');
     tiles.forEach(function (t) { if (!auto) t.classList.add(t.dataset.choice === picked ? 'ls-picked' : 'ls-dim'); });
+    if (P.retry && choice !== P.retry.match && !auto && st.attemptCount <= (P.retry.max || 1)) {
+      st.phase = 'retry'; st.promptOpen = true;
+      var retryUrl = uiUrl(P.retry.line);
+      if (retryUrl) await flow.prompt(box, [retryUrl], []);
+      st.promptOpen = false;
+      if (st.stopped || flow.dead) return null;
+      if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      return runPrompt(b, i);
+    }
+    if (P.retry && choice !== P.retry.match) choice = P.retry.match;
+    st.resolvedBranch = choice;
+    if (P.retry) tiles.forEach(function (t) { t.classList.toggle('ls-picked', t.dataset.choice === choice); t.classList.toggle('ls-dim', t.dataset.choice !== choice); });
+    var pickedChoice = auto ? null : P.choices.find(function (candidate) { return candidate.id === choice; });
+    await speak(pickedChoice && pickedChoice.reply ? pickedChoice.reply : 'cs_check');
+    if (st.stopped || flow.dead) return null;
     if (S.lisa && S.lisa.pose) S.lisa.pose('tilt', 900);
-    await speak('cs_check');
     await flow.wait(250);
-    wrap.classList.add('ls-out');
-    await flow.wait(300);
+    if (st.stopped || flow.dead) return null;
+    wrap.classList.add('ls-out'); await flow.wait(300);
     if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    return choice;
   }
 
   /* ----- the end word card: picture + the target-language word audio (exposure only) ----- */
@@ -162,9 +204,14 @@ Lesson.play = function (id, root, onDone, opts) {
     var vid = def.word, it = Core.item(vid);
     st.phase = 'word'; st.card = true;
     if (!it) return;
+    if (def.endIntro) { await speak(def.endIntro); if (st.stopped || flow.dead) return; }
     var card = el('div', 'ls-card'), rays = el('div', 'ls-rays'), pic = Core.Pic.el(it, 'ls-cardpic');
     card.appendChild(rays); card.appendChild(pic);
-    if (it[lang]) card.appendChild(el('div', 'ls-cardword', String(it[lang].word)));
+    if (it[lang]) {
+      var label = Core.vocabLabelEl(lang, it, '', 'ls-cardword');
+      if (!Core.save.settings.subtitles) label.style.visibility = 'hidden';
+      card.appendChild(label);
+    }
     box.appendChild(card);
     if (S.lisa && S.lisa.pose) S.lisa.pose('cheer', 1500);
     var url = Core.url.w(lang, vid);
@@ -180,6 +227,7 @@ Lesson.play = function (id, root, onDone, opts) {
   }
 
   function record() {
+    if (st.stopped || flow.dead || finished) return;
     try {
       if (!window.Core || !Core.L) return;
       var L = Core.L(lang); if (!L.lessons) L.lessons = {};
@@ -191,20 +239,46 @@ Lesson.play = function (id, root, onDone, opts) {
 
   async function run() {
     var P = [];
-    if (Core.Snd.preload) { def.beats.forEach(function (b) { Core.Snd.preload(uiUrl(b.line)); if (b.prompt && b.prompt.q) Core.Snd.preload(uiUrl(b.prompt.q)); }); Core.Snd.preload(uiUrl('cs_check')); Core.Snd.preload(Core.url.w(lang, def.word)); }
+    if (Core.Snd.preload) {
+      function preloadBase(key) { var url = uiUrl(key); if (url) Core.Snd.preload(url); }
+      def.beats.forEach(function (b) {
+        preloadBase(b.line);
+        if (b.branches) Object.keys(b.branches).forEach(function (k) { preloadBase(b.branches[k].line); });
+        if (b.prompt) {
+          if (b.prompt.q) preloadBase(b.prompt.q);
+          if (b.prompt.retry) preloadBase(b.prompt.retry.line);
+          b.prompt.choices.forEach(function (c) { if (c.reply) preloadBase(c.reply); });
+        }
+      });
+      if (def.endIntro) preloadBase(def.endIntro);
+      preloadBase('cs_check'); Core.Snd.preload(Core.url.w(lang, def.word));
+    }
     await flow.wait(450);
     for (var i = 0; i < def.beats.length; i++) {
       var b = def.beats[i];
+      if (st.stopped || flow.dead) return;
+      var branch = b.branches && b.branches[st.resolvedBranch];
+      if (branch) b = Object.assign({}, b, branch);
       st.beat = i; st.phase = 'beat';
       if (b.art) Object.keys(b.art).forEach(function (k) { S.set(k, b.art[k]); });
       if (b.pose && S.lisa && S.lisa.pose) S.lisa.pose(b.pose, b.poseMs || (b.pose === 'sleep' ? 0 : 1500));
       var anim = runAnim(b.anim);
       await speak(b.line, b.cues);
+      if (st.stopped || flow.dead) return;
       await anim;
-      if (b.prompt) await runPrompt(b, i);
+      if (st.stopped || flow.dead) return;
+      if (b.prompt) {
+        st.attemptCount = 0; st.retryUsed = false;
+        var prompt = b.prompt, chosen = await runPrompt(b, i);
+        if (st.stopped || flow.dead) return;
+        if (chosen && prompt.branch) st.resolvedBranch = chosen;
+        if (chosen && prompt.choiceAnims && prompt.choiceAnims[chosen]) await runAnim(prompt.choiceAnims[chosen]);
+      }
+      if (st.stopped || flow.dead) return;
       await flow.wait(b.pause == null ? 450 : b.pause);
     }
     await wordCard();
+    if (st.stopped || flow.dead) return;
     record();
     st.phase = 'done'; st.done = true; finished = true;
     if (onDone) onDone(true);

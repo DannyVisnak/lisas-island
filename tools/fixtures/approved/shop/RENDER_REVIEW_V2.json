@@ -1,0 +1,9 @@
+{
+  "exactEdits": [
+    {
+      "path": "app/css/mg_shop.css",
+      "old": ".screen.mg-shop > .lisa.mg-lisa { z-index: 2; }",
+      "new": ".screen.mg-shop > .lisa.mg-lisa { z-index: 2; }\n/* shop chrome at 13.6rem like the money (112.3 px at 1128x752); grows upward to y 0.2-13.8rem */\n.screen.mg-shop .btn.b-back, .screen.mg-shop .btn.b-speaker, .screen.mg-shop .btn.b-help { width: 13.6rem; height: 13.6rem; align-self: flex-start; margin-top: -1.4rem; }"
+    }
+  ]
+}

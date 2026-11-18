@@ -386,3 +386,716 @@ lisa_sleep1	ru	Тсс… Лиса спит. Завтра поиграем сно
 lisa_sleep2	ru	Хр-р-р… Лиса видит сон про новые слова. Завтра продолжим!
 lisa_sleep3	ru	Лиса отдыхает в своём домике. До завтра!
 lisa_play	ru	Поиграем вместе? Нажми, и пойдём!
+
+# English base narration: faithful RU translations by Sol, authorized Codex fallback (2026-11-17).
+welcome	en	Hello! Let's play!
+choose_lang	en	Which language today? Tap a flag.
+lang_en	en	English!
+lang_pt	en	Portuguese!
+lang_de	en	German!
+map	en	Where shall we go? Tap the glowing circle.
+explore	en	Tap the pictures and listen.
+listen_tap	en	Listen and tap the right picture.
+memory	en	Find two matching pictures.
+run_intro	en	Tap the screen to jump!
+gate	en	The door is shut. Find the right picture, and it will open.
+try_again	en	Try again!
+listen_again	en	Listen again.
+great	en	Well done!
+level_done	en	Hooray! You finished the level!
+new_sticker	en	A new sticker for your album!
+world_open	en	A new world has opened!
+review	en	A treasure chest! Let's practise the words you already know.
+stickers	en	This is your sticker album.
+rest	en	You played so well today. Lisa is tired and wants to sleep. See you tomorrow!
+new_hat	en	Look! Lisa has a new hat!
+say_it	en	Say this word out loud!
+lisa_hi1	en	Hello, it's me, Lisa! I've been waiting for you! Tail up, let's set off on an adventure!
+lisa_hi2	en	Hooray, you're here! Will you help me learn some new words today?
+lisa_hi3	en	Hello, friend! You know, I'm going to Portugal too. Let's learn words together!
+lisa_hi4	en	Snuffle-snuffle! I've put my hat on and I'm ready for adventure. Are you ready?
+lisa_ask1	en	Oh, I don't know this word. Will you help me?
+lisa_ask2	en	Will you help me? Listen carefully!
+lisa_ask3	en	I need your help. Find the right picture!
+lisa_yes1	en	Yes! That's right!
+lisa_yes2	en	Super work!
+lisa_yes3	en	Wow, that's wonderful!
+lisa_yes4	en	Exactly! Well done!
+lisa_yes5	en	Tail up! That's right!
+lisa_yes6	en	Wow!
+lisa_yes7	en	You really know this one!
+lisa_yes8	en	Hooray! You did it!
+lisa_combo3	en	Three in a row! Your ears are really working!
+lisa_combo5	en	Five in a row! I'm jumping for joy!
+lisa_combo8	en	Eight in a row! What brilliant listening!
+lisa_oops1	en	Hmm, not quite. Let's try again!
+lisa_oops2	en	Almost! Listen once more.
+lisa_oops3	en	That's all right, I make mistakes sometimes too!
+lisa_help1	en	Look, I'll show you! There it is!
+lisa_help2	en	Let's do it together. This picture here!
+lisa_door1	en	The door opened! Let's keep running!
+lisa_door2	en	Hooray, the way is clear! On we go!
+lisa_level1	en	Level complete! You're the best helper in the world!
+lisa_level2	en	You did it! High five!
+lisa_level3	en	Hooray! Look at all those stars!
+lisa_chest	en	Oh, what's in the chest? Let's open it!
+lisa_goal	en	You reached today's goal! I'm proud of you!
+lisa_poke1	en	Hee-hee, that tickles!
+lisa_poke2	en	Hey, that's my tail!
+lisa_poke3	en	Snuffle! I'm Lisa the explorer!
+lisa_bye1	en	I'm so tired my eyes are closing all by themselves. Good night! See you tomorrow!
+scene_zoo_intro	en	Hooray, we're at the zoo! The animals are hiding here. Will you help me find them?
+scene_house_intro	en	This is my little house! Everything's mixed up. Let's find things together!
+scene_picnic_intro	en	A picnic! I'm terribly hungry. Find me some tasty treats!
+scene_help	en	Listen to the word and find it in the picture. You can move the picture with your finger!
+scene_peek	en	Oh, look! Something's moving over there!
+scene_tap_other	en	That's interesting too! Now let's keep looking.
+scene_done	en	We found them all! You're a real tracker!
+mg_feed_intro	en	Oh, my tummy is rumbling! Please feed me. Listen to what I'd like!
+mg_feed_help	en	Listen to the word. Pick up that food with your finger and drag it to my mouth!
+mg_feed_other	en	Yum! That's tasty too. Now give me what I'm asking for.
+mg_feed_done	en	Oh, I'm full! Thank you, you're the best cook!
+mg_dress_intro	en	We're going for a walk! Help me get dressed. Listen to what I need to put on!
+mg_dress_help	en	Listen to the word. Find that thing and drag it onto me.
+mg_dress_done	en	Hooray, I'm ready! Don't I look lovely!
+mg_paint_intro	en	Let's paint! Listen for the colour. Dip the brush and colour in the picture!
+mg_paint_help	en	Listen to the colour and tap the pot of that paint. Then tap the picture.
+mg_paint_done	en	How beautiful! You're a real artist!
+mg_body_intro	en	Let's play! I'll say a word, and you tap that part of me. Ready?
+mg_body_help	en	Listen to the word and tap that part of me with your finger.
+mg_body_tickle	en	Hee-hee, that tickles!
+mg_body_done	en	You found everything! High five!
+mg_bus_intro	en	Beep-beep! Hop on the bus. You're the driver! Listen to where we need to go.
+mg_bus_help	en	Listen to the word and tap the stop with that picture.
+mg_bus_done	en	We're here! Thank you, driver!
+mg_fish_intro	en	Let's go fishing! Listen to which fish to catch.
+mg_fish_help	en	Listen to the word. Tap the fish, and the fishing rod will catch it!
+mg_fish_done	en	What a catch! You fished so well!
+mg_market_intro	en	We're at the market! Listen to how many pieces of fruit we need, and put them in the basket.
+mg_market_help	en	Listen to the number. Put fruit in the basket one at a time, and I'll count.
+mg_market_more	en	Just a little more!
+mg_market_done	en	The basket is full! Thank you for helping!
+house_intro	en	This is my little house! It's quite empty for now. Let's use our stars to build it together!
+house_help	en	Look, a present for the house! Choose one thing, and it will appear in the house.
+lisa_househi1	en	Welcome to my house!
+lisa_househi2	en	Come in, come in! Look how cosy it is!
+lisa_househi3	en	Hooray, visitors! What shall we add to the house today?
+lisa_househi4	en	Snuffle-snuffle! I've just swept the floor. Come in!
+lisa_build1	en	Tap-tap-tap! Let's keep building!
+lisa_build2	en	Wow, the house is growing!
+lisa_build3	en	Look how lovely it's turning out!
+lisa_build4	en	Another bit is ready! Brick by brick, so carefully!
+lisa_builddone1	en	The house is ready! We built it together!
+lisa_buy1	en	Hooray, something new for my house!
+lisa_buy2	en	How beautiful! Thank you!
+lisa_buy3	en	Oh, it's so cosy now!
+lisa_buy4	en	I like it so much! Thank you, friend!
+lisa_buy5	en	Wow! Now I've got this too!
+lisa_buy6	en	How lovely! Let's see where it's gone.
+lisa_more1	en	That one can wait for us for now. Look how much we've already got!
+lisa_more2	en	We haven't quite enough stars yet. That's all right, the house is cosy already!
+lisa_more3	en	We'll get that one later. For now, let's admire the house!
+lisa_gift1	en	Oh, look! A present has arrived for the house!
+lisa_gift2	en	Knock-knock! Someone has brought us something for the house!
+lisa_gift3	en	A surprise! Let's see what's inside!
+lisa_gift4	en	I've got a surprise for you. Choose what we'll put in the house!
+cs_check	en	Let's check!
+cs_float_1	en	Look, I've got a tub of water. Let's check what sinks and what floats!
+cs_float_2	en	This is a duck. Splash, and it's floating!
+cs_float_3	en	And here's a big log. It's heavy!
+cs_float_3q	en	What do you think? Will it sink or float?
+cs_float_4	en	It floats! Even a big, heavy log floats.
+cs_float_5	en	What about a little key?
+cs_float_5q	en	Will it sink or float?
+cs_float_6	en	Plop! The key sank, even though it's small.
+cs_float_7	en	And an apple floats. It has air inside.
+cs_float_8	en	See? Big things can float, and small things can sink. We have to check!
+cs_daynight_1	en	Good morning! The sun is rising, and it's getting light.
+cs_daynight_2	en	In the daytime the sun is high. It's light and warm, and we can play!
+cs_daynight_3	en	In the evening the sun goes very, very low. The sky turns orange.
+cs_daynight_4	en	What do you think will happen next?
+cs_daynight_5	en	Night has come! It's dark, with the moon and stars in the sky.
+cs_daynight_6	en	At night everyone rests and sleeps. And in the morning the sun will rise again!
+cs_daynight_7	en	Morning, daytime, evening, night. And it happens every day!
+cs_stones_1	en	Look, there are stepping stones across the stream. Each stone has a number!
+cs_stones_2	en	Let's jump together and count! One, two, three!
+cs_stones_3	en	If I jump once more, which stone do you think I'll land on?
+cs_stones_4	en	Four! With every jump forward, the number gets bigger.
+cs_stones_5	en	Five, six, seven, eight, nine, ten!
+cs_stones_6	en	We crossed the stream! The further you jump, the bigger the number.
+lisa_yes9	en	Exactly, that's it!
+lisa_yes10	en	You listened carefully!
+lisa_yes11	en	You found it! Hooray!
+lisa_yes12	en	Yes, yes, yes! That's right!
+lisa_yes13	en	Wow, you found it!
+lisa_yes14	en	You looked closely!
+lisa_yes15	en	That's right! Snuffle-snuffle!
+lisa_yes16	en	You remembered! Wonderful!
+lisa_yes17	en	Yes! You did it!
+lisa_yes18	en	Correct! My tail is wagging with joy!
+lisa_yes19	en	Aha! That's the one!
+lisa_yes20	en	There it is! You found it!
+lisa_yes21	en	You're listening so well!
+lisa_yes22	en	Hop! That's right!
+lisa_yes23	en	Yes! You remember that!
+lisa_yes24	en	Keep it up!
+lisa_yes25	en	Hooray! Another word is ours!
+lisa_yes26	en	Wonderful! You're trying hard, and it's working!
+lisa_yes27	en	That's right! Give me your paw!
+lisa_yes28	en	Yes! Can you hear how lovely it sounds?
+lisa_yes29	en	Correct! You looked carefully!
+lisa_yes30	en	Spot on!
+lisa_yes31	en	Hooray, hooray!
+lisa_yes32	en	That's right! I'm so happy!
+lisa_yes33	en	You thought about it and found it!
+lisa_yes34	en	That's it! You did it!
+lisa_yes35	en	Yes! You and I make a great team!
+lisa_yes36	en	That's right! My ears are pricked up with joy!
+lisa_combo3_2	en	Three in a row! You're on a roll!
+lisa_combo3_3	en	One, two, three, all correct!
+lisa_combo3_4	en	Three right in a row! Tail up!
+lisa_combo3_5	en	Three in a row! You're listening so carefully!
+lisa_combo5_2	en	Five in a row! Look at that little flame glowing!
+lisa_combo5_3	en	Five correct! You tried so hard!
+lisa_combo5_4	en	Five in a row! I'm spinning with joy!
+lisa_combo5_5	en	Five whole times in a row! What a team!
+lisa_combo8_2	en	Eight in a row! I've never seen anything like it!
+lisa_combo8_3	en	Eight! You really concentrated, and look what you did!
+lisa_combo8_4	en	Eight in a row! Snuffle-snuffle-snuffle! Hooray!
+lisa_oops4	en	Almost! Let's listen again.
+lisa_oops5	en	Hmm, that's something else. Try again!
+lisa_oops6	en	Oh, that's not it. But you're close!
+lisa_oops7	en	That's all right! Making mistakes is learning too.
+lisa_oops8	en	We'll get to know this word. Try another picture!
+lisa_oops9	en	Oh! I mixed them up at first too.
+lisa_oops10	en	Not that one, but well done for trying!
+lisa_oops11	en	Listen carefully, and let's try again.
+lisa_oops12	en	A tricky word, isn't it? Once more!
+lisa_oops13	en	That's all right. We're learning together!
+lisa_ask4	en	Listen! Which picture is right?
+lisa_ask5	en	Please help me. Where is it?
+lisa_ask6	en	What was that word again... Will you help me find it?
+lisa_ask7	en	Ears up! Let's listen!
+lisa_ask8	en	Come on, let's find it together!
+lisa_ask9	en	Here's a puzzle for you. Can you solve it?
+lisa_ask10	en	Oh, what's that? Please find it!
+lisa_ask11	en	Listen to how this word sounds.
+lisa_ask12	en	I believe you'll find it!
+lisa_ask13	en	Shh... Listen carefully!
+lisa_hi5	en	Hello, hello! I'm so happy to see you!
+lisa_hi6	en	Oh, it's you! I was just thinking about you!
+lisa_hi7	en	Hello! New words and adventures are waiting for us today!
+lisa_hi8	en	Snuffle-snuffle! Good morning... or good evening? Never mind, hello!
+lisa_hi9	en	Hello, my friend! Tail up, we're together again!
+lisa_hi10	en	Hooray, you're here! Now we'll have fun!
+lisa_hi11	en	Hello! As soon as I woke up today, I wondered: which words will we learn?
+lisa_hi12	en	Hello, explorer! Ready for a new adventure?
+lisa_hi13	en	Hello! A lovely day to learn something new!
+lisa_hi14	en	Hello, friend! I've got something interesting ready for you.
+lisa_hi15	en	Hello! Guess what? You know more words every day!
+lisa_hi16	en	Hello, hello! Let's play and learn something new!
+lisa_help3	en	Look carefully, there it is!
+lisa_help4	en	I'll give you a hint. This picture here!
+lisa_help5	en	Let me show you. See?
+lisa_help6	en	That's where it was hiding!
+lisa_help7	en	Look, I'll help you. Here!
+lisa_help8	en	It's easier together! Here's the right picture.
+lisa_door3	en	Hooray, the way is open!
+lisa_door4	en	The door goes bang, and it's open! On we go!
+lisa_door5	en	Through we go! You opened the door!
+lisa_door6	en	It's open! What's next?
+lisa_door7	en	Whoosh! Let's run!
+lisa_door8	en	Another door is open! You helped!
+lisa_level4	en	We finished the level! You tried so hard!
+lisa_level5	en	Done! You learned so many new words!
+lisa_level6	en	Hooray! Another level finished! Give me your paw!
+lisa_level7	en	You did it! You kept learning, and now you've got it!
+lisa_level8	en	Level complete! I'm so happy with you!
+lisa_level9	en	What an adventure! Well done for going all the way to the end!
+lisa_level10	en	Hooray, hooray! Look how many words you know now!
+lisa_level11	en	Done! Learning with you is such a pleasure!
+lisa_level12	en	We did it! You listened carefully and found everything!
+lisa_level13	en	Hooray! Stars are falling like snow!
+lisa_chest2	en	A chest! I wonder what's inside?
+lisa_chest3	en	Oh, the chest is shaking! Shall we open it?
+lisa_chest4	en	Knock-knock, little chest! Let's see what's inside!
+lisa_chest5	en	Treasure! Let's remember our old words!
+lisa_goal2	en	Today's goal is complete! You practised so well!
+lisa_goal3	en	Hooray! Today's little sun is shining! You tried hard!
+lisa_goal4	en	That's today's goal! I really enjoyed playing with you!
+lisa_goal5	en	Done for today! You learned lots of new things.
+lisa_poke4	en	Oh! You found me!
+lisa_poke5	en	Hee-hee! Don't tickle my ears!
+lisa_poke6	en	Snuffle! That's my nose, I use it to smell flowers!
+lisa_poke7	en	Oh, oh, that tickles! Ha-ha!
+lisa_poke8	en	You know, foxes can jump very, very high!
+lisa_poke9	en	Beep! Oh, I'm not a robot. I'm Lisa!
+lisa_poke10	en	Ha-ha! Again! No, that's enough, hee-hee!
+lisa_poke11	en	See my fluffy tail? Here it is!
+lisa_poke12	en	Oh, my tail's curled up from laughing!
+lisa_poke13	en	Hello! You gave me a tap, so now you're my friend forever!
+lisa_poke14	en	Knock-knock! Who's there? It's Lisa!
+lisa_poke15	en	Hee-hee, I'm bouncing like a ball! Boing, boing!
+lisa_poke16	en	Want to know a secret? I love soap bubbles!
+lisa_poke17	en	Achoo! Oh, my tail went up my nose!
+lisa_poke18	en	Oh, that tickles! Let's have a high five instead!
+lisa_poke19	en	Snuffle-snuffle! I'm the reddest fox on the island!
+lisa_poke20	en	Ha-ha! You found my ticklish spot!
+lisa_poke21	en	Meow! Oh, no, I'm a fox! Snuffle-snuffle!
+lisa_poke22	en	I saw a butterfly today. It was so beautiful!
+lisa_poke23	en	Want to know a secret? I'm ticklish!
+lisa_bye2	en	We played so well today! Time for a rest. Bye-bye!
+lisa_bye3	en	My paws are tired, and my head is full of new words. See you tomorrow!
+lisa_bye4	en	I'm off to make myself some cocoa. Thank you for playing! Bye!
+lisa_bye5	en	Today was lovely! Now we can have a rest. See you!
+lisa_bye6	en	Phew, what an adventure! Have a rest, friend. Bye!
+lisa_bye7	en	I'll curl up in my den and remember our words. See you soon!
+lisa_bye8	en	Thank you for helping me! Now you can play something else. Bye!
+lisa_bye9	en	Time to rest your eyes. Run and jump around! Bye-bye!
+lisa_next1	en	And now a new game!
+lisa_next2	en	The same words, in a different game. Let's go!
+lisa_next3	en	Wonderful! Let's move on!
+lisa_next4	en	Now let's play a different way!
+lisa_next5	en	On we go, a new game is waiting for us!
+lisa_next6	en	Let's go further along the path!
+lisa_next7	en	New words! Listen carefully.
+lisa_afterhelp1	en	Now you know this word!
+lisa_afterhelp2	en	See, we did it together!
+lisa_afterhelp3	en	Now we'll remember it! Next time you can find it on your own.
+lisa_afterhelp4	en	Good! We'll practise this word again.
+lisa_yes37	en	Oh, now I've remembered this word too. You helped me!
+lisa_yes38	en	It would have been hard on my own. But we did it together!
+lisa_yes39	en	Snuffle-snuffle! Playing with you is so much fun!
+lisa_yes40	en	A tricky word, and you found it!
+lisa_ask14	en	I wonder what word is hiding there?
+lisa_ask15	en	Oh, what's this? Let's find out!
+lisa_da1	en	Yes!
+lisa_da2	en	Aha!
+lisa_da3	en	Correct!
+lisa_da4	en	Exactly!
+lisa_da5	en	That's right!
+lisa_da6	en	Got it!
+lisa_da7	en	Yes, yes!
+lisa_da8	en	Mm-hmm!
+lisa_blockend1	en	You listened carefully, and now all four words are ours!
+lisa_blockend2	en	Four new words! You worked so hard to find them!
+lisa_blockend3	en	Look how many words you've learned! You've done some really good work.
+lisa_blockend4	en	We learned new words together. You helped me so much!
+lisa_blockend5	en	You tried, searched and found them. What good work!
+lisa_blockend6	en	The new words now live in your head!
+lisa_blockend7	en	You listened, looked and remembered. That went so well!
+lisa_blockend8	en	All the words are found! Tail up!
+lisa_move1	en	Let's move a little! Stand up and jump like a bunny! Hop, hop, hop!
+lisa_move2	en	A break! Flap your arms like a bird flaps its wings. Higher, higher!
+lisa_move3	en	Let's stretch! Arms up, very, very high, right up to the sky!
+lisa_move4	en	Show me how a bear walks! Stomp, stomp, stomp!
+lisa_move5	en	Let's spin like a leaf in the wind! Whee!
+lisa_move6	en	Clap your hands with me! Clap, clap, clap!
+lisa_move7	en	Stand on one leg like a heron! Now on the other!
+lisa_move8	en	Let's do some squats! Down, up, down, up!
+lisa_moveend1	en	Phew, what a workout! Let's carry on!
+lisa_moveend2	en	Great moving about! Now let's play again.
+lisa_moveend3	en	Tail up! We've had a rest, let's move on!
+lisa_reviewday1	en	Today let's practise the words we already know!
+lisa_reviewday2	en	Today is our practice day! Let's visit our old words.
+lisa_reviewday3	en	Let's remember the words we've already learned!
+lisa_sleep1	en	Shh… Lisa is asleep. We'll play again tomorrow!
+lisa_sleep2	en	Snore… Lisa is dreaming about new words. We'll carry on tomorrow!
+lisa_sleep3	en	Lisa is resting in her little house. See you tomorrow!
+lisa_play	en	Shall we play together? Tap, and off we go!
+cs_repka_1	ru	Посадил дед репку. Выросла репка большая-пребольшая!
+cs_repka_2	ru	Стал дед репку тянуть. Тянет-потянет, вытянуть не может!
+cs_repka_3	ru	Позвал дед бабку. Бабка за дедку, дедка за репку. Тянут-потянут, вытянуть не могут!
+cs_repka_4	ru	Позвала бабка внучку, внучка позвала Жучку. Тянут-потянут, а репка сидит!
+cs_repka_5	ru	Кого позовём на помощь?
+cs_repka_6	ru	Позвала Жучка кошку, кошка позвала мышку. Тянут-потянут, и вытянули репку!
+cs_repka_7	ru	Видишь? Даже маленькая мышка помогла. Давай посчитаем: дед, бабка, внучка, Жучка, кошка, мышка. Шесть! Вместе всё получается.
+cs_more_1	ru	У меня две корзинки. Смотри, я кладу яблоки.
+cs_more_2	ru	Сюда три яблока, а сюда одно.
+cs_more_3	ru	Где яблок больше? Нажми на корзинку!
+cs_more_4	ru	Раз, два, три. И раз. Три — это больше, чем один!
+cs_more_5	ru	А если я положу сюда ещё одно? Раз, два. Всё равно меньше!
+cs_more_6	ru	А теперь? Раз, два, три! Поровну! Одинаково!
+cs_more_7	ru	Больше, меньше и поровну. Ты теперь это знаешь!
+cs_more_count	ru	Давай посчитаем вместе!
+cs_hist_name	ru	Послушай, как это называется.
+cs_hist_castle_1	ru	Смотри, мы в Лиссабоне! Там, на горе, стоит настоящий замок.
+cs_hist_castle_2	ru	У замка есть высокая башня и толстая каменная стена.
+cs_hist_castle_3	ru	Этот замок начали строить давным-давно. Тогда ещё не было ни машин, ни телефонов!
+cs_hist_castle_4	ru	Давай его рассмотрим.
+cs_hist_castle_4q	ru	Что посмотрим, башню или стену?
+cs_hist_castle_5a	ru	Башня! С неё далеко-далеко видно весь город.
+cs_hist_castle_5b	ru	Стена! Она толстая и крепкая.
+cs_hist_castle_6	ru	Замок очень старый, а люди его чинят и берегут. Поэтому он стоит и сегодня.
+cs_hist_tiles_1	ru	Ой, какая стена! Она вся в картинках.
+cs_hist_tiles_2	ru	Каждая картинка нарисована на плитке. Плитка гладкая и блестит.
+cs_hist_tiles_3	ru	В Португалии так украшают стены уже очень-очень давно. Сотни лет!
+cs_hist_tiles_4	ru	А на моей стенке не хватает одной плитки.
+cs_hist_tiles_4q	ru	Какая плитка подходит к узору?
+cs_hist_tiles_4x	ru	Хм, эта не подходит. Попробуем другую!
+cs_hist_tiles_5	ru	Подошла! Теперь узор целый. Смотри: эта стена старая, а эта новая, и на обеих красивые плитки.
+cs_hist_tiles_6	ru	Такие плитки делали давным-давно и делают сейчас.
+cs_hist_tram_1	ru	Мы на остановке. Сейчас приедет трамвай!
+cs_hist_tram_2	ru	А давным-давно в Лиссабоне был вот такой вагончик на рельсах. Его везли лошадки!
+cs_hist_tram_3	ru	Лошадки шли вперёд, и вагончик ехал за ними по рельсам.
+cs_hist_tram_4	ru	А это трамвай сегодня. Лошадок у него нет.
+cs_hist_tram_4q	ru	Как думаешь, он поедет без лошадок?
+cs_hist_tram_5	ru	Поехал! Его везёт электричество. Оно бежит вот по этому проводу наверху.
+cs_hist_tram_6	ru	Сначала вагончик везли лошадки, а потом трамвай поехал на электричестве.
+cs_hist_ship_1	ru	Посмотри на эту картинку. Это старинный корабль.
+cs_hist_ship_2	ru	Он деревянный, а наверху у него большие паруса.
+cs_hist_ship_3	ru	На таких кораблях моряки из Португалии плавали давным-давно, сотни лет назад. Корабль называется каравелла.
+cs_hist_ship_4	ru	Давай посмотрим на паруса поближе.
+cs_hist_ship_4q	ru	Какой парус посмотрим, этот или вон тот?
+cs_hist_ship_5	ru	Парус сшит из ткани. Ветер дует в парус, и корабль плывёт!
+cs_hist_ship_6	ru	Давным-давно моряки плавали на кораблях с парусами, и их толкал ветер.
+cs_hist_print_1	ru	Мы в Германии, в городе Майнц. Здесь работал мастер Гутенберг.
+cs_hist_print_2	ru	Смотри, вот маленькие кусочки металла. На каждом одна буква.
+cs_hist_print_3	ru	Мастер ставит буквы в ряд, одну к другой. Получается целая строчка!
+cs_hist_print_4	ru	Теперь он мажет буквы краской и крепко прижимает к ним лист бумаги.
+cs_hist_print_4q	ru	Как думаешь, что будет на листе?
+cs_hist_print_5	ru	Смотри! На листе появились буквы. А на втором листе точно такие же!
+cs_hist_print_6	ru	Мастер Гутенберг печатал страницы маленькими металлическими буквами. А из страниц получались книги.
+cs_hist_doll_1	ru	Посмотри, какая старинная игрушка! Её сделали в России больше ста лет назад.
+cs_hist_doll_2	ru	Это матрёшка. Она деревянная и ярко раскрашенная.
+cs_hist_doll_3	ru	А матрёшка открывается!
+cs_hist_doll_3q	ru	Как думаешь, что у неё внутри?
+cs_hist_doll_4	ru	Открываем! Внутри матрёшка поменьше.
+cs_hist_doll_4b	ru	А в ней ещё одна, совсем маленькая!
+cs_hist_doll_5	ru	Такие матрёшки делают и сегодня, и дети с ними играют.
+cs_hist_doll_6	ru	Деревянным матрёшкам уже больше ста лет.
+cs_repka_1	en	Grandpa planted a turnip. The turnip grew big, really, really big!
+cs_repka_2	en	Grandpa started to pull the turnip. He pulls and pulls, but he can't pull it out!
+cs_repka_3	en	Grandpa called Grandma. Grandma holds Grandpa, Grandpa holds the turnip. They pull and pull, but they can't pull it out!
+cs_repka_4	en	Grandma called the granddaughter, and the granddaughter called Zhuchka the dog. They pull and pull, but the turnip stays put!
+cs_repka_5	en	Who shall we call to help?
+cs_repka_6	en	Zhuchka called the cat, and the cat called the mouse. They pull and pull, and out comes the turnip!
+cs_repka_7	en	See? Even the little mouse helped. Let's count: Grandpa, Grandma, the granddaughter, Zhuchka, the cat, the mouse. Six! Together, everything works out.
+cs_more_1	en	I've got two baskets. Look, I'm putting apples in.
+cs_more_2	en	Three apples in here, and one in here.
+cs_more_3	en	Where are there more apples? Tap the basket!
+cs_more_4	en	One, two, three. And one. Three is more than one!
+cs_more_5	en	And what if I put one more in here? One, two. That's still fewer!
+cs_more_6	en	And now? One, two, three! The same! They're equal!
+cs_more_7	en	More, fewer and the same. Now you know that!
+cs_more_count	en	Let's count together!
+cs_hist_name	en	Listen to what it's called.
+cs_hist_castle_1	en	Look, we're in Lisbon! Up there on the hill stands a real castle.
+cs_hist_castle_2	en	The castle has a tall tower and a thick stone wall.
+cs_hist_castle_3	en	People started building this castle a long, long time ago. Back then there were no cars and no phones!
+cs_hist_castle_4	en	Let's take a closer look.
+cs_hist_castle_4q	en	What shall we look at, the tower or the wall?
+cs_hist_castle_5a	en	The tower! From up there you can see far, far away, over the whole city.
+cs_hist_castle_5b	en	The wall! It's thick and strong.
+cs_hist_castle_6	en	The castle is very old, but people repair it and look after it. That's why it's still standing today.
+cs_hist_tiles_1	en	Oh, what a wall! It's covered in pictures.
+cs_hist_tiles_2	en	Each picture is painted on a tile. The tile is smooth and shiny.
+cs_hist_tiles_3	en	In Portugal, people have decorated walls like this for a very, very long time. Hundreds of years!
+cs_hist_tiles_4	en	But my wall is missing one tile.
+cs_hist_tiles_4q	en	Which tile fits the pattern?
+cs_hist_tiles_4x	en	Hmm, that one doesn't fit. Let's try another!
+cs_hist_tiles_5	en	It fits! Now the pattern is whole. Look: this wall is old, and this one is new, and both have beautiful tiles.
+cs_hist_tiles_6	en	Tiles like these were made long, long ago, and they're still made today.
+cs_hist_tram_1	en	We're at the stop. A tram is coming!
+cs_hist_tram_2	en	A long, long time ago in Lisbon, there was a little carriage like this on rails. Horses pulled it!
+cs_hist_tram_3	en	The horses walked forward, and the carriage rolled along the rails behind them.
+cs_hist_tram_4	en	And this is a tram today. It has no horses.
+cs_hist_tram_4q	en	Do you think it will go without horses?
+cs_hist_tram_5	en	Off it goes! Electricity makes it move. The electricity runs along this wire up here.
+cs_hist_tram_6	en	First, horses pulled the carriage, and later the tram ran on electricity.
+cs_hist_ship_1	en	Look at this picture. It's a ship from long ago.
+cs_hist_ship_2	en	It's made of wood, and at the top it has big sails.
+cs_hist_ship_3	en	Sailors from Portugal sailed on ships like this a long, long time ago, hundreds of years ago. This ship is called a caravel.
+cs_hist_ship_4	en	Let's look at the sails more closely.
+cs_hist_ship_4q	en	Which sail shall we look at, this one or that one over there?
+cs_hist_ship_5	en	The sail is sewn from cloth. The wind blows into the sail, and the ship moves along!
+cs_hist_ship_6	en	Long, long ago, sailors travelled on ships with sails, and the wind pushed them along.
+cs_hist_print_1	en	We're in Germany, in a town called Mainz. Master Gutenberg worked here.
+cs_hist_print_2	en	Look, here are little pieces of metal. Each one has a letter on it.
+cs_hist_print_3	en	The master puts the letters in a row, one next to the other. That makes a whole line!
+cs_hist_print_4	en	Now he puts ink on the letters and presses a sheet of paper firmly onto them.
+cs_hist_print_4q	en	What do you think will be on the paper?
+cs_hist_print_5	en	Look! Letters have appeared on the paper. And the second sheet looks exactly the same!
+cs_hist_print_6	en	Master Gutenberg printed pages with little metal letters. And the pages were made into books.
+cs_hist_doll_1	en	Look, what an old toy! It was made in Russia more than a hundred years ago.
+cs_hist_doll_2	en	This is a matryoshka. It's made of wood and painted in bright colours.
+cs_hist_doll_3	en	And the matryoshka opens!
+cs_hist_doll_3q	en	What do you think is inside?
+cs_hist_doll_4	en	Let's open it! Inside there's a smaller matryoshka.
+cs_hist_doll_4b	en	And inside that one is another, a really tiny one!
+cs_hist_doll_5	en	People still make matryoshkas today, and children play with them.
+cs_hist_doll_6	en	Wooden matryoshkas have been around for more than a hundred years.
+lisa_letters_intro	ru	Хочешь, открою секрет? В словах живут буквы! Давай найдём одну.
+lisa_letters_intro	en	Want to know a secret? Letters live inside words! Let's find one.
+lisa_letters_listen	ru	Послушай этот звук. Можешь повторить, если хочешь.
+lisa_letters_listen	en	Listen to this sound. You can say it too, if you like.
+lisa_letters_word	ru	Вот наше слово. А эта буква стоит в самом начале!
+lisa_letters_word	en	Here is our word. And this letter is right at the start!
+lisa_letters_inside	ru	Слушай, этот звук прячется внутри слова!
+lisa_letters_inside	en	Listen, this sound is hiding inside the word!
+lisa_letters_tap	ru	Где наша буква? Покажи пальчиком.
+lisa_letters_tap	en	Where is our letter? Show me with your finger.
+lisa_letters_trace	ru	Смотри, как я рисую. Теперь ты, пальчиком!
+lisa_letters_trace	en	Watch how I draw it. Now you, with your finger!
+lisa_letters_tap_instead	ru	Можно и просто нажать на букву. Как тебе удобнее.
+lisa_letters_tap_instead	en	You can just tap the letter too. Whatever you like.
+lisa_letters_case	ru	Это та же буква, только большая. На кнопке она вот такая.
+lisa_letters_case	en	This is the same letter, only big. On the key it looks like this.
+lisa_letters_screen_key	ru	Найди эту букву на кнопках на экране.
+lisa_letters_screen_key	en	Find this letter on the keys on the screen.
+lisa_letters_real_key	ru	А теперь нажми эту букву на настоящей клавиатуре. Один разок!
+lisa_letters_real_key	en	Now press this letter on the real keyboard. Just once!
+lisa_letters_touch_instead	ru	Давай играть на экране. Так тоже здорово!
+lisa_letters_touch_instead	en	Let's play on the screen. That's great too!
+lisa_letters_relisten	ru	Давай послушаем ещё разок и посмотрим внимательно.
+lisa_letters_relisten	en	Let's listen once more and look closely.
+lisa_letters_show	ru	Вот она, смотри! Нажмём вместе.
+lisa_letters_show	en	Here it is, look! Let's press it together.
+lisa_letters_found	ru	Ты нажал, и появилась буква!
+lisa_letters_found	en	You pressed it, and the letter appeared!
+lisa_letters_name	ru	А ещё у буквы есть имя. Послушай, как её зовут.
+lisa_letters_name	en	A letter has a name too. Listen to what it's called.
+lisa_letters_language	ru	Посмотри на флажок: сейчас мы играем на этом языке.
+lisa_letters_language	en	Look at the flag: this is the language we're playing in now.
+lisa_letters_script_contrast	ru	Да, в русском есть похожая буква! А здесь она звучит вот так.
+lisa_letters_script_contrast	en	Yes, Russian has a letter that looks like this! Here it sounds like this.
+lisa_letters_variant	ru	Ой, а в этом слове буква звучит по-другому. Так бывает!
+lisa_letters_variant	en	Oh, in this word the letter sounds different. That happens!
+lisa_letters_group	ru	Эти буквы держатся за ручки и звучат вместе.
+lisa_letters_group	en	These letters hold hands and sound together.
+lisa_letters_blend	ru	Слушай, звуки соединяются, и получается слово!
+lisa_letters_blend	en	Listen, the sounds join up and make a word!
+lisa_letters_review	ru	О, а эту букву мы уже встречали!
+lisa_letters_review	en	Oh, we've met this letter before!
+lisa_letters_finish	ru	Ты сегодня нашёл новую букву! Фыр-фыр, бежим дальше.
+lisa_letters_finish	en	You found a new letter today! Frr-frr, let's run on.
+lisa_letters_layout_help	ru	Ой, клавиатура шалит. Давай играть на экране, а взрослые её починят.
+lisa_letters_layout_help	en	Oops, the keyboard is being cheeky. Let's play on the screen, and the grown-ups will fix it.
+
+lisa_shop_intro	ru	Пойдём в магазин! У меня есть кошелёк, а в нём денежки.
+lisa_shop_basket	ru	Положи в корзинку то, что я прошу.
+lisa_shop_price	ru	Послушай, сколько это стоит.
+lisa_shop_pay	ru	Теперь заплатим. Перетащи денежки к кассе.
+lisa_shop_count	ru	Давай посчитаем вместе.
+lisa_shop_more	ru	Ещё чуть-чуть не хватает. Добавь монетку.
+lisa_shop_extra	ru	Ой, тут лишняя монетка. Забери одну назад.
+lisa_shop_exact	ru	Ровно столько, сколько нужно!
+lisa_shop_change	ru	Ты дал больше, и продавец даёт тебе сдачу.
+lisa_shop_swap	ru	Смотри: эти маленькие монетки стоят столько же, сколько одна большая.
+lisa_shop_find	ru	Найди вот такую денежку.
+lisa_shop_note	ru	А это бумажная денежка. Она называется купюра.
+lisa_shop_euro	ru	Это евро. Им платят в Португалии, в Германии и во многих других странах.
+lisa_shop_cent	ru	Маленькие монетки — это центы. Сто центов — это один евро!
+lisa_shop_budget	ru	Сколько у нас денег? Давай выберем, что купим.
+lisa_shop_left	ru	Смотри, у нас ещё осталось!
+lisa_shop_finish	ru	Все покупки в корзинке! Ты сам заплатил, как взрослый.
+lisa_shop_travel	ru	Летим в другую страну! Там свои деньги.
+lisa_cur_gbp	ru	В Англии платят фунтами и пенсами.
+lisa_cur_usd	ru	В Америке платят долларами и центами.
+lisa_cur_chf	ru	В Швейцарии платят франками.
+lisa_cur_jpy	ru	В Японии платят иенами.
+lisa_cur_rub	ru	В России платят рублями и копейками.
+lisa_cur_brl	ru	В Бразилии тоже говорят по-португальски! А платят там реалами.
+lisa_fact_pt	ru	В Португалии в магазин берут свою сумку. Её можно брать снова и снова!
+lisa_fact_de	ru	Некоторые бутылки в Германии можно сдать обратно в магазин, и тебе вернут двадцать пять центов!
+lisa_fact_uk	ru	В Англии новый пакет в магазине стоит денег. Поэтому многие приносят свою сумку.
+lisa_fact_us	ru	В Америке на ценнике часто есть маленькая подсказка: какая упаковка выгоднее.
+lisa_fact_ch	ru	В некоторых магазинах Швейцарии фрукты взвешивают сами и наклеивают бумажку с ценой.
+lisa_fact_jp	ru	В Японии деньги часто кладут не в руку, а на маленький поднос.
+lisa_fact_jp2	ru	А чаевые в Японии обычно не оставляют, даже в кафе. Там так не принято.
+lisa_fact_ru	ru	В Москве по выходным бывают ярмарки. Там продают яблоки и овощи прямо на улице!
+lisa_fact_br	ru	В Сан-Паулу есть уличные рынки, они называются фейры. Там столько фруктов!
+shop_cur_eur	pt	o euro
+shop_cur_eur	en	the euro
+shop_cur_eur	de	der Euro
+shop_cur_gbp	pt	a libra
+shop_cur_gbp	en	the pound
+shop_cur_gbp	de	das Pfund
+shop_cur_usd	pt	o dólar
+shop_cur_usd	en	the dollar
+shop_cur_usd	de	der Dollar
+shop_cur_chf	pt	o franco suíço
+shop_cur_chf	en	the Swiss franc
+shop_cur_chf	de	der Schweizer Franken
+shop_cur_jpy	pt	o iene
+shop_cur_jpy	en	the yen
+shop_cur_jpy	de	der Yen
+shop_cur_rub	pt	o rublo
+shop_cur_rub	en	the rouble
+shop_cur_rub	de	der Rubel
+shop_cur_brl	pt	o real
+shop_cur_brl	en	the real
+shop_cur_brl	de	der Real
+shop_amt_eur_1	pt	um euro
+shop_amt_eur_1	en	one euro
+shop_amt_eur_1	de	ein Euro
+shop_amt_eur_2	pt	dois euros
+shop_amt_eur_2	en	two euros
+shop_amt_eur_2	de	zwei Euro
+shop_amt_eur_3	pt	três euros
+shop_amt_eur_3	en	three euros
+shop_amt_eur_3	de	drei Euro
+shop_amt_eur_4	pt	quatro euros
+shop_amt_eur_4	en	four euros
+shop_amt_eur_4	de	vier Euro
+shop_amt_eur_5	pt	cinco euros
+shop_amt_eur_5	en	five euros
+shop_amt_eur_5	de	fünf Euro
+shop_amt_eur_cent_1	pt	um cêntimo
+shop_amt_eur_cent_1	en	one cent
+shop_amt_eur_cent_1	de	ein Cent
+shop_amt_eur_cent_2	pt	dois cêntimos
+shop_amt_eur_cent_2	en	two cents
+shop_amt_eur_cent_2	de	zwei Cent
+shop_amt_eur_cent_3	pt	três cêntimos
+shop_amt_eur_cent_3	en	three cents
+shop_amt_eur_cent_3	de	drei Cent
+shop_amt_eur_cent_4	pt	quatro cêntimos
+shop_amt_eur_cent_4	en	four cents
+shop_amt_eur_cent_4	de	vier Cent
+shop_amt_eur_cent_5	pt	cinco cêntimos
+shop_amt_eur_cent_5	en	five cents
+shop_amt_eur_cent_5	de	fünf Cent
+shop_amt_eur_cent_6	pt	seis cêntimos
+shop_amt_eur_cent_6	en	six cents
+shop_amt_eur_cent_6	de	sechs Cent
+shop_amt_eur_cent_7	pt	sete cêntimos
+shop_amt_eur_cent_7	en	seven cents
+shop_amt_eur_cent_7	de	sieben Cent
+shop_amt_eur_cent_8	pt	oito cêntimos
+shop_amt_eur_cent_8	en	eight cents
+shop_amt_eur_cent_8	de	acht Cent
+shop_amt_eur_cent_9	pt	nove cêntimos
+shop_amt_eur_cent_9	en	nine cents
+shop_amt_eur_cent_9	de	neun Cent
+shop_amt_eur_cent_10	pt	dez cêntimos
+shop_amt_eur_cent_10	en	ten cents
+shop_amt_eur_cent_10	de	zehn Cent
+shop_amt_eur_cent_20	pt	vinte cêntimos
+shop_amt_eur_cent_20	en	twenty cents
+shop_amt_eur_cent_20	de	zwanzig Cent
+shop_amt_eur_cent_50	pt	cinquenta cêntimos
+shop_amt_eur_cent_50	en	fifty cents
+shop_amt_eur_cent_50	de	fünfzig Cent
+shop_amt_gbp_pence_50	pt	cinquenta pence
+shop_amt_gbp_pence_50	en	fifty pence
+shop_amt_gbp_pence_50	de	fünfzig Pence
+shop_amt_gbp_1	pt	uma libra
+shop_amt_gbp_1	en	one pound
+shop_amt_gbp_1	de	ein Pfund
+shop_amt_gbp_5	pt	cinco libras
+shop_amt_gbp_5	en	five pounds
+shop_amt_gbp_5	de	fünf Pfund
+shop_amt_gbp_10	pt	dez libras
+shop_amt_gbp_10	en	ten pounds
+shop_amt_gbp_10	de	zehn Pfund
+shop_amt_usd_cent_5	pt	cinco cêntimos
+shop_amt_usd_cent_5	en	five cents
+shop_amt_usd_cent_5	de	fünf Cent
+shop_amt_usd_cent_10	pt	dez cêntimos
+shop_amt_usd_cent_10	en	ten cents
+shop_amt_usd_cent_10	de	zehn Cent
+shop_amt_usd_cent_25	pt	vinte e cinco cêntimos
+shop_amt_usd_cent_25	en	twenty-five cents
+shop_amt_usd_cent_25	de	fünfundzwanzig Cent
+shop_amt_usd_1	pt	um dólar
+shop_amt_usd_1	en	one dollar
+shop_amt_usd_1	de	ein Dollar
+shop_amt_chf_1	pt	um franco
+shop_amt_chf_1	en	one franc
+shop_amt_chf_1	de	ein Franken
+shop_amt_chf_2	pt	dois francos
+shop_amt_chf_2	en	two francs
+shop_amt_chf_2	de	zwei Franken
+shop_amt_chf_10	pt	dez francos
+shop_amt_chf_10	en	ten francs
+shop_amt_chf_10	de	zehn Franken
+shop_amt_chf_20	pt	vinte francos
+shop_amt_chf_20	en	twenty francs
+shop_amt_chf_20	de	zwanzig Franken
+shop_amt_jpy_5	pt	cinco ienes
+shop_amt_jpy_5	en	five yen
+shop_amt_jpy_5	de	fünf Yen
+shop_amt_jpy_10	pt	dez ienes
+shop_amt_jpy_10	en	ten yen
+shop_amt_jpy_10	de	zehn Yen
+shop_amt_jpy_50	pt	cinquenta ienes
+shop_amt_jpy_50	en	fifty yen
+shop_amt_jpy_50	de	fünfzig Yen
+shop_amt_jpy_100	pt	cem ienes
+shop_amt_jpy_100	en	one hundred yen
+shop_amt_jpy_100	de	hundert Yen
+shop_amt_rub_1	pt	um rublo
+shop_amt_rub_1	en	one rouble
+shop_amt_rub_1	de	ein Rubel
+shop_amt_rub_2	pt	dois rublos
+shop_amt_rub_2	en	two roubles
+shop_amt_rub_2	de	zwei Rubel
+shop_amt_rub_5	pt	cinco rublos
+shop_amt_rub_5	en	five roubles
+shop_amt_rub_5	de	fünf Rubel
+shop_amt_rub_10	pt	dez rublos
+shop_amt_rub_10	en	ten roubles
+shop_amt_rub_10	de	zehn Rubel
+shop_amt_brl_centavo_50	pt	cinquenta centavos
+shop_amt_brl_centavo_50	en	fifty centavos
+shop_amt_brl_centavo_50	de	fünfzig Centavos
+shop_amt_brl_1	pt	um real
+shop_amt_brl_1	en	one real
+shop_amt_brl_1	de	ein Real
+shop_amt_brl_2	pt	dois reais
+shop_amt_brl_2	en	two reais
+shop_amt_brl_2	de	zwei Reais
+shop_amt_brl_5	pt	cinco reais
+shop_amt_brl_5	en	five reais
+shop_amt_brl_5	de	fünf Reais
+lisa_shop_intro	en	Let's go to the shop! I've got a purse, and there's money in it.
+lisa_shop_basket	en	Put the things I ask for in the basket.
+lisa_shop_price	en	Listen to how much it costs.
+lisa_shop_pay	en	Now let's pay. Move the money over to the till.
+lisa_shop_count	en	Let's count together!
+lisa_shop_more	en	It's not quite enough yet. Add a coin.
+lisa_shop_extra	en	Oops, there's one coin too many. Take one back.
+lisa_shop_exact	en	Exactly the right amount!
+lisa_shop_change	en	You gave more, so the shopkeeper gives you change.
+lisa_shop_swap	en	Look: these little coins are worth the same as one big one.
+lisa_shop_note	en	And this is paper money. It's called a banknote.
+lisa_shop_find	en	Find one just like this.
+lisa_shop_euro	en	This is the euro. People pay with it in Portugal, in Germany and in lots of other countries.
+lisa_shop_cent	en	The little coins are cents. A hundred cents make one euro!
+lisa_shop_finish	en	Everything's in the basket! You paid all by yourself, just like a grown-up.
+lisa_shop_travel	en	Let's fly to another country! They have their own money there.
+lisa_cur_gbp	en	In England, people pay with pounds and pence.
+lisa_cur_usd	en	In America, people pay with dollars and cents.
+lisa_cur_chf	en	In Switzerland, people pay with francs.
+lisa_cur_jpy	en	In Japan, people pay with yen.
+lisa_cur_rub	en	In Russia, people pay with roubles and kopecks.
+lisa_cur_brl	en	In Brazil, people speak Portuguese too! And they pay with reais.
+lisa_fact_pt	en	In Portugal, people take their own bag to the shop. You can use it again and again!
+lisa_fact_uk	en	In England, a new bag at the shop costs money. That's why lots of people bring their own.
+lisa_fact_us	en	In America, the price label often has a little hint: which pack is better value.
+lisa_fact_ch	en	In some shops in Switzerland, people weigh their own fruit and stick on a little label with the price.
+lisa_fact_jp	en	In Japan, people often put money on a little tray instead of into someone's hand.
+lisa_fact_ru	en	In Moscow there are fairs at the weekend. They sell apples and vegetables right out in the street!
+lisa_fact_br	en	In São Paulo there are street markets called feiras. There's so much fruit there!
+
+# Opus5.5 exact English country narration, 2026-11-17
+lisa_country_choose	en	Where shall we fly next time? If you like, tap a picture.
+lisa_country_board	en	Hop into my little plane. Off we go!
+lisa_country_postcard	en	Look, it's a postcard! I'll say a word, and you find the picture.
+lisa_country_done	en	We found everything on the postcard! You listened carefully and looked hard.
+lisa_country_album	en	I've collected our postcards here. Tap a picture and listen to the word.
+lisa_country_intro_pt	en	We're in Portugal! In Lisbon, little yellow trams ride along the streets.
+lisa_country_intro_ru	en	We're in Russia! Inside a big Russian doll, a smaller one is hiding.
+lisa_country_intro_de	en	We're in Germany! There are old castles here with tall towers.
+lisa_country_intro_eng	en	We're in England! In London, red buses with two floors drive along the streets.
+lisa_country_intro_it	en	We're in Italy! In Venice, gondola boats float along the canals.
+lisa_country_intro_fr	en	We're in France! Here the bakeries bake long, crunchy bread: the baguette.
+lisa_country_intro_jp	en	We're in Japan! In spring the cherry trees bloom here, with soft pink flowers.
+lisa_country_intro_br	en	We're in Brazil! People speak Portuguese here too, just a little bit differently.
+lisa_country_intro_cn	en	We're in China! Pandas live here in the mountain forests and munch bamboo.
+lisa_country_intro_eg	en	We're in Egypt! Huge stone pyramids stand here in the desert.
+lisa_country_intro_au	en	We're in Australia! Here a mummy kangaroo carries her baby in a pouch on her tummy.
+lisa_country_intro_us	en	We're in the United States of America! In New York there are lots and lots of tall buildings: skyscrapers.
+house_pick	ru	Выбери, что тебе нравится!
+house_pick	en	Choose the one you like!

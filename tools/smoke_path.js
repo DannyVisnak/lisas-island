@@ -13,6 +13,34 @@ const ev = (lib, fn, arg) => lib.page.evaluate(fn, arg);
 const waitPromptFree = (lib, timeout = 22000) => lib.page.waitForFunction(() => !document.querySelector('.prompt-playing, .prompt-choice') && !(window.__test && __test.quizBusy && __test.quizBusy()), null, { timeout });
 const sess = (lib) => ev(lib, () => { const S = Path.session(Core.curLang()); return S ? JSON.parse(JSON.stringify(S)) : null; });
 
+async function historyContract(lib) {
+  const HISTORY = ['hist_castle','hist_tiles','hist_tram','hist_ship','hist_doll','hist_print'];
+  const result = await ev(lib, () => {
+    const ids=['hist_castle','hist_tiles','hist_tram','hist_ship','hist_doll','hist_print'];
+    const list=Lesson.list(), found=list.filter(x=>ids.includes(x.id)).map(x=>x.id);
+    const legacy=list.filter(x=>x.domain!=='history').map(x=>x.id), oldL=Core.L, lang=Core.curLang(), fake={lessons:{}};
+    Core.L=()=>fake;
+    const S={lessonsSeen:{},lastLessonDomain:null,lessonId:null};
+    legacy.forEach((id,i)=>{S.lessonsSeen[id]=true;fake.lessons[id]={seen:1,last:i+1};});
+    let old=Path.nextLesson(S,lang), progression=[];
+    for(let guard=0;guard<40;guard++){
+      const next=Path.nextLesson(S,lang); if(!next)break;
+      progression.push(next); S.lessonsSeen[next]=true; fake.lessons[next]=fake.lessons[next]||{seen:1,last:0};
+      fake.lessons[next].last=100+guard; S.lastLessonDomain=LESSON_DATA.lessons[next].domain||'other';
+      if(ids.every(id=>S.lessonsSeen[id]))break;
+    }
+    Core.L=oldL;
+    const ended={plan:['L'],step:0,newA:[],newB:[],queue:[],lessonsSeen:{},day:'fixture',playedMs:0,done:false};
+    return {found,legacy,old,progression,domains:ids.map(id=>LESSON_DATA.lessons[id].domain),oneLesson:(ended.plan.filter(x=>x==='L').length===1)};
+  });
+  lib.expect(JSON.stringify(result.found)==JSON.stringify(['hist_castle','hist_tiles','hist_tram','hist_ship','hist_doll','hist_print']), 'history lessons retain their required relative order');
+  lib.expect(result.legacy[0]==='float' && result.old!=='hist_print' && result.domains.every(x=>x==='history'), 'history scheduling preserves legacy priority and separates consecutive history domains');
+  const reached=result.progression.filter(id=>HISTORY.includes(id));
+  lib.expect(JSON.stringify(reached)===JSON.stringify(HISTORY), 'seeded scheduler progression reaches all six history lessons in order');
+  lib.expect(result.progression.some(id=>!HISTORY.includes(id)), 'seeded history progression interleaves completed non-history lessons');
+  lib.expect(result.oneLesson, 'one lesson slot per daily session');
+}
+
 /* ---------- one solver per screen type; every solver does ONE wrong tap first, then answers correctly until the screen changes ---------- */
 async function solveListen(lib, st) {
   const { page } = lib;
@@ -401,6 +429,29 @@ async function reviewDayCase(lib, vp) {
   expect(words1 === words0, 'no new words on a review day (' + words0 + ' -> ' + words1 + ')');
 }
 
+async function scheduledLessonsCase(lib, vp) {
+  const { page, expect } = lib;
+  const seed = (seen) => ev(lib, (ids) => {
+    const lang=Core.curLang(), records=Core.L(lang).lessons || (Core.L(lang).lessons={});
+    ids.forEach(id => { records[id]={seen:1,last:Date.now()}; });
+    const S=Path.newSession(lang); S.plan=['L','MV']; S.step=0; Path.test.go();
+  }, seen);
+  await seed(['float','daynight','stones']);
+  await page.waitForFunction(() => window.__lessonTest && __lessonTest.id==='repka', null, {timeout:10000});
+  const before=await ev(lib,()=>Core.save.stars);
+  await solveLesson(lib,{ });
+  await page.waitForFunction(() => __test.screen()==='pmove',null,{timeout:12000});
+  let state=await ev(lib,()=>({seen:Lesson.seen(Core.curLang(),'repka'),queue:Path.test.session().queue.slice(),step:Path.test.session().step,stars:Core.save.stars}));
+  expect(state.seen===1 && state.queue[0]==='n6' && state.step===1 && state.stars===before+1,'path repka: one lesson reward, n6 queued first, then movement '+JSON.stringify(state));
+  await ev(lib,()=>{const lang=Core.curLang(),S=Path.newSession(lang);S.plan=['L','MV'];S.step=0;Path.test.go();});
+  await page.waitForFunction(() => window.__lessonTest && __lessonTest.id==='more',null,{timeout:10000});
+  await solveLesson(lib,{});
+  await page.waitForFunction(() => __test.screen()==='pmove',null,{timeout:12000});
+  state=await ev(lib,()=>({seen:Lesson.seen(Core.curLang(),'more'),queue:Path.test.session().queue.slice(),step:Path.test.session().step}));
+  expect(state.seen===1 && state.queue.includes('n3') && state.step===1,'path more: scheduled after repka and n3 queued for Meet '+JSON.stringify(state));
+  await ev(lib,()=>__test.go('home')); await sleep(250);
+}
+
 async function ruleCases(lib, vp) {
   const { page, expect } = lib;
   console.log('  cap, early end, small setting, resume, parent area');
@@ -492,7 +543,7 @@ async function freshBoot(vp) {
 
 (async () => {
   let code = 0;
-  const ONLY = (process.env.PATH_CASES || 'ABC'), ONLYVP = process.env.PATH_VP ? +process.env.PATH_VP : 0;   /* e.g. PATH_CASES=B PATH_VP=1920 runs one case at one viewport */
+  const ONLY = (process.env.PATH_CASES || 'ABCD'), ONLYVP = process.env.PATH_VP ? +process.env.PATH_VP : 0;   /* e.g. PATH_CASES=B PATH_VP=1920 runs one case at one viewport */
   for (const vp of VIEWPORTS) {
     if (ONLYVP && vp.width !== ONLYVP) continue;
     console.log('viewport ' + vp.width + 'x' + vp.height);
@@ -500,6 +551,7 @@ async function freshBoot(vp) {
     const lib = await freshBoot(vp);
     const { page, expect } = lib;
     try {
+      await historyContract(lib);
       console.log('  day 1: fresh save, Play, whole session, ritual, sleeping Lisa');
       await fullSession(lib, vp);
 
@@ -550,6 +602,11 @@ async function freshBoot(vp) {
     const lib3 = await freshBoot(vp);
     try { await reviewDayCase(lib3, vp); await ruleCases(lib3, vp); } catch (e) { lib3.fail('exception: ' + (e && e.stack || e)); }
     code = (await lib3.finish('PATH SMOKE C (review, rules) ' + vp.width)) || code;
+    }
+    if (ONLY.includes('D')) {
+    const lib4 = await freshBoot(vp);
+    try { await scheduledLessonsCase(lib4, vp); } catch (e) { lib4.fail('exception: ' + (e && e.stack || e)); }
+    code = (await lib4.finish('PATH SMOKE D (new lessons) ' + vp.width)) || code;
     }
   }
   process.exit(code);

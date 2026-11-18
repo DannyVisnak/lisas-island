@@ -150,6 +150,8 @@ UI.screens.home = function (flow, root) {
   var bWard = UI.btn('b-big b-ward', '<span class="ic">' + Lisa.ico.wardrobe + '</span>', function () { UI.go('wardrobe', { from: 'home' }); });
   var bGar = UI.btn('b-big b-garden', '<span class="ic">' + Lisa.ico.garden + '</span>', function () { UI.go('garden', { from: 'home' }); });
   var bHouse = House.mapBtn('home'); bHouse.classList.add('b-big');
+  var bStory = window.Stories && Stories.ready(lang) ? UI.btn('b-big b-story', '<span class="ic">' + Lisa.ico.story + '</span>', function () { UI.go('story'); }) : null;
+  if (bStory) { low.classList.add('has-story'); low.appendChild(bStory); }
   [bHouse, bGar, bAlbum, bWard].forEach(function (b) { low.appendChild(b); });
   root.appendChild(UI.starBadge());
   root.appendChild(FX.goalPill());
@@ -203,7 +205,7 @@ UI.screens.map = function (flow, root) {
       if (busy) return;
       if (!unl) { Snd.sfx('boop'); n.classList.remove('shake'); void n.offsetWidth; n.classList.add('shake'); return; }
       busy = true;
-      flow.say([Core.url.ui('ru', 'w_' + w.id), 200, Core.url.ui(lang, 'w_' + w.id)]).then(function () { UI.go('path', { world: w.id }); });
+      flow.say([Core.baseUrl('w_' + w.id), 200, Core.baseLang() === lang && Core.save.settings.ruHelp ? null : Core.url.ui(lang, 'w_' + w.id)]).then(function () { UI.go('path', { world: w.id }); });
     }, { nopress: true });
     root.appendChild(n);
   });
@@ -278,7 +280,7 @@ UI.screens.path = function (flow, root, p) {
   bar.appendChild(UI.backBtn(function () { UI.go('map'); }));
   var med = el('div', 'medal'); med.appendChild(UI.worldPic(wid)); bar.appendChild(med);
   if (Core.crownOf(lang, wid)) med.appendChild(FX.crown(Core.crownOf(lang, wid)));
-  var wsp = UI.speakerBtn(function () { Snd.say([Core.url.ui('ru', 'w_' + wid), 200, Core.url.ui(lang, 'w_' + wid)]); });
+  var wsp = UI.speakerBtn(function () { Snd.say([Core.baseUrl('w_' + wid), 200, Core.baseLang() === lang && Core.save.settings.ruHelp ? null : Core.url.ui(lang, 'w_' + wid)]); });
   bar.appendChild(wsp);
   var sb = UI.starBadge(); sb.classList.add('path-stars'); root.appendChild(sb);
   var lisa = Lisa.make({ cls: 'path-lisa' });

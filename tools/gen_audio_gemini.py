@@ -15,8 +15,9 @@ LOC = {"ru": "ru-RU", "pt": "pt-PT", "en": "en-GB", "de": "de-DE"}
 LANGN = {"pt": "European Portuguese from Portugal (Lisbon), not Brazilian", "en": "British English",
          "de": "standard German (Hochdeutsch)", "ru": "Russian"}
 def style(lang, kind):
+    if kind == "greeting": return "warm, clear greeting; speak the supplied text in locale " + lang
     if kind == "lisa":
-        return "playful, energetic, smiling young female fox character, lively but clear; speak Russian"
+        return "playful, energetic, smiling young female fox character, lively but clear; speak " + LANGN[lang]
     if lang == "ru":
         return "warm, slow, clear kindergarten teacher speaking Russian to a five-year-old, kind and patient"
     if kind == "word":
@@ -30,6 +31,23 @@ def key():
         sys.exit("Set GEMINI_API_KEY (or GEMINI_ENV_FILE pointing to a .env file with GEMINI_API_KEY=...)")
     for l in pathlib.Path(env_file).read_text().splitlines():
         if l.startswith("GEMINI_API_KEY="): return l.split("=", 1)[1].strip().strip("\"'")
+# Audition request validation must happen before credentials or production state reads.
+if any('--pt-audition' in arg or arg == '--audition-dry-run' or 'lisa09_pt_clear_v1_' in arg for arg in sys.argv[1:]):
+    sys.dont_write_bytecode = True
+from pt_audition import load_request, run_audition, inspect_clip
+try:
+    AUDITION = load_request(sys.argv[1:], ROOT, model=MODEL, voice=VOICE)
+except ValueError as e:
+    sys.exit(str(e))
+if AUDITION and AUDITION['dryRun']:
+    print(json.dumps({'audition': True, 'jobs': [out.name for out, *_ in AUDITION['jobs']],
+                      'directory': str(AUDITION['directory']),
+                      'styleSha256': hashlib.sha256(AUDITION['style'].encode()).hexdigest(),
+                      'network': False, 'writes': False}, indent=2))
+    sys.exit(0)
+if AUDITION:
+    T = AUDITION['directory']; A = T
+    BACKUP = T / 'baseline'; RAW = T / '_gemini_raw'; MAN = T / 'gemini_manifest.json'
 K = key()
 lock = threading.Lock()
 man = json.loads(MAN.read_text()) if MAN.exists() else {"clips": {}, "spent": 0.0, "usage": {"tts_in": 0, "tts_out": 0, "qa_in_audio": 0, "qa_in_txt": 0, "qa_out": 0, "tts_calls": 0, "qa_calls": 0}}
@@ -59,7 +77,7 @@ def post(model, body):
 
 def tts(text, lang, sty):
     body = {"contents": [{"parts": [{"text": f"# Style: {sty}\n# Transcript:\n{text}"}]}],
-            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {"languageCode": LOC[lang],
+            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {"languageCode": LOC.get(lang, lang),
              "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": VOICE}}}}}
     for att in range(4):
         r = post(MODEL, body)
@@ -82,14 +100,23 @@ def tsv(name):
         if line.strip() and not line.startswith("#"): yield line.split("\t")
 def jobs():
     J = []   # (out_path, lang, text, kind)
-    for c in tsv("vocab.tsv"):
+    vocab_rows = list(tsv("vocab.tsv"))
+    if (ROOT / "content/packs/countries_vocab.tsv").exists(): vocab_rows += list(tsv("packs/countries_vocab.tsv"))
+    for c in vocab_rows:
         _w, id_, _p, en, pt, de, ru, q_en, q_pt, q_de = [x.strip() for x in c]
         for lang, word, q in (("pt", pt, q_pt), ("en", en, q_en), ("de", de, q_de)):
             J.append((A / lang / f"{id_}.ogg", lang, word, "word")); J.append((A / lang / f"{id_}_q.ogg", lang, q, "phrase"))
         J.append((A / "ru" / f"{id_}.ogg", "ru", ru, "word"))
-    for c in tsv("ui.tsv"):
+    ui_rows = list(tsv("ui.tsv"))
+    if (ROOT / "content/packs/countries_ui.tsv").exists(): ui_rows += list(tsv("packs/countries_ui.tsv"))
+    for c in ui_rows:
         key_, lang, text = c[0].strip(), c[1].strip(), "\t".join(c[2:]).strip()
         J.append((A / "ui" / f"{lang}_{key_}.ogg", lang, text, "lisa" if key_.startswith(("lisa_", "cs_")) else "phrase"))
+    if (ROOT / "content/packs/countries_greetings.tsv").exists():
+        for c in tsv("packs/countries_greetings.tsv"):
+            J.append((A / "countries" / (c[0] + ".ogg"), c[1], c[2], "greeting"))
+    from letters_audio_jobs import letter_jobs
+    J.extend(letter_jobs(ROOT, include_ui=False))
     return J
 
 def wav_data(b):
@@ -146,9 +173,12 @@ def dur(path):
     try: return float(r.stdout.strip())
     except ValueError: return 0.0
 
+def job_style(lang, kind):
+    return AUDITION['style'] if AUDITION else style(lang, kind)
+
 def gen_one(j, force=False):
     out, lang, text, kind = j
-    sty = style(lang, kind); h = sha(text, lang, sty)
+    sty = job_style(lang, kind); h = sha(text, lang, sty)
     raw = RAW / f"{h}.pcm"
     if force and raw.exists(): raw.unlink()
     if not raw.exists():
@@ -174,7 +204,7 @@ def stage_encode(J):
     pend = []; os.makedirs(T / "_wav", exist_ok=True)
     for out, lang, text, kind in J:
         rel = str(out.relative_to(ROOT)); e = man["clips"].get(rel)
-        h = sha(text, lang, style(lang, kind)); raw = RAW / f"{h}.pcm"
+        h = sha(text, lang, job_style(lang, kind)); raw = RAW / f"{h}.pcm"
         if not raw.exists(): continue
         if e and e.get("done") and e.get("sha") == h and out.exists() and out.stat().st_size > 1024: continue
         w = T / "_wav" / f"{hashlib.md5(rel.encode()).hexdigest()}.wav"; write_wav(w, process(raw.read_bytes())); pend.append((out, w, rel, h))
@@ -243,13 +273,58 @@ def reprocess_only(J):
         encode(pend[k:k + 40])
     shutil.rmtree(T / "_wav", ignore_errors=True); print("reprocessed", len(pend))
 
+def select_jobs(J, args):
+    """Pure exact union of scoped UI keys and explicit vocabulary IDs."""
+    def value(flag):
+        if flag not in args: return None
+        i = args.index(flag)
+        if i + 1 >= len(args) or args[i + 1].startswith('--'):
+            raise ValueError(f'{flag} requires a value')
+        return args[i + 1]
+    scoped = [flag for flag in ('--vocab-ids','--country-greeting-keys') if flag in args]
+    if scoped:
+        if len(scoped) != 1 or any(flag in args for flag in ('--keys','--ui-lang','--vocab','--letter-files')): raise ValueError('country selectors cannot be combined')
+        flag = scoped[0]
+        if args.count(flag) != 1: raise ValueError('duplicate country selector')
+        requested = value(flag).split(',')
+        if not all(requested) or len(set(requested)) != len(requested): raise ValueError('empty or duplicate country IDs')
+        if flag == '--vocab-ids':
+            allowed = {j[0].stem for j in J if j[0].parent.name in {'pt','en','de','ru'} and not j[0].stem.endswith('_q')}
+            stems = {stem for id_ in requested for stem in (id_,id_+'_q')}
+            selected = [j for j in J if j[0].parent.name in {'pt','en','de','ru'} and j[0].stem in stems]
+        else:
+            allowed = {j[0].stem for j in J if j[0].parent.name == 'countries' and j[3] == 'greeting'}
+            selected = [j for j in J if j[0].parent.name == 'countries' and j[0].stem in requested and j[3] == 'greeting']
+        if not set(requested) <= allowed: raise ValueError('unknown country selector ID')
+        return selected
+    lang = value('--ui-lang')
+    if lang is not None and lang not in LANGN: raise ValueError('unsupported --ui-lang')
+    keys, vocab = value('--keys'), value('--vocab')
+    def names(value_, flag):
+        if value_ is None: return set()
+        result = set(value_.split(','))
+        if not value_ or '' in result: raise ValueError(f'{flag} requires non-empty names')
+        return result
+    ks, ids = names(keys, '--keys'), names(vocab, '--vocab')
+    if keys is None and vocab is None and lang is None: return J
+    stems = {stem for id_ in ids for stem in (id_, f'{id_}_q')}
+    return [j for j in J if
+            (j[0].parent.name == 'ui' and (keys is not None or lang is not None)
+             and (keys is None or j[0].stem.split('_', 1)[1] in ks)
+             and (lang is None or j[1] == lang))
+            or (j[0].parent.name in {'pt', 'en', 'de', 'ru'} and j[0].stem in stems)]
+
 def main():
-    J = jobs()
+    if AUDITION:
+        return run_audition(AUDITION, stage_generate, stage_encode, inspect_clip, man, save)
+    from letters_audio_jobs import select_letter_jobs
+    all_jobs = jobs()
+    if '--letter-files' in sys.argv and any(f in sys.argv for f in ('--vocab-ids','--country-greeting-keys')): raise ValueError('country and letter selectors cannot be combined')
+    letter_selection = select_letter_jobs(all_jobs, sys.argv[1:])
+    J = letter_selection if letter_selection is not None else select_jobs(all_jobs, sys.argv[1:])
     if "--reprocess-only" in sys.argv: return reprocess_only(J)
-    if "--keys" in sys.argv:   # only these ui keys (comma list, e.g. scene_help,scene_peek): never touches any other clip
-        ks = set(sys.argv[sys.argv.index("--keys") + 1].split(","))
-        J = [j for j in J if j[0].parent.name == "ui" and j[0].stem.split("_", 1)[1] in ks]
-        print("only keys:", sorted(j[0].stem for j in J))
+    if any(flag in sys.argv for flag in ("--keys", "--ui-lang", "--vocab", "--letter-files", "--vocab-ids", "--country-greeting-keys")):
+        print("selected clips:", sorted(f"{j[0].parent.name}/{j[0].stem}" for j in J))
     if "--limit" in sys.argv: J = J[:int(sys.argv[sys.argv.index("--limit") + 1])]
     if not BACKUP.exists():
         shutil.copytree(A, BACKUP); print("backed up Piper audio ->", BACKUP)
@@ -270,4 +345,4 @@ def main():
         else: man["qa"] = {"round1": {}, "remaining": {}}
         save()
     print(f"spent ${man['spent']:.3f}")
-if __name__ == "__main__": main()
+if __name__ == "__main__": sys.exit(main())

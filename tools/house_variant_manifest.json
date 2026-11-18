@@ -1,0 +1,462 @@
+{
+  "author": "Opus 5.5; deterministic technical build",
+  "assets": [
+    {
+      "id": "bed",
+      "variant": "b",
+      "source": "app/img/bed.svg",
+      "output": "app/img/house/bed_b.svg",
+      "source_sha256": "6061c5e7b16cb6cdc1f12451a3fdaf248676165a6333385dc79221735e83641a",
+      "output_sha256": "d6f3c89db4be55a538220cc1da5cb107ae0f1d1349444ee4a63efcfad3b5bcc6",
+      "counts": {
+        "3DAAE0": 1,
+        "188AD6": 1,
+        "B0E0FF": 1,
+        "7DBBE3": 1,
+        "E0F7FA": 2,
+        "94D1E0": 1
+      }
+    },
+    {
+      "id": "bed",
+      "variant": "c",
+      "source": "app/img/bed.svg",
+      "output": "app/img/house/bed_c.svg",
+      "source_sha256": "6061c5e7b16cb6cdc1f12451a3fdaf248676165a6333385dc79221735e83641a",
+      "output_sha256": "10e16f748c5a2ed60a8ba62e42e8f729a8a1c1b620caefba2e38ec20a6c4b101",
+      "counts": {
+        "3DAAE0": 1,
+        "188AD6": 1,
+        "B0E0FF": 1,
+        "7DBBE3": 1
+      }
+    },
+    {
+      "id": "ball",
+      "variant": "b",
+      "source": "app/img/ball.svg",
+      "output": "app/img/house/ball_b.svg",
+      "source_sha256": "07f69528d790b680f6ea4d07afa9d21b9e4a6670cbcc7b9749cb192c175510d5",
+      "output_sha256": "6474651248be0eace1cea7d658d2d105d985c6741693007ce0fd8dcb1c687b5d",
+      "counts": {
+        "474C4F": 6
+      }
+    },
+    {
+      "id": "ball",
+      "variant": "c",
+      "source": "app/img/ball.svg",
+      "output": "app/img/house/ball_c.svg",
+      "source_sha256": "07f69528d790b680f6ea4d07afa9d21b9e4a6670cbcc7b9749cb192c175510d5",
+      "output_sha256": "c0e8b7ca2637409d5d594de73580c1679df2cb15061372aafb063d2a45066ba7",
+      "counts": {
+        "474C4F": 6
+      }
+    },
+    {
+      "id": "car",
+      "variant": "b",
+      "source": "app/img/car.svg",
+      "output": "app/img/house/car_b.svg",
+      "source_sha256": "0ed788aa0d922d69a031b7ece7e862e254b9cd07e3c7e6974e0f5ac5694cb549",
+      "output_sha256": "f9161f2104ccac8c2cdd2862946b472f95bf73d5ca941365866df2acd0137be2",
+      "counts": {
+        "F92612": 2,
+        "D70617": 1,
+        "AF0F21": 1
+      }
+    },
+    {
+      "id": "car",
+      "variant": "c",
+      "source": "app/img/car.svg",
+      "output": "app/img/house/car_c.svg",
+      "source_sha256": "0ed788aa0d922d69a031b7ece7e862e254b9cd07e3c7e6974e0f5ac5694cb549",
+      "output_sha256": "722c9b6d9eb363510548223e706bfb788a62baf1b3cbe8d705a43845fe14ddca",
+      "counts": {
+        "F92612": 2,
+        "D70617": 1,
+        "AF0F21": 1
+      }
+    },
+    {
+      "id": "chair",
+      "variant": "b",
+      "source": "app/img/chair.svg",
+      "output": "app/img/house/chair_b.svg",
+      "source_sha256": "91249a6f6253fb990f54a8d331021a7f3ff54fd4a348d00cafd34b775e7732b3",
+      "output_sha256": "f320e8531c1fdb12937a992fd4f03e361c77c95b193af1c65a58df215e45c28b",
+      "counts": {
+        "F0AA6B": 2,
+        "BA793E": 2,
+        "9E5737": 5,
+        "77381F": 2
+      }
+    },
+    {
+      "id": "chair",
+      "variant": "c",
+      "source": "app/img/chair.svg",
+      "output": "app/img/house/chair_c.svg",
+      "source_sha256": "91249a6f6253fb990f54a8d331021a7f3ff54fd4a348d00cafd34b775e7732b3",
+      "output_sha256": "f34f53ac29a5a74858efdbd339949e1260558f8f9358a35b9ae21cba5f2d9300",
+      "counts": {
+        "F0AA6B": 2,
+        "BA793E": 2,
+        "9E5737": 5,
+        "77381F": 2
+      }
+    },
+    {
+      "id": "backpack",
+      "variant": "b",
+      "source": "app/img/backpack.svg",
+      "output": "app/img/house/backpack_b.svg",
+      "source_sha256": "efd1cf27ed6e9e5dcaf3ac85f0d1e7dea2e4c2d3494baaea030029731be3c715",
+      "output_sha256": "5daa43da0c45124cb1f14ef9cb097d4ecc92d72d8c504c43807425f8a31e387d",
+      "counts": {
+        "F44336": 3,
+        "FF7555": 6,
+        "C62828": 4,
+        "E2A610": 1,
+        "FFCA28": 1
+      }
+    },
+    {
+      "id": "backpack",
+      "variant": "c",
+      "source": "app/img/backpack.svg",
+      "output": "app/img/house/backpack_c.svg",
+      "source_sha256": "efd1cf27ed6e9e5dcaf3ac85f0d1e7dea2e4c2d3494baaea030029731be3c715",
+      "output_sha256": "7ec5103c5fdbf1873b8e8ca6f636bd0c88685f5e1c7f9d42285356288b6499f2",
+      "counts": {
+        "F44336": 3,
+        "FF7555": 6,
+        "C62828": 4
+      }
+    },
+    {
+      "id": "bath",
+      "variant": "b",
+      "source": "app/img/bath.svg",
+      "output": "app/img/house/bath_b.svg",
+      "source_sha256": "54daf24d78798e5a1b424e04d0d6f42949cc4adeaeafc295d09c75f3f0671371",
+      "output_sha256": "c5dc83b9c95222bdf29af58aaa5479795ec40424015ef8b1586b4cd32dce399f",
+      "counts": {
+        "EEEEEE": 1,
+        "B7D5E5": 2,
+        "69A1BA": 1
+      }
+    },
+    {
+      "id": "bath",
+      "variant": "c",
+      "source": "app/img/bath.svg",
+      "output": "app/img/house/bath_c.svg",
+      "source_sha256": "54daf24d78798e5a1b424e04d0d6f42949cc4adeaeafc295d09c75f3f0671371",
+      "output_sha256": "b28f9e754c9e32501797797ba169b83a9c849eb7f7edd8a9a55c0f6144e124e7",
+      "counts": {
+        "EEEEEE": 1,
+        "B7D5E5": 2,
+        "69A1BA": 1
+      }
+    },
+    {
+      "id": "toilet",
+      "variant": "b",
+      "source": "app/img/toilet.svg",
+      "output": "app/img/house/toilet_b.svg",
+      "source_sha256": "f1b99684fea49eb3e23ebed87550d80115620d2440b3ec540153705f66e691ba",
+      "output_sha256": "3821cc478f3cabdd82672f748665fca65e247fc89db860b4f7281f30aef7441d",
+      "counts": {
+        "EEEEEE": 3,
+        "B7D5E5": 4,
+        "69A1BA": 5,
+        "2F7889": 2
+      }
+    },
+    {
+      "id": "toilet",
+      "variant": "c",
+      "source": "app/img/toilet.svg",
+      "output": "app/img/house/toilet_c.svg",
+      "source_sha256": "f1b99684fea49eb3e23ebed87550d80115620d2440b3ec540153705f66e691ba",
+      "output_sha256": "23cd722a7f58238e236eee1dd16e1e96d43c4d31b4dae30a679077aed624d931",
+      "counts": {
+        "EEEEEE": 3,
+        "B7D5E5": 4,
+        "69A1BA": 5,
+        "2F7889": 2
+      }
+    },
+    {
+      "id": "tv",
+      "variant": "b",
+      "source": "app/img/tv.svg",
+      "output": "app/img/house/tv_b.svg",
+      "source_sha256": "b3d570cf7e2c0aab4d9a8aaa3e9c1d2cf15ebfde2d9f61027351ec711949d054",
+      "output_sha256": "0e0eeddcfb3b309cd8649a420f22a46de949bc0ee587f0715d66d55590ffb3e7",
+      "counts": {
+        "82AEC0": 3,
+        "455A64": 6,
+        "B9E4EA": 1
+      }
+    },
+    {
+      "id": "tv",
+      "variant": "c",
+      "source": "app/img/tv.svg",
+      "output": "app/img/house/tv_c.svg",
+      "source_sha256": "b3d570cf7e2c0aab4d9a8aaa3e9c1d2cf15ebfde2d9f61027351ec711949d054",
+      "output_sha256": "c2946f10988f9507eb0cde2367baee2909c7b7c4cc317ee9f4451eacdc812e7b",
+      "counts": {
+        "82AEC0": 3,
+        "455A64": 6,
+        "B9E4EA": 1
+      }
+    },
+    {
+      "id": "cake",
+      "variant": "b",
+      "source": "app/img/cake.svg",
+      "output": "app/img/house/cake_b.svg",
+      "source_sha256": "ca3bb5107ce0bf930ce438d30afa4d204d8b11327235c24257f2d8150b5e0254",
+      "output_sha256": "1e184e186978cad766c706c90318744a6219d1bdc0f3a2458cc1b0aa878ebb88",
+      "counts": {
+        "FEEAC9": 1,
+        "FEE7C2": 1,
+        "FEDEAE": 1,
+        "FFCF8D": 1,
+        "FFCB85": 1,
+        "FCE9CA": 5
+      }
+    },
+    {
+      "id": "cake",
+      "variant": "c",
+      "source": "app/img/cake.svg",
+      "output": "app/img/house/cake_c.svg",
+      "source_sha256": "ca3bb5107ce0bf930ce438d30afa4d204d8b11327235c24257f2d8150b5e0254",
+      "output_sha256": "2bd54702f43e74e3c0f6a8b3c688c8763f179d902fee499f647302f4ef77e34d",
+      "counts": {
+        "FEEAC9": 1,
+        "FEE7C2": 1,
+        "FEDEAE": 1,
+        "FFCF8D": 1,
+        "FFCB85": 1,
+        "FCE9CA": 5
+      }
+    },
+    {
+      "id": "book",
+      "variant": "b",
+      "source": "app/img/book.svg",
+      "output": "app/img/house/book_b.svg",
+      "source_sha256": "313fc41da742c061839771786e25a8f4f1e951c2ebca8cd94c51ead095d861f6",
+      "output_sha256": "e3127e7266bb7121795eebc0eb1c1bd41c4579834f06c8996c76efa4abac63c4",
+      "counts": {
+        "F44336": 1,
+        "C62828": 2
+      }
+    },
+    {
+      "id": "book",
+      "variant": "c",
+      "source": "app/img/book.svg",
+      "output": "app/img/house/book_c.svg",
+      "source_sha256": "313fc41da742c061839771786e25a8f4f1e951c2ebca8cd94c51ead095d861f6",
+      "output_sha256": "0dd3fbe0b19e99bd3473bf4c1020736414f718cbfbfd81198fae02ff499218b3",
+      "counts": {
+        "F44336": 1,
+        "C62828": 2
+      }
+    },
+    {
+      "id": "teddy",
+      "variant": "b",
+      "source": "app/img/teddy.svg",
+      "output": "app/img/house/teddy_b.svg",
+      "source_sha256": "d38d58d5cfda9a40f2677d4787afe5c2762a10c9604c4a5c9e3c5839ce1d94a5",
+      "output_sha256": "20d5c937aeb9b962387ce9e1335beb055a7ca74ead260c73ce6ff40c7edf7bd0",
+      "counts": {
+        "A65F3E": 2,
+        "874D36": 2,
+        "703B26": 4,
+        "FFCA28": 1
+      }
+    },
+    {
+      "id": "teddy",
+      "variant": "c",
+      "source": "app/img/teddy.svg",
+      "output": "app/img/house/teddy_c.svg",
+      "source_sha256": "d38d58d5cfda9a40f2677d4787afe5c2762a10c9604c4a5c9e3c5839ce1d94a5",
+      "output_sha256": "b95a21441d29fb44a5030596da6d5d5bc9979414549e5a9dfc561ce4589e3191",
+      "counts": {
+        "FFCA28": 1
+      }
+    },
+    {
+      "id": "pencil",
+      "variant": "b",
+      "source": "app/img/pencil.svg",
+      "output": "app/img/house/pencil_b.svg",
+      "source_sha256": "5adac2395f2be13ba9bd93cf106597352668126d2b9ac0fa1a72f2365bdb2c60",
+      "output_sha256": "dc58a89722ad8f4daff8ea0940a9f39134b3d97505a1d8987e6d752140167a25",
+      "counts": {
+        "FFC107": 1,
+        "FFA000": 1,
+        "FDD835": 1,
+        "D1762C": 1,
+        "F19534": 1,
+        "EF5350": 1,
+        "FF8383": 1
+      }
+    },
+    {
+      "id": "pencil",
+      "variant": "c",
+      "source": "app/img/pencil.svg",
+      "output": "app/img/house/pencil_c.svg",
+      "source_sha256": "5adac2395f2be13ba9bd93cf106597352668126d2b9ac0fa1a72f2365bdb2c60",
+      "output_sha256": "978daaabed19ac5f3863ecc04e1da9d040ff0a28372f5803e952a88a349bf2c9",
+      "counts": {
+        "FFC107": 1,
+        "FFA000": 1,
+        "FDD835": 1,
+        "D1762C": 1,
+        "F19534": 1
+      }
+    },
+    {
+      "id": "balloon",
+      "variant": "b",
+      "source": "app/img/balloon.svg",
+      "output": "app/img/house/balloon_b.svg",
+      "source_sha256": "1557f246f5714cdae0ef14fc9a1fa04a12800577a64e7867163d6526ecc4ce1f",
+      "output_sha256": "d2ac8922e4f036957df0e62d726ac2197171169c2b9dc3361cc3a761f4277248",
+      "counts": {
+        "F44336": 2,
+        "C62828": 1,
+        "FF847A": 1
+      }
+    },
+    {
+      "id": "balloon",
+      "variant": "c",
+      "source": "app/img/balloon.svg",
+      "output": "app/img/house/balloon_c.svg",
+      "source_sha256": "1557f246f5714cdae0ef14fc9a1fa04a12800577a64e7867163d6526ecc4ce1f",
+      "output_sha256": "46f598f6fb16569336b27e463413316b2b73781e694d06d7f787ef340d187bae",
+      "counts": {
+        "F44336": 2,
+        "C62828": 1,
+        "FF847A": 1
+      }
+    },
+    {
+      "id": "flower",
+      "variant": "b",
+      "source": "app/img/flower.svg",
+      "output": "app/img/house/flower_b.svg",
+      "source_sha256": "587438199f316790a9a0f614dcdd7347cccdf4acd8e9ef648d34572b185f2508",
+      "output_sha256": "ea21e3788d69045a4b8c221ceb3dcd33ec5fdfe8d2f28600b70267226f199395",
+      "counts": {
+        "FFBCD8": 1,
+        "FCA2C8": 5,
+        "BF0477": 1
+      }
+    },
+    {
+      "id": "flower",
+      "variant": "c",
+      "source": "app/img/flower.svg",
+      "output": "app/img/house/flower_c.svg",
+      "source_sha256": "587438199f316790a9a0f614dcdd7347cccdf4acd8e9ef648d34572b185f2508",
+      "output_sha256": "3e4587df267ac23c2e07ebe072096a64abed3c0dce6e35d2d8e03b7735bcf55a",
+      "counts": {
+        "FFBCD8": 1,
+        "FCA2C8": 5,
+        "BF0477": 1
+      }
+    },
+    {
+      "id": "key",
+      "variant": "b",
+      "source": "app/img/key.svg",
+      "output": "app/img/house/key_b.svg",
+      "source_sha256": "b46b78a164f2f121e1afab7cdcaf17cbd6ee068b9b04ad2b3b06459da239f33a",
+      "output_sha256": "5cb94d1e0556ccab3d54b8d0c39eb0c9f4260077b9f26b1dbbce5c51bebb2e81",
+      "counts": {
+        "FFCA28": 1,
+        "9E740B": 1,
+        "DBA010": 1,
+        "FFF59D": 2
+      }
+    },
+    {
+      "id": "key",
+      "variant": "c",
+      "source": "app/img/key.svg",
+      "output": "app/img/house/key_c.svg",
+      "source_sha256": "b46b78a164f2f121e1afab7cdcaf17cbd6ee068b9b04ad2b3b06459da239f33a",
+      "output_sha256": "2359514e8e00fdc813984c6ed65b8ebcb265cecb75b47084bc2ccbfa89a45810",
+      "counts": {
+        "FFCA28": 1,
+        "9E740B": 1,
+        "DBA010": 1,
+        "FFF59D": 2
+      }
+    },
+    {
+      "id": "spoon",
+      "variant": "b",
+      "source": "app/img/spoon.svg",
+      "output": "app/img/house/spoon_b.svg",
+      "source_sha256": "27f8a6c8599af09a0aea401dc8302e128e185ee1d4d14b43ab8e67d6fdb331e8",
+      "output_sha256": "e49143af74a07dabb7e79bcc4353eba22d3aa0b152b24877098b153080dc66f2",
+      "counts": {
+        "9D9D9D": 1,
+        "C8C8C8": 1,
+        "E0E0E0": 1
+      }
+    },
+    {
+      "id": "spoon",
+      "variant": "c",
+      "source": "app/img/spoon.svg",
+      "output": "app/img/house/spoon_c.svg",
+      "source_sha256": "27f8a6c8599af09a0aea401dc8302e128e185ee1d4d14b43ab8e67d6fdb331e8",
+      "output_sha256": "10ec165fc0bb4aded1c105ce60f9186e3881391b39706ab368e6917b2cfa7e39",
+      "counts": {
+        "9D9D9D": 1,
+        "C8C8C8": 1,
+        "E0E0E0": 1
+      }
+    },
+    {
+      "id": "plane",
+      "variant": "b",
+      "source": "app/img/plane.svg",
+      "output": "app/img/house/plane_b.svg",
+      "source_sha256": "95d4e5e64dec4cd5a68cd61116467f0ccef6471b75e729f876cc262717533018",
+      "output_sha256": "cd9818dd6e3762c28cae8e66745e020749a787d4dc60bf6f9b7980014b197e5d",
+      "counts": {
+        "006CA8": 4,
+        "014EAC": 2
+      }
+    },
+    {
+      "id": "plane",
+      "variant": "c",
+      "source": "app/img/plane.svg",
+      "output": "app/img/house/plane_c.svg",
+      "source_sha256": "95d4e5e64dec4cd5a68cd61116467f0ccef6471b75e729f876cc262717533018",
+      "output_sha256": "fd4d6c6ad8611a9af1448d3d0ec470d0940d431951fabd48b929ff80b6d6f128",
+      "counts": {
+        "006CA8": 4,
+        "014EAC": 2
+      }
+    }
+  ]
+}

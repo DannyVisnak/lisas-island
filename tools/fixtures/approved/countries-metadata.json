@@ -1,0 +1,58 @@
+{
+  "food": {
+    "pt": [
+      "country_sardine",
+      "country_custard_tart"
+    ],
+    "ru": [
+      "country_pancakes"
+    ],
+    "de": [
+      "country_pretzel",
+      "country_sausage"
+    ],
+    "eng": [
+      "country_tea"
+    ],
+    "it": [
+      "country_pizza",
+      "country_pasta",
+      "icecream"
+    ],
+    "fr": [
+      "country_baguette",
+      "country_croissant",
+      "cheese"
+    ],
+    "jp": [
+      "country_sushi",
+      "country_rice_ball"
+    ],
+    "br": [
+      "banana"
+    ],
+    "cn": [
+      "country_dumplings"
+    ],
+    "eg": [],
+    "au": [],
+    "us": [
+      "country_burger"
+    ]
+  },
+  "greetingSrc": {
+    "pt": "audio/pt/hello.ogg",
+    "ru": "audio/ru/hello.ogg",
+    "de": "audio/de/hello.ogg",
+    "eng": "audio/en/hello.ogg",
+    "au": "audio/en/hello.ogg",
+    "us": "audio/en/hello.ogg",
+    "it": "audio/countries/country_hello_it.ogg",
+    "fr": "audio/countries/country_hello_fr.ogg",
+    "jp": "audio/countries/country_hello_jp.ogg",
+    "br": "audio/countries/country_hello_br.ogg",
+    "cn": "audio/countries/country_hello_cn.ogg",
+    "eg": "audio/countries/country_hello_eg.ogg"
+  },
+  "art": "journey class, palette and window/preview picture are in CountryArt.TRIP (countries_art.js); countries.json may mirror journey only if the builder needs it in tests."
+}

@@ -6,3 +6,5 @@
 - Lisa the mascot and all colour blobs / dot layouts are drawn in code (original).
 - Andika (SIL OFL 1.1), `app/fonts/OFL.txt`.
 - Full Apache License 2.0 text: `app/img/LICENSE-Apache-2.0.txt`. The fox icon was resized from the Noto SVG.
+
+img/house/*_b.svg and *_c.svg: recoloured copies of the Noto Emoji SVGs above (Apache-2.0); change: fill/stroke/stop colours only.

@@ -1,0 +1,14 @@
+{
+  "exactEdits": [
+    {
+      "id": "C2",
+      "file": "app/js/shop_contract.js",
+      "new": "\"noteAssets\": {\"500\": {\"src\": \"img/shop/eur_5_specimen.png\", \"w\": 300, \"h\": 155, \"span\": 2, \"mm\": [120, 62], \"dpi\": 63.5, \"note\": \"Opus 5.5 18.11.26. Aspect kept; not drawn to coin scale.\"}}, \"moneySizes\": {\"note\": \"Coins are drawn at k = 0.44 rem/mm"
+    },
+    {
+      "id": "S1",
+      "file": "app/css/mg_shop.css",
+      "new": "/* LISA-06 €5 note delta, Opus 5.5 18.11.26: two-cell span 27.6 x 13.6rem (227.9 x 112.3 px at 1128x752). Aspect 120:62 kept; the note is not drawn to coin scale. */\n.screen.mg-shop .mgs-money.mgs-notecell { width: 27.6rem; }\n.screen.mg-shop .mgs-note { position: absolute; left: 50%; top: 6.2rem; width: 23.2rem; height: auto; aspect-ratio: 300 / 155; translate: -50% -50%; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 .4rem 0 rgba(0,0,0,.2)); }\n.screen.mg-shop .mgs-bitem .mgs-note { position: relative; left: auto; top: auto; translate: none; width: 12rem; }"
+    }
+  ]
+}

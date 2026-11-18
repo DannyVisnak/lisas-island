@@ -11,14 +11,19 @@ def rows(path):
 
 def main():
     worlds, items, order = [], {}, {}
-    for r in rows(ROOT / "content" / "vocab.tsv"):
+    optional_path = ROOT / "content/packs/countries_vocab.tsv"
+    vocab_rows = list(rows(ROOT / "content" / "vocab.tsv"))
+    if optional_path.exists(): vocab_rows += list(rows(optional_path))
+    optional_ids = []
+    for r in vocab_rows:
         if len(r) != 10:
             raise SystemExit(f"bad vocab row: {r}")
         world, id_, pic, en, pt, de, ru, q_en, q_pt, q_de = [c.strip() for c in r]
-        if world not in order:
+        if world == "countries": optional_ids.append(id_)
+        if world != "countries" and world not in order:
             order[world] = len(worlds)
             worlds.append({"id": world, "items": []})
-        worlds[order[world]]["items"].append(id_)
+        if world != "countries": worlds[order[world]]["items"].append(id_)
         if re.fullmatch(r"#[0-9a-fA-F]{6}", pic):
             p = {"type": "color", "hex": pic.lower()}
         elif pic.isdigit():
@@ -31,11 +36,32 @@ def main():
                       "pt": {"word": pt, "q": q_pt}, "en": {"word": en, "q": q_en},
                       "de": {"word": de, "q": q_de}, "ru": ru}
     ui = {"ru": {}, "en": {}, "pt": {}, "de": {}}
-    for r in rows(ROOT / "content" / "ui.tsv"):
+    ui_rows = list(rows(ROOT / "content" / "ui.tsv"))
+    country_ui = ROOT / "content/packs/countries_ui.tsv"
+    if country_ui.exists(): ui_rows += list(rows(country_ui))
+    for r in ui_rows:
         key, lang, text = r[0].strip(), r[1].strip(), "\t".join(r[2:]).strip()
+        if key in ui[lang]: raise SystemExit(f'duplicate UI key {lang}/{key}')
         ui[lang][key] = text
-    data = {
+    packs = {}
+    country_source = ROOT / "content/packs/countries.json"
+    if country_source.exists():
+        countries = json.loads(country_source.read_text())["countries"]
+        if len(countries) != 12 or len({c["id"] for c in countries}) != 12: raise SystemExit("invalid country catalog")
+        for c in countries:
+            if len(c["ids"]) != 4 or len(set(c["ids"])) != 4 or any(x not in items for x in c["ids"]): raise SystemExit("invalid country quartet")
+        greetings = {r[0]: {"locale": r[1], "text": r[2], "path": "audio/countries/" + r[0] + ".ogg"} for r in rows(ROOT / "content/packs/countries_greetings.tsv")}
+        ready_assets = []
+        for p in (ROOT / "app").rglob("*"):
+            if not p.is_file(): continue
+            rel = p.relative_to(ROOT / "app").as_posix()
+            minimum = 1024 if p.suffix == ".ogg" else 100 if p.suffix == ".svg" else 1
+            if p.suffix in (".ogg", ".svg", ".css", ".js") and p.stat().st_size >= minimum: ready_assets.append(rel)
+        packs["countries"] = {"items": optional_ids, "countries": countries, "greetings": greetings, "readyAssets": sorted(ready_assets)}
+    data = {"packs": packs,
         "langs": ["pt", "en", "de"], "worlds": worlds, "items": items, "ui": ui,
+        "letterAudio": sorted("pt/" + p.stem for p in (ROOT / "app/audio/pt").glob("*.ogg") if p.stat().st_size >= 1024),
+        "uiAudio": {lang: sorted(p.stem[len(lang)+1:] for p in (ROOT / "app/audio/ui").glob(lang + "_*.ogg")) for lang in ui},
         "audioPath": {"word": "audio/{lang}/{id}.ogg", "q": "audio/{lang}/{id}_q.ogg",
                       "gloss": "audio/ru/{id}.ogg", "ui": "audio/ui/{lang}_{key}.ogg"},
         "uiImg": {"star": "img/ui_star.svg", "chest": "img/ui_chest.svg", "home": "img/ui_home.svg",

@@ -2,6 +2,7 @@
    Run: node tools/smoke.js */
 const path = require('path');
 const fs = require('fs');
+const { waitRunProgress, readRunSnapshot } = require('./run_progress_contract');
 const pw = require(require.resolve('playwright', { paths: [process.cwd(), __dirname] }));
 const ROOT = path.resolve(__dirname, '..');
 const APP = path.join(ROOT, 'app');
@@ -537,13 +538,15 @@ async function waitScreenAfterCelebrations(want) {
     await waitFor(() => __runState.state === 'bounce', null, 2000, 'pre-door fall enters spring recovery');
     expect(await page.evaluate(() => __runState.checkpointX === 220 && __runState.lisa.x === 220), 'fall before the first door returns to initial spawn');
     await waitFor(() => __runState.state === 'run', null, 5000, 'running resumes after pre-door recovery');
+    /* Observe >300 from the post-recovery baseline before a later legitimate fall resets x. */
+    let runningProgress = null, runningProgressError = '';
+    try { runningProgress = await waitRunProgress(() => readRunSnapshot(page)); } catch (e) { runningProgressError = e.message; }
+    expect(!!runningProgress && runningProgress.delta > 300, 'Lisa should keep running by herself (observed post-recovery progress: ' + JSON.stringify(runningProgress) + '; ' + runningProgressError + ')');
     /* watch her run for a while without jumping: states must stay friendly (no fail state) */
     const seen = new Set();
     for (let i = 0; i < 40; i++) { seen.add(await page.evaluate(() => __runState.state)); await sleep(150); }
     log('  run states seen: ' + [...seen].join(','));
     expect(!seen.has('dead') && !seen.has('over'), 'run must have no fail state');
-    const xNow = await page.evaluate(() => __runState.lisa.x);
-    expect(xNow > st1.x + 300, 'Lisa should keep running by herself (x ' + st1.x + ' -> ' + xNow + ')');
     await shot('run-mid');
     const nG = await page.evaluate(() => __runState.gates.length);
     log('  gates: ' + nG);

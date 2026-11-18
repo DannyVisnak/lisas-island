@@ -27,7 +27,7 @@ Core.sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms 
 Core.worlds = D.worlds;
 Core.item = function (id) { return D.items[id]; };
 Core.worldIdx = function (wid) { for (var i = 0; i < D.worlds.length; i++) if (D.worlds[i].id === wid) return i; return -1; };
-Core.worldItems = function (wid) { return D.worlds[Core.worldIdx(wid)].items; };
+Core.worldItems = function (wid) { var i = Core.worldIdx(wid); if (i >= 0) return D.worlds[i].items; var p = D.packs && D.packs[wid]; return p && Array.isArray(p.items) ? p.items.slice() : []; };
 Core.picKey = function (it) {
   var p = it.pic;
   return p.type === 'emoji' ? 'e:' + p.src : p.type === 'color' ? 'c:' + String(p.hex).toLowerCase() : 'n:' + p.n;
@@ -54,9 +54,28 @@ function norm(s) { return String(s || '').toLowerCase().replace(/[.!?,]/g, '').t
 Core.url = {
   w: function (lang, id) { return D.audioPath.word.replace('{lang}', lang).replace('{id}', id); },
   q: function (lang, id) { return D.audioPath.q.replace('{lang}', lang).replace('{id}', id); },
-  gloss: function (id) { return D.audioPath.gloss.replace('{id}', id); },
+  gloss: function (id, targetLang) {
+    if (!Core.save.settings.ruHelp || Core.baseLang() === targetLang) return null;
+    return Core.baseLang() === 'en' ? Core.url.w('en', id) : D.audioPath.gloss.replace('{id}', id);
+  },
   ui: function (lang, key) { return D.audioPath.ui.replace('{lang}', lang).replace('{key}', key); }
 };
+/* Base language is separate from the language being learned. Legacy ru* APIs remain aliases. */
+Core.baseLang = function () { return Core.save.settings.baseLang === 'en' ? 'en' : 'ru'; };
+Core.baseText = function (key) { var u = D.ui[Core.baseLang()]; return u && u[key] || ''; };
+Core.baseUrl = function (key) {
+  var lang = Core.baseLang(), available = D.uiAudio && D.uiAudio[lang];
+  if (!Core.save.settings.ruHelp || !Core.baseText(key)) return null;
+  /* Build-time inventory prevents guessed URLs or fallback speech in the wrong language. */
+  if (!available || available.indexOf(key) < 0) return null;
+  return Core.url.ui(lang, key);
+};
+Core.glossText = function (id, targetLang) {
+  if (!Core.save.settings.ruHelp || Core.baseLang() === targetLang) return '';
+  var it = Core.item(id); return !it ? '' : Core.baseLang() === 'en' ? it.en.word : it.ru;
+};
+/* Exact Opus country handoff exclusions: no same-picture idea as a distractor. */
+var COUNTRY_CONTRAST = [['castle','country_castle'],['fish','country_sardine'],['ball','country_football'],['teddy','country_bear'],['tree','country_forest'],['boat','country_gondola'],['bread','country_baguette'],['cake','country_custard_tart'],['flower','country_cherry_blossom']];
 /* distractor choice: never two items with the same picture or the same target-language word */
 Core.choices = function (lang, targetId, n, pool) {
   var t = D.items[targetId], usedPic = {}, usedWord = {}, out = [targetId];
@@ -64,13 +83,14 @@ Core.choices = function (lang, targetId, n, pool) {
   function tryAdd(id) {
     if (out.length >= n || id === targetId) return;
     var it = D.items[id]; if (!it) return;
+    if (out.some(function(other){return COUNTRY_CONTRAST.some(function(pair){return pair.indexOf(id)>=0 && pair.indexOf(other)>=0;});})) return;
     var pk = Core.picKey(it), w = norm(it[lang].word);
     if (usedPic[pk] || usedWord[w]) return;
     usedPic[pk] = 1; usedWord[w] = 1; out.push(id);
   }
   Core.shuffle(pool || []).forEach(tryAdd);
   if (out.length < n) {
-    var same = D.worlds[Core.worldIdx(t.world)].items;
+    var same = Core.worldItems(t.world);
     Core.shuffle(same).forEach(tryAdd);
   }
   if (out.length < n) Core.shuffle(Object.keys(D.items)).forEach(tryAdd);
@@ -88,20 +108,33 @@ Core.placeCorrect = function (ids, target) { /* avoid the correct card sitting i
 
 /* ---------- storage ---------- */
 var KEY = 'lisa-island-v1';
+function validAge(age) { return typeof age === 'number' && [3, 4, 5, 6].indexOf(age) >= 0; }
+Core.ageProfile = function (age) { return { pathSmall: age <= 4, sessionMin: 15 }; };
+/* Loading fills missing settings; only a changed explicit selection applies a profile. */
+Core.applyAgeProfile = function (age) {
+  var S = Core.save.settings;
+  if (!validAge(age) || age === S.ageYears) return false;
+  var profile = Core.ageProfile(age);
+  S.ageYears = age; S.pathSmall = profile.pathSmall; S.sessionMin = profile.sessionMin;
+  Core.persist(); return true;
+};
 function defaults() {
   return {
     v: 1, firstRun: true,
-    settings: { enabled: { pt: true, en: true, de: false }, ruHelp: true, subtitles: true, sessionMin: 15, pathSmall: false, hard: false, volume: 0.9, dailyGoal: 30 },
+    settings: { enabled: { pt: true, en: true, de: false }, baseLang: 'ru', ruHelp: true, subtitles: true, ageYears: 6, sessionMin: 15, pathSmall: false, letters: false, physicalKeys: false, hard: false, volume: 0.9, dailyGoal: 30 },
     stars: 0, hats: { unlocked: [], worn: [] }, hardStop: null, langs: {},
     /* rewards (added with the Duolingo-style layer; old saves get these defaults through merge()) */
     xp: 0, daily: { day: -1, xp: 0, met: false }, goalDays: [], crowns: {},
     /* Lisa's house (house.js): stage = build stages shown so far (0-5, milestones of the lifetime star total), gifts = unopened furniture gifts, owned = furniture ids, placed = id -> slot.
        Nothing is ever paid: stars only grow. */
-    house: { stage: 0, gifts: 0, owned: [], placed: {}, reviewDay: -1 }
+    house: { stage: 0, gifts: 0, owned: [], placed: {}, reviewDay: -1, look: {} }
   };
 }
 /* repair odd values after loading so a hand-edited or older save can never break the reward layer */
 function sanitize(s) {
+  if (typeof s.settings.letters !== 'boolean') s.settings.letters = false;
+  if (typeof s.settings.physicalKeys !== 'boolean') s.settings.physicalKeys = false;
+  if (s.settings.baseLang !== 'en') s.settings.baseLang = 'ru';
   if (typeof s.xp !== 'number' || !isFinite(s.xp) || s.xp < 0) s.xp = 0;
   if (!s.daily || typeof s.daily !== 'object') s.daily = { day: -1, xp: 0, met: false };
   if (typeof s.daily.xp !== 'number' || !isFinite(s.daily.xp) || s.daily.xp < 0) s.daily.xp = 0;
@@ -114,7 +147,7 @@ function sanitize(s) {
   if (typeof s.settings.subtitles !== 'boolean') s.settings.subtitles = true;
   s.settings.dailyGoal = (g >= 10 && g <= 300) ? Math.round(g) : 30;
   var h = s.house;
-  if (!h || typeof h !== 'object' || Array.isArray(h)) h = s.house = { stage: 0, gifts: 0, owned: [], placed: {}, reviewDay: -1 };
+  if (!h || typeof h !== 'object' || Array.isArray(h)) h = s.house = { stage: 0, gifts: 0, owned: [], placed: {}, reviewDay: -1, look: {} };
   if (typeof h.built === 'number' && isFinite(h.built)) h.stage = Math.max(Number(h.stage) || 0, h.built);   /* migrate the first (purse) draft: nothing is lost, nothing is paid back */
   delete h.built; delete h.spent;
   if (typeof h.stage !== 'number' || !isFinite(h.stage)) h.stage = 0;
@@ -125,16 +158,28 @@ function sanitize(s) {
   if (!Array.isArray(h.owned)) h.owned = [];
   h.owned = h.owned.filter(function (id, i) { return typeof id === 'string' && h.owned.indexOf(id) === i; });
   if (!h.placed || typeof h.placed !== 'object' || Array.isArray(h.placed)) h.placed = {};
+  var look = h.look;
+  if (!look || typeof look !== 'object' || (Object.getPrototypeOf(look) !== Object.prototype && Object.getPrototypeOf(look) !== null)) look = {};
+  h.look = {};
+  Object.keys(look).forEach(function (key) {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
+    var value = look[key];
+    if (typeof value === 'string' && value.length <= 16 && /^[a-z]+$/.test(value)) h.look[key] = value;
+  });
   /* linear path (path.js): per-language session record. A broken record is dropped (a new session simply starts); words/boxes are never touched here. */
   if (s.langs && typeof s.langs === 'object') Object.keys(s.langs).forEach(function (l) {
     var L = s.langs[l]; if (!L || typeof L !== 'object') { delete s.langs[l]; return; }
+    if (window.CountryRules && L.countries != null) L.countries = CountryRules.migrateLanguage(L).countries;
     if (L.path != null && (typeof L.path !== 'object' || Array.isArray(L.path) || typeof L.path.day !== 'string')) delete L.path;
   });
+  if (!validAge(s.settings.ageYears)) s.settings.ageYears = 6;
+  if ([10, 15, 20].indexOf(Number(s.settings.sessionMin)) < 0) s.settings.sessionMin = 15;
   if (typeof s.settings.pathSmall !== 'boolean') s.settings.pathSmall = false;
   return s;
 }
 function merge(a, b) {
   for (var k in b) {
+    if (!Object.prototype.hasOwnProperty.call(b, k) || k === '__proto__' || k === 'constructor' || k === 'prototype') continue;
     if (b[k] && typeof b[k] === 'object' && !Array.isArray(b[k]) && a[k] && typeof a[k] === 'object' && !Array.isArray(a[k])) merge(a[k], b[k]);
     else a[k] = b[k];
   }
@@ -261,7 +306,7 @@ function getAudio(url) {
   }
   return a;
 }
-Snd.preload = function (url) { if (!Core.fast) try { getAudio(url); } catch (e) {} };
+Snd.preload = function (url) { if (url && !Core.fast) try { getAudio(url); } catch (e) {} };
 function playOne(url, tok) {
   return new Promise(function (res) {
     if (Core.fast) { setTimeout(function () { res(true); }, 40); return; }
@@ -286,7 +331,7 @@ function playOne(url, tok) {
     var p;
     try { p = a.play(); } catch (e) { fin(false); return; }
     if (p && p.catch) p.catch(function (err) {
-      if (err && err.name === 'NotAllowedError') Snd._blocked = true;
+      if (tok === Snd.token && err && err.name === 'NotAllowedError') Snd._blocked = true;
       fin(false);
     });
     safety = setTimeout(function () { fin(true); }, ((isFinite(a.duration) && a.duration > 0) ? a.duration * 1000 : 5000) + 1500);
@@ -294,6 +339,7 @@ function playOne(url, tok) {
 }
 Snd.stop = function () {
   Snd.token++;
+  Snd.pendingList = null; Snd._blocked = false; /* navigation/cancellation also retires gesture retries */
   var act = Snd.active.slice();
   act.forEach(function (r) { try { r.a.pause(); } catch (e) {} r.fin(false); });
 };
@@ -427,11 +473,11 @@ Core.Flow = Flow;
 /* Russian instruction voice (respects the parent setting) */
 Core.sayRu = function (flow, key, extra) {
   var list = [];
-  if (Core.save.settings.ruHelp) list.push(Core.url.ui('ru', key));
+  var u = Core.baseUrl(key); if (u) list.push(u);
   if (extra) list = list.concat(extra);
   return list.length ? flow.say(list) : flow.wait(200);
 };
-Core.ruUrl = function (key) { return Core.save.settings.ruHelp ? Core.url.ui('ru', key) : null; };
+Core.ruUrl = Core.baseUrl;
 var praiseN = 0;
 Core.praiseUrl = function (lang) { praiseN = (praiseN % 3) + 1; return Core.url.ui(lang, 'praise' + praiseN); };
 
@@ -509,6 +555,7 @@ SRS.dueList = function (lang) {
 SRS.introduced = function (lang) {
   var W = Core.L(lang).words, out = [];
   D.worlds.forEach(function (w) { w.items.forEach(function (id) { if (W[id] && W[id].box >= 1) out.push(id); }); });
+  Core.worldItems('countries').forEach(function(id) { if (out.indexOf(id) < 0 && W[id] && W[id].box >= 1) out.push(id); });
   return out;
 };
 SRS.stickerCount = function (lang) {
@@ -516,7 +563,7 @@ SRS.stickerCount = function (lang) {
   for (var id in W) if (W[id].sticker && D.items[id]) n++;
   return n;
 };
-Core.totalWords = D.worlds.reduce(function (n, w) { return n + w.items.length; }, 0);
+Core.totalWords = Object.keys(D.items).length;
 Core.pending = { stickers: [], hats: [], opened: [], goal: false };
 
 /* ---------- progress: worlds / levels / stars / hats ---------- */
@@ -571,12 +618,37 @@ Core.houseGift = function (src) {
   H.gifts++; Core.persist(); return true;
 };
 /* the child picked an item for a gift: one gift is used, the item is owned and placed in its slot. Returns true when stored. */
-Core.housePlace = function (id, slot) {
-  var H = Core.save.house;
-  if (!id || H.gifts < 1 || H.stage < 5 || H.owned.indexOf(id) >= 0) return false;
-  H.gifts--; H.owned.push(id); H.placed[id] = slot == null ? 1 : slot; Core.persist(); return true;
+function houseVariant(key) {
+  var registry = window.House && window.House.VARIANTS || window.HouseVariantRules && window.HouseVariantRules.VARIANTS;
+  return typeof key === 'string' && key !== '__proto__' && key !== 'constructor' && key !== 'prototype' && registry && Object.prototype.hasOwnProperty.call(registry, key) ? registry[key] : null;
+}
+function validHouseLook(key, look) {
+  var entry = houseVariant(key);
+  return !!entry && Array.isArray(entry.list) && typeof look === 'string' && entry.list.indexOf(look) >= 0;
+}
+function houseStagePart(n) { return ['plot', 'base', 'walls', 'roof', 'door'][n - 1] || null; }
+function housePartStage(key) { return ['plot', 'base', 'walls', 'roof', 'door'].indexOf(key) + 1; }
+Core.houseSetLook = function (key, look) {
+  var H = Core.save.house, stage = housePartStage(key);
+  if (!validHouseLook(key, look) || (stage ? H.stage < stage : H.owned.indexOf(key) < 0)) return false;
+  H.look[key] = look; Core.persist(); return true;
 };
-Core.houseStage = function (n) { var H = Core.save.house; n = Core.clamp(Math.round(n), 0, 5); if (n > H.stage) { H.stage = n; Core.persist(); return true; } return false; };
+Core.housePlace = function (id, slot, look) {
+  var H = Core.save.house;
+  if (!houseVariant(id) || housePartStage(id) || H.gifts < 1 || H.stage < 5 || H.owned.indexOf(id) >= 0 || (arguments.length >= 3 && !validHouseLook(id, look))) return false;
+  H.gifts--; H.owned.push(id); H.placed[id] = slot == null ? 1 : slot;
+  if (arguments.length >= 3) H.look[id] = look;
+  Core.persist(); return true;
+};
+Core.houseStage = function (n, look) {
+  var H = Core.save.house;
+  if (typeof n !== 'number' || !isFinite(n)) return false;
+  n = Core.clamp(Math.round(n), 0, 5);
+  if (n <= H.stage || (arguments.length >= 2 && !validHouseLook(houseStagePart(n), look))) return false;
+  H.stage = n;
+  if (arguments.length >= 2) H.look[houseStagePart(n)] = look;
+  Core.persist(); return true;
+};
 Core.starsFor = function (mistakes) { return mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1; };
 Core.completeLevel = function (lang, wid, k, stars) {
   var lv = Core.lv(lang, wid), wasDone = lv[k].done, old = lv[k].stars || 0, crownBefore = Core.crownOf(lang, wid);
@@ -676,11 +748,11 @@ var LISA_KEYS = {
 };
 var lisaBag = {}, lisaLastKey = {};
 Core.lisaLast = null;
-Core.lisaUrl = function (key) { return Core.url.ui('ru', key); };
+Core.lisaUrl = Core.baseUrl;
 Core.lisaBad = function (key) { var a = Snd.cache[Core.lisaUrl(key)]; return !!(a && a._bad); };
 Core.lisaLine = function (group) {
   if (!Core.save.settings.ruHelp) return null;
-  var keys = (LISA_KEYS[group] || []).filter(function (k) { return D.ui && D.ui.ru && D.ui.ru[k] != null && !Core.lisaBad(k); });
+  var keys = (LISA_KEYS[group] || []).filter(function (k) { return Core.baseUrl(k) && !Core.lisaBad(k); });
   if (!keys.length) return null;
   var bag = (lisaBag[group] || []).filter(function (k) { return keys.indexOf(k) >= 0; });
   if (!bag.length) {
@@ -694,7 +766,7 @@ Core.lisaLine = function (group) {
 /* ask the browser which of Lisa's files exist (a failed load marks the cache entry bad); harmless when they are missing */
 Core.lisaProbe = function () {
   if (Core.fast) return;
-  Object.keys(LISA_KEYS).forEach(function (g) { LISA_KEYS[g].forEach(function (k) { Snd.preload(Core.lisaUrl(k)); }); });
+  Object.keys(LISA_KEYS).forEach(function (g) { LISA_KEYS[g].forEach(function (k) { var u = Core.lisaUrl(k); if (u) Snd.preload(u); }); });
 };
 
 /* ---------- session length (soft / hard stop) ---------- */

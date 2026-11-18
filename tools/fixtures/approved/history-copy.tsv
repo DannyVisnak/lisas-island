@@ -1,0 +1,49 @@
+# key	lang	text   (LISA-15 history lessons H1-H6: Russian Lisa narration, written by the controller (Opus 5.5) 16.11.26 from RESEARCH.md §4 beats + writer boundaries. Same shape as content/lessons_ui.tsv (cs_<topic>_N, _Nq = question half, _Na/_Nb = reveal for tap choice a/b). Each lesson ends with cs_hist_name, then the target-language word clip (PT o castelo / o azulejo / o elétrico / o navio / o livro / a boneca; EN/DE from RESEARCH.md). Order in the pack: castle, tiles, tram, ship, doll, print; never two history lessons in one sitting.)
+cs_hist_name	ru	Послушай, как это называется.
+cs_hist_castle_1	ru	Смотри, мы в Лиссабоне! Там, на горе, стоит настоящий замок.
+cs_hist_castle_2	ru	У замка есть высокая башня и толстая каменная стена.
+cs_hist_castle_3	ru	Этот замок начали строить давным-давно. Тогда ещё не было ни машин, ни телефонов!
+cs_hist_castle_4	ru	Давай его рассмотрим.
+cs_hist_castle_4q	ru	Что посмотрим, башню или стену?
+cs_hist_castle_5a	ru	Башня! С неё далеко-далеко видно весь город.
+cs_hist_castle_5b	ru	Стена! Она толстая и крепкая.
+cs_hist_castle_6	ru	Замок очень старый, а люди его чинят и берегут. Поэтому он стоит и сегодня.
+cs_hist_tiles_1	ru	Ой, какая стена! Она вся в картинках.
+cs_hist_tiles_2	ru	Каждая картинка нарисована на плитке. Плитка гладкая и блестит.
+cs_hist_tiles_3	ru	В Португалии так украшают стены уже очень-очень давно. Сотни лет!
+cs_hist_tiles_4	ru	А на моей стенке не хватает одной плитки.
+cs_hist_tiles_4q	ru	Какая плитка подходит к узору?
+cs_hist_tiles_4x	ru	Хм, эта не подходит. Попробуем другую!
+cs_hist_tiles_5	ru	Подошла! Теперь узор целый. Смотри: эта стена старая, а эта новая, и на обеих красивые плитки.
+cs_hist_tiles_6	ru	Такие плитки делали давным-давно и делают сейчас.
+cs_hist_tram_1	ru	Мы на остановке. Сейчас приедет трамвай!
+cs_hist_tram_2	ru	А давным-давно в Лиссабоне был вот такой вагончик на рельсах. Его везли лошадки!
+cs_hist_tram_3	ru	Лошадки шли вперёд, и вагончик ехал за ними по рельсам.
+cs_hist_tram_4	ru	А это трамвай сегодня. Лошадок у него нет.
+cs_hist_tram_4q	ru	Как думаешь, он поедет без лошадок?
+cs_hist_tram_5	ru	Поехал! Его везёт электричество. Оно бежит вот по этому проводу наверху.
+cs_hist_tram_6	ru	Сначала вагончик везли лошадки, а потом трамвай поехал на электричестве.
+cs_hist_ship_1	ru	Посмотри на эту картинку. Это старинный корабль.
+cs_hist_ship_2	ru	Он деревянный, а наверху у него большие паруса.
+cs_hist_ship_3	ru	На таких кораблях моряки из Португалии плавали давным-давно, сотни лет назад. Корабль называется каравелла.
+cs_hist_ship_4	ru	Давай посмотрим на паруса поближе.
+cs_hist_ship_4q	ru	Какой парус посмотрим, этот или вон тот?
+cs_hist_ship_5	ru	Парус сшит из ткани. Ветер дует в парус, и корабль плывёт!
+cs_hist_ship_6	ru	Давным-давно моряки плавали на кораблях с парусами, и их толкал ветер.
+cs_hist_print_1	ru	Мы в Германии, в городе Майнц. Здесь работал мастер Гутенберг.
+cs_hist_print_2	ru	Смотри, вот маленькие кусочки металла. На каждом одна буква.
+cs_hist_print_3	ru	Мастер ставит буквы в ряд, одну к другой. Получается целая строчка!
+cs_hist_print_4	ru	Теперь он мажет буквы краской и крепко прижимает к ним лист бумаги.
+cs_hist_print_4q	ru	Как думаешь, что будет на листе?
+cs_hist_print_5	ru	Смотри! На листе появились буквы. А на втором листе точно такие же!
+cs_hist_print_6	ru	Мастер Гутенберг печатал страницы маленькими металлическими буквами. А из страниц получались книги.
+cs_hist_doll_1	ru	Посмотри, какая старинная игрушка! Её сделали в России больше ста лет назад.
+cs_hist_doll_2	ru	Это матрёшка. Она деревянная и ярко раскрашенная.
+cs_hist_doll_3	ru	А матрёшка открывается!
+cs_hist_doll_3q	ru	Как думаешь, что у неё внутри?
+cs_hist_doll_4	ru	Открываем! Внутри матрёшка поменьше.
+cs_hist_doll_4b	ru	А в ней ещё одна, совсем маленькая!
+cs_hist_doll_5	ru	Такие матрёшки делают и сегодня, и дети с ними играют.
+cs_hist_doll_6	ru	Деревянным матрёшкам уже больше ста лет.
+# Prediction taps (tram_4q, print_4q, doll_3q) have no wrong answer: any tap plays the reveal. Only tiles_4q can miss (tiles_4x, then retry). No dates, no quiz, no score.
+# Facts checked against RESEARCH.md §4: castle founded 11th c., restored 1938-40 (castle_6 says it is mended); azulejos mid-15th c. onward, not "invented in Portugal", not "all blue"; horse-drawn tramcar 1873 then electric 1901 (dates adult-only); caravels = Portuguese crews centuries ago, no discovery claims; Gutenberg = movable metal type, not "first book"/"invented printing"; nesting dolls made in Sergiev Posad 1900s = "more than 100 years".

@@ -1,6 +1,7 @@
 /* Lisa's Island - smoke for the shared mini-game API itself (ctx helpers + MG.drag), using a throw-away game registered in the page.
    Called by smoke_mg.js; standalone: node tools/smoke_mg_api.js */
 const { boot, sleep } = require('./mg_lib');
+const { uiNamespaceFixture } = require('./mg_api_fixture');
 
 async function run(lib) {
   const { page } = lib;
@@ -25,10 +26,20 @@ async function run(lib) {
   const T = await page.evaluate(() => __apit.targets);
   lib.expect(T.length === 3 && new Set(T).size === 3, 'pickTargets should return 3 unique items, got ' + JSON.stringify(T));
   lib.expect(await page.evaluate((t) => t.every((i) => Core.worldItems('food').indexOf(i) >= 0), T), 'pickTargets must stay inside the requested world');
-  const urls = await page.evaluate(() => ({ ru: __mgTest.ru(), key: __mgTest.key(), ask: __mgTest.ask() }));
-  lib.expect(/ui\/ru_mg_apitest_help\.ogg$/.test(urls.ru || ''), 'ctx.ruUrl("help") -> mg_<id>_help, got ' + urls.ru);
-  lib.expect(/ru_mg_apitest_intro/.test(urls.key[0] || '') && /ru_mg_feed_done/.test(urls.key[1] || ''), 'ctx.ruUrl keys: short and full mg_ form');
-  lib.expect(/_q\.ogg$/.test(urls.ask), 'ctx.askUrl should be the q_ clip');
+  /* Unknown synthetic names must stay unavailable under the real asset policy. */
+  const missing = await page.evaluate(() => ({ help: __mgTest.ru(), intro: __mgTest.key()[0] }));
+  lib.expect(missing.help === null && missing.intro === null, 'uncatalogued synthetic UI keys return null');
+  try {
+    await page.evaluate(uiNamespaceFixture, { action: 'install' });
+    const urls = await page.evaluate(() => ({ ru: __mgTest.ru(), key: __mgTest.key(), ask: __mgTest.ask() }));
+    lib.expect(/ui\/ru_mg_apitest_help\.ogg$/.test(urls.ru || ''), 'ctx.ruUrl("help") -> mg_<id>_help, got ' + urls.ru);
+    lib.expect(/ru_mg_apitest_intro/.test(urls.key[0] || '') && /ru_mg_feed_done/.test(urls.key[1] || ''), 'ctx.ruUrl keys: short and full mg_ form');
+    lib.expect(/_q\.ogg$/.test(urls.ask), 'ctx.askUrl should be the q_ clip');
+  } finally {
+    /* Namespace-only metadata is removed before any drag/reward/help playback. No synthetic TTS exists. */
+    await page.evaluate(uiNamespaceFixture, { action: 'restore' });
+  }
+  lib.expect(await page.evaluate(() => __mgTest.ru() === null && __mgTest.key()[0] === null), 'synthetic namespace metadata is restored to unavailable');
   const zero = (v) => /^(0px( 0px)?)?$/.test(v || '');
   const off = () => page.evaluate(() => ({ a: document.querySelector('.apit-a').style.translate, b: document.querySelector('.apit-b').style.translate }));
 

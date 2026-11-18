@@ -1,0 +1,617 @@
+[
+  {
+    "path": "audio/ui/ru_lisa_shop_intro.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_basket.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_price.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_pay.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_count.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_more.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_extra.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_exact.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_change.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_swap.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_find.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_note.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_euro.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_cent.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_budget.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_left.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_finish.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_shop_travel.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_gbp.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_usd.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_chf.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_jpy.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_rub.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_cur_brl.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_pt.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_de.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_uk.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_us.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_ch.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_jp.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_jp2.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_ru.ogg"
+  },
+  {
+    "path": "audio/ui/ru_lisa_fact_br.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_eur.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_gbp.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_usd.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_chf.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_jpy.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_rub.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_cur_brl.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_2.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_3.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_4.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_2.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_3.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_4.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_6.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_7.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_8.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_9.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_20.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_eur_cent_50.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_gbp_pence_50.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_gbp_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_gbp_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_gbp_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_usd_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_usd_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_usd_cent_25.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_usd_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_chf_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_chf_2.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_chf_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_chf_20.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_jpy_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_jpy_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_jpy_50.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_jpy_100.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_rub_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_rub_2.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_rub_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_rub_10.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_brl_centavo_50.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_brl_1.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_brl_2.ogg"
+  },
+  {
+    "path": "audio/ui/en_shop_amt_brl_5.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_intro.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_basket.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_price.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_pay.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_count.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_more.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_extra.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_exact.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_change.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_swap.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_find.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_euro.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_cent.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_finish.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_shop_travel.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_gbp.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_usd.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_chf.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_jpy.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_rub.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_cur_brl.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_pt.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_uk.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_us.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_ch.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_jp.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_ru.ogg"
+  },
+  {
+    "path": "audio/ui/en_lisa_fact_br.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_eur.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_gbp.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_usd.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_chf.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_jpy.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_rub.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_cur_brl.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_2.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_3.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_4.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_2.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_3.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_4.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_6.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_7.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_8.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_9.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_20.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_eur_cent_50.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_gbp_pence_50.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_gbp_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_gbp_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_gbp_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_usd_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_usd_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_usd_cent_25.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_usd_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_chf_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_chf_2.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_chf_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_chf_20.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_jpy_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_jpy_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_jpy_50.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_jpy_100.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_rub_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_rub_2.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_rub_5.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_rub_10.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_brl_centavo_50.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_brl_1.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_brl_2.ogg"
+  },
+  {
+    "path": "audio/ui/pt_shop_amt_brl_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_eur.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_gbp.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_usd.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_chf.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_jpy.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_rub.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_cur_brl.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_2.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_3.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_4.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_2.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_3.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_4.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_6.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_7.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_8.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_9.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_20.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_eur_cent_50.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_gbp_pence_50.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_gbp_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_gbp_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_gbp_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_usd_cent_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_usd_cent_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_usd_cent_25.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_usd_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_chf_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_chf_2.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_chf_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_chf_20.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_jpy_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_jpy_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_jpy_50.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_jpy_100.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_rub_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_rub_2.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_rub_5.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_rub_10.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_brl_centavo_50.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_brl_1.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_brl_2.ogg"
+  },
+  {
+    "path": "audio/ui/de_shop_amt_brl_5.ogg"
+  }
+]

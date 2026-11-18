@@ -13,15 +13,18 @@ Source of every rule: research/LEARNING_SCIENCE.md §9 + "Design rules" checklis
 | 0 | Hello + warm-up | 2–3 due words (box ≥1, due today) | Lisa `hi` line → listen&tap, 2 choices, errorless. Skip if nothing is due. |
 | A1 | Meet A | 4 new | existing meet card, 3 exposures per word: word alone → carrier phrase → word + action/gesture prompt. Target lit, others dimmed. Russian gloss only while the word is in box 0 (first ever exposure). |
 | A2 | Memory | same 4 (4 pairs) | existing memory game |
-| A3 | Mini-game X | 4 new + 2–4 due old | the registered mini-game whose `worlds` contains the current world; if none, listen&tap with 3 choices |
+| A3 | Mini-game X | 4 new + 2–4 due old | the registered mini-game whose `worlds` contains the current world; if none, listen&tap with the per-word choice ladder (§4) |
 | C | Lesson + move | – | `Lesson.play(nextLessonId)` (built by the lesson builder) then movement break: `move` line, 35 s with Lisa doing the move (simple bounce animation), `moveend` line. If no lesson is available, movement break only. |
 | B1 | Meet B | 4 new | as A1 |
-| B2 | Listen & tap | B words + 1–2 A words | 2–3 choices (see §4) |
+| B2 | Listen & tap | B words + 1–2 A words | 2–4 choices (see §4) |
 | B3 | Game Z | all 8 new + 4–6 due old | rotate: Run (picture gates) → seek-and-find scene (Scene, if the world has one) → another mini-game from an EARLIER world (review). Run/seek only use words already retrieved ≥2 times this session. |
 | R | Ritual | – | `blockend` praise was already given; now house gift (Core.houseGift via the existing hook), Lisa yawns, `bye` line, sleepy-fox screen. |
 
 Rules
 - New words: 4 per block, 8 per session max. Parent setting "small" (age 3–4) = block A only.
+- Fresh saves store `settings.ageYears=6`, `pathSmall=false`, `sessionMin=15` (900000 ms active cap). Age profiles support integers 3/4/5/6: ages 3–4 select Small; ages 5–6 select Normal; all initially select 15 minutes.
+- Loading missing/invalid age uses 6 without changing valid saved Small/time overrides or any progress, rewards or unfinished session. Only changing the parent Age selection explicitly applies that profile. Selecting the same age preserves overrides. Existing Small and 10/15/20-minute controls remain independent overrides.
+- Age/Small changes affect the next newly planned session; existing plans stay intact. Session length remains a live cap for the current session.
 - Review-only day: if > 12 words are due, skip both Meet blocks: `reviewday` line → listen&tap (due) → mini-game X of the due words' world → lesson + move → Run/seek with due words → ritual.
 - Never start Block B before every A word has been retrieved at least once in a game.
 - Choose new words in world order (current world first, its unseen items); when a world has no unseen words left, the next world starts. World order: animals, food, colors, numbers, body, family, clothes, toys, home, transport, nature, actions, phrases, school (adjust if a world id does not exist). Lesson end-card words (water, moon, n4) are queued first into the next Meet.
@@ -36,7 +39,7 @@ Rules
 ## 4. SRS changes (core.js)
 - Leitner: one promotion per calendar day per word (keep). Lapse: box ≥3 → down one box; box 1–2 → box 1. (Currently resets to 1.)
 - Due intervals: box1 +1 d, box2 +3 d, box3 +7 d, box4 +14 d, box5 +30 d.
-- Choices count per word: 2 until the word has 3 first-try-correct answers on different days, then 3, then 4 after another 3. Never change inside a block after an error.
+- Choices count per word: 2 until the word has 3 first-try-correct answers on different days, then 3, then 4 after another 3. Cache the count per word for the session; errors and reloads retain it. Ordinary answer-card fallbacks, catch-up questions and daily Run gates use the same cache. Warm-up stays at two choices; scene objects, memory and bespoke mini-games retain their existing mechanics. If distinct valid distractors are scarce, use fewer cards.
 
 ## 5. Stars (completion-based, fixed)
 - +1 star per finished step (warm-up, Meet, Memory, X, lesson, Listen&tap, Z), +3 for the ritual. Never accuracy-based, never random. `Core.starsFor` accuracy logic is not used in the path (the parent free-play keeps it).

@@ -123,3 +123,8 @@ actions	sing	🧑‍🎤	sing	cantar	singen	петь	Who is singing?	Quem está 
 actions	cry	😢	cry	chorar	weinen	плакать	Who is crying?	Quem está a chorar?	Wer weint?
 actions	laugh	😂	laugh	rir	lachen	смеяться	Who is laughing?	Quem está a rir?	Wer lacht?
 actions	clap	👏	clap	bater palmas	klatschen	хлопать	Who is clapping?	Quem está a bater palmas?	Wer klatscht?
+home	castle	🏰	castle	o castelo	die Burg	замок	Where is the castle?	Onde está o castelo?	Wo ist die Burg?
+home	azulejo	🔷	tile	o azulejo	die Fliese	плитка	Where is the tile?	Onde está o azulejo?	Wo ist die Fliese?
+transport	tram	🚋	tram	o elétrico	die Straßenbahn	трамвай	Where is the tram?	Onde está o elétrico?	Wo ist die Straßenbahn?
+transport	ship	🚢	ship	o navio	das Schiff	корабль	Where is the ship?	Onde está o navio?	Wo ist das Schiff?
+toys	doll	🪆	doll	a boneca	die Puppe	кукла	Where is the doll?	Onde está a boneca?	Wo ist die Puppe?

@@ -23,7 +23,7 @@ async function boot(o) {
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   fs.mkdirSync(SHOTS, { recursive: true });
-  await page.goto(o.url || URL);
+  await page.goto(o.url || URL, { waitUntil: o.waitUntil || 'load' });
   await page.waitForFunction(() => window.__test && __test.screen() === 'home');
   await page.evaluate((n) => __test.speedUp(n), o.speed || 8);
   const lib = { page, browser, errors, problems, sleep };

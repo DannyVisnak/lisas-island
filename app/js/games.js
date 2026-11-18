@@ -31,7 +31,7 @@ Q.ask = function (flow, host, o) {
       help: function () {
         if (done || prompting) return; helped = true;
         var list = [Core.url.w(lang, tid)], hl = Core.lisaLine('help');
-        if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(tid));
+        if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(tid, lang));
         if (hl) list = [hl, 150].concat(list);
         prompt(list);
         cards[tid].classList.add('hint');
@@ -180,7 +180,7 @@ UI.screens.meet = function (flow, root, p) {
     var c = el('div', 'card meet'); c.dataset.id = id; c.style.animationDelay = (i * 90) + 'ms';
     c.appendChild(Core.Pic.el(Core.item(id)));
     firstExposure[id] = SRS.peek(lang, id).box < 1;
-    labels[id] = Core.vocabLabelEl(lang, Core.item(id), firstExposure[id] && Core.save.settings.ruHelp ? Core.item(id).ru : '', 'vocab-label meet-label'); c.appendChild(labels[id]);
+    labels[id] = Core.vocabLabelEl(lang, Core.item(id), firstExposure[id] ? Core.glossText(id, lang) : '', 'vocab-label meet-label'); c.appendChild(labels[id]);
     c.appendChild(el('span', 'check', Lisa.ico.check));
     cards[id] = c; counts[id] = 0;
     tap(c, function () {
@@ -190,7 +190,7 @@ UI.screens.meet = function (flow, root, p) {
       if (counts[id] >= 2) c.classList.add('seen');
       ctx.lisa.react('cheer');
       var list = [Core.url.w(lang, id)];
-      if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(id));
+      if (Core.save.settings.ruHelp) list.push(250, Core.url.gloss(id, lang));
       flow.prompt(ctx.area, list, Object.keys(cards).map(function (k) { return cards[k]; })).then(check);
     }, { silent: true, nopress: true });
     grid.appendChild(c);

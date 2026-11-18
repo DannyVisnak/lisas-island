@@ -362,4 +362,72 @@ LessonArt.scenes.stones = function (S) {
   }
   return { act: act, tile: tile, promptBox: { x: 683, y: 168, size: 250, gap: 60 } };
 };
+
+/* =====================================================================================================================
+   4. Repka: six helpers pull one enormous turnip from the garden
+   ===================================================================================================================== */
+LessonArt.scenes.repka = function (S) {
+  var bg = S.layer('ls-bg', svgOpen('0 0 1366 768') + '<rect width="1366" height="768" fill="#d9f2ff"/><circle cx="1160" cy="110" r="54" fill="#fff3b0"/><path d="M0 430 Q250 360 520 430 T1050 420 T1366 400 V768 H0Z" fill="#9bdc75"/><path d="M0 580 Q300 520 720 585 T1366 550 V768 H0Z" fill="#72c44e"/><path d="M985 610 Q1135 530 1285 610" fill="none" stroke="#9a602f" stroke-width="44" stroke-linecap="round"/><path d="M0 690 Q400 650 800 695 T1366 680 V768 H0Z" fill="#5dac42"/></svg>');
+  var actors = S.layer('ls-actors');
+  var places = { grandpa:[960,500], grandma:[835,485], girl:[710,475], dog:[585,490], cat:[460,500], mouse:[365,500] };
+  var cast = {};
+  Object.keys(places).forEach(function (name) { cast[name] = S.actor(actors, name, name, places[name][0], places[name][1], name === 'mouse' ? 82 : 142, name === 'mouse' ? 82 : 150); cast[name].dataset.helper=name; });
+  var root = el('div','ls-a ls-rp-turnip','<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg"><path d="M100 12 C22 4 12 87 36 150 C50 192 73 217 100 220 C127 217 150 192 164 150 C188 87 178 4 100 12Z" fill="#ffe36b" stroke="#c49a36" stroke-width="8"/><path d="M100 18 Q80 0 76 4 M100 18 Q116 -2 128 3" fill="none" stroke="#55a843" stroke-width="13" stroke-linecap="round"/></svg>');
+  S.place(root,1020,440,230,260); root.style.opacity='0'; root.style.transform=S.T(0,150,0,.72); actors.appendChild(root); S.actors.turnip=root;
+  var pullLine = S.layer('ls-pull-line', svgOpen('0 0 1366 768') + '<path class="ls-rp-rope" d="M1040 545 Q700 535 360 540" fill="none" stroke="#d29a59" stroke-width="13" stroke-linecap="round" opacity="0"/></svg>');
+  var rope = pullLine.querySelector('.ls-rp-rope');
+  S.edge('#d9f2ff', '#5dac42'); S.lisaBox(28, 500, 150);
+  function show(name, delay) { var a = cast[name]; a.dataset.joined='true'; return S.anim(a, [{ opacity:0, transform:S.T(0, 35, 0, .65) }, { opacity:1, transform:S.T(0,0,0,1) }], 420, { delay: delay || 0 }); }
+  function pull(names) { return Promise.all(names.map(function (name, i) { var a=cast[name]; return S.anim(a, [{transform:S.T(0,0)},{transform:S.T(-24,0)},{transform:S.T(0,0)}], 500, {delay:i*45}); })); }
+  function count(name) { var a=cast[name]; a.classList.add('ls-rp-count'); return S.anim(a,[{transform:S.T(0,0,0,1)},{transform:S.T(0,-24,0,1.2),offset:.45,easing:'ease-out'},{transform:S.T(0,0,0,1)}],480); }
+  var sequence = ['grandpa','grandma','girl','dog','cat','mouse'];
+  var act = {
+    plant: function () { return Promise.all([S.anim(root,[{opacity:0,transform:S.T(0,150,0,.7)},{opacity:1,transform:S.T(0,0,0,1)}],700), show('grandpa')]); },
+    pullGrandpa: function () { return Promise.all([pull(['grandpa']),S.fade(rope,1,350)]); },
+    joinGrandma: function () { return show('grandma').then(function(){return pull(['grandpa','grandma']);}); },
+    joinGirlDog: function () { return Promise.all([show('girl',0),show('dog',160)]).then(function(){return pull(['grandpa','grandma','girl','dog']);}); },
+    joinCat: function () { return show('cat'); },
+    joinMouse: function () { return show('mouse'); },
+    helpersPull: function () { return act.joinCat().then(function(){return act.joinMouse();}).then(function(){return act.extract();}); },
+    extract: function () { return pull(sequence).then(function(){return S.anim(root,[{transform:S.T(0,0),opacity:1},{transform:S.T(0,-185),opacity:1}],900);}).then(function(){root.dataset.extracted='true';S.lisa.pose('cheer',1200);}); },
+    countGrandpa:function(){return count('grandpa');}, countGrandma:function(){return count('grandma');}, countGirl:function(){return count('girl');},
+    countDog:function(){return count('dog');}, countCat:function(){return count('cat');}, countMouse:function(){return count('mouse');}
+  };
+  function tile(spec) { return el('div','ls-tile-in',svgOpen('0 0 300 300')+'<rect width="300" height="300" rx="34" fill="#e5f7dc"/><image href="img/'+spec.helper+'.svg" x="55" y="38" width="190" height="220"/></svg>'); }
+  return {act:act,tile:tile,promptBox:{x:683,y:195,size:245,gap:58},helpers:cast,turnip:root};
+};
+
+/* =====================================================================================================================
+   5. More: two baskets, identical apples, and the progression 3–1 → 3–2 → 3–3
+   ===================================================================================================================== */
+LessonArt.scenes.more = function (S) {
+  S.layer('ls-bg',svgOpen('0 0 1366 768')+'<rect width="1366" height="768" fill="#dff4ff"/><circle cx="1150" cy="100" r="52" fill="#fff2b0"/><path d="M0 540 Q300 470 600 535 T1366 515 V768 H0Z" fill="#9bdc75"/><rect y="650" width="1366" height="118" fill="#76c950"/></svg>');
+  var art=S.layer('ls-basket-art',svgOpen('0 0 1366 768')+'<g class="ls-more-basket ls-more-left"><path d="M250 390 H610 L565 650 H300Z" fill="#c98343" stroke="#8f562d" stroke-width="20"/><path d="M230 390 H630" stroke="#f0b35f" stroke-width="34" stroke-linecap="round"/></g><g class="ls-more-basket ls-more-right"><path d="M760 390 H1120 L1075 650 H810Z" fill="#c98343" stroke="#8f562d" stroke-width="20"/><path d="M740 390 H1140" stroke="#f0b35f" stroke-width="34" stroke-linecap="round"/></g></svg>');
+  var basketL=art.querySelector('.ls-more-left'), basketR=art.querySelector('.ls-more-right');
+  var apples=S.layer('ls-apples'), left=[], right=[];
+  function apple(name,x,y,parent,visible) { var a=S.actor(parent,name,'apple',x,y,92,92); a.style.opacity=visible?'1':'0'; return a; }
+  [[340,345],[430,345],[520,345]].forEach(function(p,i){left.push(apple('left'+i,p[0],p[1],apples,true));});
+  [[850,345]].forEach(function(p,i){right.push(apple('right'+i,p[0],p[1],apples,true));});
+  var extra2=apple('right1',940,345,apples,false), extra3=apple('right2',1030,345,apples,false);
+  S.edge('#dff4ff','#76c950'); S.lisaBox(28,500,150);
+  var quantities={left:3,right:1};
+  function setCounts(){basketL.dataset.count=String(quantities.left);basketR.dataset.count=String(quantities.right);}
+  setCounts();
+  function moveApple(a,x){return S.anim(a,[{opacity:0,transform:S.T(0,-100)},{opacity:1,transform:S.T(x,0)}],620);}
+  function highlight(list){return Promise.all(list.map(function(a){a.classList.add('ls-more-lit');return S.anim(a,[{transform:S.T(0,0,0,1)},{transform:S.T(0,-20,0,1.17),offset:.45},{transform:S.T(0,0,0,1)}],420);}));}
+  function countOne(list,index){var a=list[index];if(!a)return Promise.resolve();a.classList.add('ls-more-lit');return S.anim(a,[{transform:S.T(0,0,0,1)},{transform:S.T(0,-20,0,1.18),offset:.45},{transform:S.T(0,0,0,1)}],420);}
+  var act={
+    showBaskets:function(){return S.wait(100);}, apples31:function(){return S.wait(100);},
+    countLeft1:function(){return countOne(left,0);},countLeft2:function(){return countOne(left,1);},countLeft3:function(){return countOne(left,2);},
+    countRight1:function(){return countOne(right,0);},countRight2:function(){return countOne(right,1);},countRight3:function(){return countOne(right,2);},
+    compare31:function(){return S.wait(160);},
+    apples32:function(){quantities.right=2;setCounts();right.push(extra2);return moveApple(extra2,0);},
+    compare32:function(){return S.wait(160);},
+    apples33:function(){quantities.right=3;setCounts();right.push(extra3);return moveApple(extra3,0);},
+    compare33:function(){return S.wait(160);},
+    highlightLeft:function(){return highlight(left);},highlightRight:function(){return highlight(right);},highlightBoth:function(){return highlight(left.concat(right));}
+  };
+  function tile(spec){var n=spec.basket==='small'?1:3, apples='';for(var i=0;i<n;i++)apples+='<image href="img/apple.svg" x="'+(121+(i-(n-1)/2)*54)+'" y="34" width="58" height="58"/>';return el('div','ls-tile-in',svgOpen('0 0 300 300')+'<rect width="300" height="300" rx="32" fill="#e9f6df"/><path d="M72 100 H228 L206 250 H94Z" fill="#c98343" stroke="#8f562d" stroke-width="12"/><path d="M60 100 H240" stroke="#f0b35f" stroke-width="18" stroke-linecap="round"/>'+apples+'</svg>');}
+  return {act:act,tile:tile,promptBox:{x:683,y:160,size:250,gap:56},quantities:quantities};
+};
 })();

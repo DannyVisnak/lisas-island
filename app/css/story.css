@@ -1,0 +1,25 @@
+/* Exact Opus original CSS plus corrective author pass, 18-Nov-2026. */
+.b-story { background: #7e57c2; }
+.homebtns.has-story { left: 41rem; right: 15.6rem; bottom: 3.2rem; gap: 2.4rem; }
+.homebtns.has-story .b-big { width: 14rem; height: 14rem; }
+.s-story .st-lisa{position:absolute;left:14rem;top:20rem;width:36rem;height:40.5rem}
+.s-story .st-choices{position:absolute;left:60rem;top:26rem;width:64rem;height:30rem;display:flex;gap:4rem}
+.s-story .st-tile { display: flex; flex-direction: column; align-items: stretch; gap: .6rem; width: 30rem; height: 30rem; padding: 2.4rem; border: .8rem solid #fff; border-radius: 3rem; background: #fff; overflow: hidden; box-shadow: 0 .8rem 0 rgba(0,0,0,.12); animation: st-in 320ms ease-out backwards; }
+.s-story .st-tile > .pic { flex: 1 1 auto; min-height: 0; height: auto; }
+.s-story .st-label { flex: 0 0 5.6rem; min-height: 5.6rem; font-size: 3.4rem; overflow: hidden; }
+.s-story .st-label.subtitles-off { visibility: hidden; }
+.s-story .st-tile:nth-child(2){animation-delay:140ms}
+.s-story .st-tile.st-dim{opacity:.35;transition:opacity 250ms}
+.s-story .st-tile.st-picked{transform:scale(1.06);transition:transform 200ms}
+.s-story .st-tile.st-feed{transition:transform 600ms ease-in,opacity 600ms;transform:translate(-38rem,-4rem) scale(.25);opacity:0}
+.s-story .st-choices.st-pulse .st-tile{animation:st-pulse 900ms ease-in-out 2}
+.s-story .st-end{position:absolute;left:60rem;top:30rem;display:flex;gap:6rem}
+.s-story .st-end .btn{width:16rem;height:16rem}
+.b-story-again{background:#26a69a}
+@keyframes st-in{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+@keyframes st-pulse{50%{transform:scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.s-story .st-tile,.s-story .st-choices.st-pulse .st-tile{animation:none}.s-story .st-tile.st-feed{transform:none}.s-story .st-tile.st-picked{transform:none}}
+
+/* Story top bar controls >=110px at 1128x752 (Opus 5.5, 18-Nov-2026). Scoped to the story screen only. */
+.s-story .topbar { left: 2rem; top: 1.6rem; gap: 2.4rem; }
+.s-story .topbar .btn { width: 14rem; height: 14rem; }

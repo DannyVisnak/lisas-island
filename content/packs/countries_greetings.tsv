@@ -1,0 +1,10 @@
+# key	locale	text	note
+# written by Opus 5.5 16.11.26 for LISA-13. Spoken text is in the local script for that locale's voice; the note column is guidance for the controller only and is never spoken. Never route these through the PT/EN/DE/RU voices; if a locale voice is unavailable, hold the clip for controller resolution.
+# country_hello_eg: draft had 'Marhaba'. Changed to Egyptian everyday 'Ahlan' (beginner Egyptian-Arabic guides list ahlan as the most common hello; marhaba is also understood). Avoided 'as-salamu alaykum' (religious register). Source checked: https://polyglotclub.com/wiki/Language/Egyptian-arabic/Vocabulary/Basic-Greetings
+# country_hello_br: 'Oi' is the everyday Brazilian hello and audibly different from the PT-PT 'Olá' the child already hears; pt-BR voice for this one clip only.
+country_hello_it	it-IT	Ciao!	say: CHOW. Friendly everyday hello, right for a child.
+country_hello_fr	fr-FR	Bonjour !	say: bon-ZHOOR (zh as the s in 'measure'). Space before ! is French typography only.
+country_hello_jp	ja-JP	こんにちは！	say: kon-nee-chee-wah (romaji Konnichiwa). The final は is read 'wa'.
+country_hello_br	pt-BR	Oi!	say: OY. Brazilian Portuguese voice; does not replace the PT-PT learning voice.
+country_hello_cn	zh-CN	你好！	say: nee-how (pinyin nǐ hǎo). Mandarin voice.
+country_hello_eg	ar-EG	أهلاً!	say: AH-lan. Egyptian Arabic voice (ar-EG); if unavailable, hold for controller, do not substitute another language.

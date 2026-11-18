@@ -133,7 +133,7 @@ UI.screens.run = function (flow, root, p) {
     requestAnimationFrame(function () { gateBar.classList.add('up'); });
     Snd.sfx('whoosh');
     if (S.firstGate) { S.firstGate = false; await Core.sayRu(flow, 'gate'); }
-    var n = Math.min(S.ad.n, maxN); if (inPath) n = Core.SRS.choiceCount(lang, g.target);
+    var n = Math.min(S.ad.n, maxN); if (inPath) n = Path.choices(lang, g.target);
     var ids = Core.placeCorrect(Core.choices(lang, g.target, n, pool), g.target);
     var res = await Q.ask(flow, holder, {
       lang: lang, target: g.target, choices: ids, speaker: gsp, helpBtn: ghb, lisa: null, cls: 'gatechoices', hud: hud, voiceGroup: 'door',

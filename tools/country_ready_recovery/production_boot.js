@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=process.env.COUNTRY_SOURCE||path.resolve(__dirname,'../..');
+function boot(saved){let stored=typeof saved==='string'?saved:saved?JSON.stringify(saved):null;const events=[],c={window:null,document:{addEventListener(){}},setTimeout:()=>0,clearTimeout(){},setInterval(){},Date,console,Lisa:{ico:{}},UI:{screens:{},p:{lang:'pt'},cur:'home',go(name,p){events.push(['go',name,p]);c.UI.cur=name;c.UI.p=p||{};}},localStorage:{getItem:()=>stored,setItem(k,v){stored=v;events.push(['flush']);}}};c.window=c;vm.createContext(c);for(const name of ['data','country_rules','core','countries_art','countries','path']){const staged=process.env.COUNTRY_READY_STAGE&&['countries','path'].includes(name)?path.join(process.env.COUNTRY_READY_STAGE,name+'.js'):path.join(root,'app/js',name+'.js');vm.runInContext(fs.readFileSync(staged,'utf8'),c);}c.Core.save.settings.enabled={pt:true,en:true,de:true};return {c,C:c.Core,P:c.Path,events,persisted:()=>stored};}
+module.exports={boot,root};

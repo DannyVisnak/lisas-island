@@ -1,0 +1,241 @@
+{
+  "author": "Opus 5.5 (claude-opus-5-5, high), 18.11.26",
+  "maps": {
+    "bed": {
+      "b": {
+        "3DAAE0": "F06292",
+        "188AD6": "D81B60",
+        "B0E0FF": "F8BBD0",
+        "7DBBE3": "F48FB1",
+        "E0F7FA": "FFF0F4",
+        "94D1E0": "F3C1D0"
+      },
+      "c": {
+        "3DAAE0": "66BB6A",
+        "188AD6": "388E3C",
+        "B0E0FF": "C8E6C9",
+        "7DBBE3": "A5D6A7"
+      },
+      "note": "pink / green blanket; wooden frame stays"
+    },
+    "ball": {
+      "b": {
+        "474C4F": "E53935"
+      },
+      "c": {
+        "474C4F": "1E88E5"
+      },
+      "note": "neutral source: patches recoloured, white and seams stay"
+    },
+    "car": {
+      "b": {
+        "F92612": "FFCA28",
+        "D70617": "FFA000",
+        "AF0F21": "FF8F00"
+      },
+      "c": {
+        "F92612": "1E88E5",
+        "D70617": "1565C0",
+        "AF0F21": "0D47A1"
+      },
+      "note": "red source: b yellow, c blue; windows and tyres stay"
+    },
+    "chair": {
+      "b": {
+        "F0AA6B": "F48FB1",
+        "BA793E": "EC407A",
+        "9E5737": "C2185B",
+        "77381F": "880E4F"
+      },
+      "c": {
+        "F0AA6B": "64B5F6",
+        "BA793E": "1E88E5",
+        "9E5737": "1565C0",
+        "77381F": "0D47A1"
+      },
+      "note": "painted wooden chair: pink / blue"
+    },
+    "backpack": {
+      "b": {
+        "F44336": "FFB300",
+        "FF7555": "FFCA28",
+        "C62828": "EF8F00",
+        "E2A610": "9E9E9E",
+        "FFCA28": "E0E0E0"
+      },
+      "c": {
+        "F44336": "43A047",
+        "FF7555": "66BB6A",
+        "C62828": "2E7D32"
+      },
+      "note": "red source: b amber with a silver buckle so the buckle stays visible; c green"
+    },
+    "bath": {
+      "b": {
+        "EEEEEE": "F8BBD0",
+        "B7D5E5": "F48FB1",
+        "69A1BA": "D81B60"
+      },
+      "c": {
+        "EEEEEE": "C8F2E0",
+        "B7D5E5": "80CBC4",
+        "69A1BA": "26A69A"
+      },
+      "note": "pink / mint tub; taps, feet and bubbles stay"
+    },
+    "toilet": {
+      "b": {
+        "EEEEEE": "F8BBD0",
+        "B7D5E5": "F48FB1",
+        "69A1BA": "D81B60",
+        "2F7889": "AD1457"
+      },
+      "c": {
+        "EEEEEE": "C8F2E0",
+        "B7D5E5": "80CBC4",
+        "69A1BA": "26A69A",
+        "2F7889": "00695C"
+      },
+      "note": "matches the bath families"
+    },
+    "tv": {
+      "b": {
+        "82AEC0": "FF8A65",
+        "455A64": "BF360C",
+        "B9E4EA": "FFCCBC"
+      },
+      "c": {
+        "82AEC0": "81C784",
+        "455A64": "2E7D32",
+        "B9E4EA": "C8E6C9"
+      },
+      "note": "case + stand recoloured; the screen #2F7889 and #212121 stay so it still reads as a TV"
+    },
+    "cake": {
+      "b": {
+        "FEEAC9": "FDE0EA",
+        "FEE7C2": "FCD5E3",
+        "FEDEAE": "F9C4D7",
+        "FFCF8D": "F6A9C4",
+        "FFCB85": "F49FBD",
+        "FCE9CA": "FDE0EA"
+      },
+      "c": {
+        "FEEAC9": "E0F5EC",
+        "FEE7C2": "D5F1E5",
+        "FEDEAE": "C2EBD9",
+        "FFCF8D": "A8E2C9",
+        "FFCB85": "9FDEC3",
+        "FCE9CA": "E0F5EC"
+      },
+      "note": "only the icing changes (pink / mint); sponge, strawberries, candles and flames stay, so it is still a cake"
+    },
+    "book": {
+      "b": {
+        "F44336": "FFB300",
+        "C62828": "F57C00"
+      },
+      "c": {
+        "F44336": "42A5F5",
+        "C62828": "1565C0"
+      },
+      "note": "cover only"
+    },
+    "teddy": {
+      "b": {
+        "A65F3E": "C9874A",
+        "874D36": "A86A35",
+        "703B26": "8A5226",
+        "FFCA28": "EC407A"
+      },
+      "c": {
+        "FFCA28": "42A5F5"
+      },
+      "note": "fur stays bear-brown on purpose (a blue bear reads as another toy). b = honey fur + pink bow, c = brown fur + blue bow"
+    },
+    "pencil": {
+      "b": {
+        "FFC107": "E53935",
+        "FFA000": "C62828",
+        "FDD835": "EF5350",
+        "D1762C": "8E1B1B",
+        "F19534": "B71C1C",
+        "EF5350": "F48FB1",
+        "FF8383": "F8BBD0"
+      },
+      "c": {
+        "FFC107": "1E88E5",
+        "FFA000": "1565C0",
+        "FDD835": "42A5F5",
+        "D1762C": "0D3C78",
+        "F19534": "0D47A1"
+      },
+      "note": "yellow source: b red with a pink eraser, c blue; wood and lead stay"
+    },
+    "balloon": {
+      "b": {
+        "F44336": "FFCA28",
+        "C62828": "FFA000",
+        "FF847A": "FFF59D"
+      },
+      "c": {
+        "F44336": "42A5F5",
+        "C62828": "1565C0",
+        "FF847A": "BBDEFB"
+      },
+      "note": "red source: b yellow, c blue; string stays"
+    },
+    "flower": {
+      "b": {
+        "FFBCD8": "FFE082",
+        "FCA2C8": "FFCA28",
+        "BF0477": "E65100"
+      },
+      "c": {
+        "FFBCD8": "B3D4FF",
+        "FCA2C8": "90BFF9",
+        "BF0477": "1A47B8"
+      },
+      "note": "pink source: b yellow, c blue; centre stays"
+    },
+    "key": {
+      "b": {
+        "FFCA28": "F48FB1",
+        "9E740B": "AD1457",
+        "DBA010": "E05C8E",
+        "FFF59D": "FCE4EC"
+      },
+      "c": {
+        "FFCA28": "90CAF9",
+        "9E740B": "1E5FA8",
+        "DBA010": "5B9BE0",
+        "FFF59D": "E3F2FD"
+      },
+      "note": "gold source: b rose, c blue"
+    },
+    "spoon": {
+      "b": {
+        "9D9D9D": "B8860B",
+        "C8C8C8": "F2C94C",
+        "E0E0E0": "FFE58A"
+      },
+      "c": {
+        "9D9D9D": "8D5A2B",
+        "C8C8C8": "C48850",
+        "E0E0E0": "D9A066"
+      },
+      "note": "b gold, c wooden, as planned in phase 1; the white highlight stays"
+    },
+    "plane": {
+      "b": {
+        "006CA8": "E53935",
+        "014EAC": "B71C1C"
+      },
+      "c": {
+        "006CA8": "43A047",
+        "014EAC": "1B5E20"
+      },
+      "note": "wings only; body and windows stay"
+    }
+  }
+}

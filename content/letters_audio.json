@@ -1,0 +1,240 @@
+{
+  "author": "Opus 5.5",
+  "designSource": "tickets/OPUS-LETTERS-DESIGN/DESIGN.json",
+  "englishReleaseProof": "held",
+  "uiKeys": [
+    "lisa_letters_intro",
+    "lisa_letters_listen",
+    "lisa_letters_word",
+    "lisa_letters_inside",
+    "lisa_letters_tap",
+    "lisa_letters_trace",
+    "lisa_letters_tap_instead",
+    "lisa_letters_case",
+    "lisa_letters_screen_key",
+    "lisa_letters_real_key",
+    "lisa_letters_touch_instead",
+    "lisa_letters_relisten",
+    "lisa_letters_show",
+    "lisa_letters_found",
+    "lisa_letters_name",
+    "lisa_letters_language",
+    "lisa_letters_script_contrast",
+    "lisa_letters_variant",
+    "lisa_letters_group",
+    "lisa_letters_blend",
+    "lisa_letters_review",
+    "lisa_letters_finish",
+    "lisa_letters_layout_help"
+  ],
+  "activeUiKeys": [
+    "lisa_letters_intro",
+    "lisa_letters_listen",
+    "lisa_letters_word",
+    "lisa_letters_tap",
+    "lisa_letters_trace",
+    "lisa_letters_tap_instead",
+    "lisa_letters_case",
+    "lisa_letters_screen_key",
+    "lisa_letters_real_key",
+    "lisa_letters_touch_instead",
+    "lisa_letters_relisten",
+    "lisa_letters_show",
+    "lisa_letters_found",
+    "lisa_letters_finish"
+  ],
+  "assets": [
+    {
+      "id": "sound_p",
+      "lower": "p",
+      "anchor": "duck",
+      "path": "audio/pt/sound_p.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_duck_bare",
+      "lower": "p",
+      "anchor": "duck",
+      "path": "audio/pt/word_duck_bare.ogg",
+      "lang": "pt",
+      "text": "pato",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "sound_a_reduced",
+      "lower": "a",
+      "anchor": "yellow",
+      "path": "audio/pt/sound_a_reduced.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_yellow_bare",
+      "lower": "a",
+      "anchor": "yellow",
+      "path": "audio/pt/word_yellow_bare.ogg",
+      "lang": "pt",
+      "text": "amarelo",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "sound_m",
+      "lower": "m",
+      "anchor": "apple",
+      "path": "audio/pt/sound_m.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_apple_bare",
+      "lower": "m",
+      "anchor": "apple",
+      "path": "audio/pt/word_apple_bare.ogg",
+      "lang": "pt",
+      "text": "maçã",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "sound_o_close",
+      "lower": "o",
+      "anchor": "egg",
+      "path": "audio/pt/sound_o_close.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_egg_bare",
+      "lower": "o",
+      "anchor": "egg",
+      "path": "audio/pt/word_egg_bare.ogg",
+      "lang": "pt",
+      "text": "ovo",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "sound_l_initial",
+      "lower": "l",
+      "anchor": "milk",
+      "path": "audio/pt/sound_l_initial.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_milk_bare",
+      "lower": "l",
+      "anchor": "milk",
+      "path": "audio/pt/word_milk_bare.ogg",
+      "lang": "pt",
+      "text": "leite",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "sound_v",
+      "lower": "v",
+      "anchor": "cow",
+      "path": "audio/pt/sound_v.ogg",
+      "lang": "pt",
+      "text": null,
+      "kind": "phoneme",
+      "generationStatus": "blocked-opus-author-prompt",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    },
+    {
+      "id": "word_cow_bare",
+      "lower": "v",
+      "anchor": "cow",
+      "path": "audio/pt/word_cow_bare.ogg",
+      "lang": "pt",
+      "text": "vaca",
+      "kind": "word",
+      "generationStatus": "ready",
+      "review": {
+        "status": "needs-ear-check",
+        "reviewer": null,
+        "reviewerKind": null,
+        "date": null
+      }
+    }
+  ]
+}

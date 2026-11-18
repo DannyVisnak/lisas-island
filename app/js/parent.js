@@ -66,11 +66,54 @@ UI.screens.parent = function (flow, root, p) {
       S.enabled[l] = on; if (!on && Core.lang === l) Core.lang = null; Core.persist();
     });
   });
-  var rh = row(sl, 'Russian help', 'Short spoken Russian instructions and word translations.');
+  var bl = row(sl, 'Base language', 'The language Lisa uses for instructions and word translations.');
+  bl.parentNode.dataset.setting = 'baseLang';
+  seg(bl, [{ v: 'ru', t: 'Русский' }, { v: 'en', t: 'English' }], Core.baseLang(), function (v) { S.baseLang = v; Core.persist(); });
+  var rh = row(sl, 'Base language help', 'Short spoken instructions and word translations in the selected base language.');
   toggle(rh, !!S.ruHelp, function (on) { S.ruHelp = on; Core.persist(); });
 
   /* daily path */
-  var dp = section(wrap, 'Daily path', 'One Play button: a short session of about 10 to 15 minutes, once a day. After it Lisa sleeps until tomorrow.');
+  var dp = section(wrap, 'Daily path', 'One Play button, one session a day. It stops at the Session length below at the latest. After it Lisa sleeps until tomorrow.');
+  /* LISA-18 exact Opus parent copy; same native rows/toggles as the existing parent area. */
+  if (window.Letters && window.LETTERS_DATA) {
+    var LP = LETTERS_DATA.parentCopy, lb = 'en', pt = function(v){return v[lb];};
+    var letterToggle = row(dp, pt(LP.lettersToggle.label), pt(LP.lettersToggle.small));
+    letterToggle.parentNode.dataset.setting = 'letters';
+    toggle(letterToggle, !!S.letters, function(on){S.letters=on;Core.persist();});
+    var physicalToggle = row(dp, pt(LP.physicalToggle.label), pt(LP.physicalToggle.small));
+    physicalToggle.parentNode.dataset.setting = 'physicalKeys';
+    toggle(physicalToggle, !!S.physicalKeys, function(on){S.physicalKeys=on;Core.persist();});
+    var lp = section(wrap, pt(LP.progress.heading), pt(LP.progress.footnote));
+    var letterProgress = LetterRules.progress(Core.L('pt').letters), observed = letterProgress.observations;
+    if (!Object.keys(observed).length) lp.appendChild(el('p','psub',pt(LP.progress.empty)));
+    LetterRules.mappings(D.items).forEach(function(m){
+      var ob=observed[m.lower];
+      if(ob){
+        var chips=[ob.track==='bare'?'byWord':'bySound', (ob.track==='bare'?ob.bareWordSelectionUnhelped:ob.soundSelectionUnhelped)?'choseAlone':'withHint',ob.formation==='trace'?'traced':'tapped','screenKey'];
+        if(ob.physicalKeyLocated)chips.push('physicalKey');
+        var title=pt(LP.progress.row).replace('{letter}',m.lower).replace('{word}',m.label).replace('{date}',new Date(ob.lastDay*864e5).toISOString().slice(0,10));
+        row(lp,title,chips.map(function(k){return pt(LP.progress.chips[k]);}).join(' · '));
+        if(ob.track==='bare')lp.appendChild(el('p','psub',pt(LP.earCheck.bareMode)));
+      }
+      [m.variant,'word_'+m.anchor+'_bare'].forEach(function(id){
+        var key='pt/'+id, statuses={ 'needs-ear-check':LP.earCheck.pending, approved:LP.earCheck.approved,rejected:LP.earCheck.rejected};
+        var cr=row(lp,id===m.variant?LETTERS_DATA.layout.a11yLabels.sound[lb]+' · '+m.lower:m.label,pt(LP.earCheck.note));
+        var play=el('div','pbtn',Lisa.ico.speaker);play.setAttribute('aria-label',LETTERS_DATA.layout.a11yLabels.speaker[lb]);cr.appendChild(play);
+        click(play,function(){if((D.letterAudio||[]).indexOf(key)>=0)Snd.say(['audio/pt/'+id+'.ogg']);});
+        var select=document.createElement('select'),saved=(Core.save.letterAudioReview||{})[key],available=(D.letterAudio||[]).indexOf(key)>=0;
+        Object.keys(statuses).forEach(function(status){var option=document.createElement('option');option.value=status;option.textContent=pt(statuses[status]);select.appendChild(option);});
+        if(!available){var missing=document.createElement('option');missing.value='missing';missing.textContent=pt(LP.earCheck.missing);select.appendChild(missing);}
+        select.value=available?(saved&&saved.status||'needs-ear-check'):'missing';select.disabled=!available;select.dataset.letterAudio=key;
+        select.addEventListener('change',function(){if(!available)return;Core.save.letterAudioReview=Core.save.letterAudioReview||{};Core.save.letterAudioReview[key]={status:select.value,reviewer:'parent',reviewerKind:'parent',date:new Date().toISOString()};Core.persist();});cr.appendChild(select);
+      });
+    });
+  }
+
+  var ca = row(dp, 'Age', 'Changing the age also sets Small sessions to match the age and Session length back to 15 min.');
+  ca.parentNode.dataset.setting = 'ageYears';
+  seg(ca, [3, 4, 5, 6].map(function (age) { return { v: age, t: String(age) }; }), S.ageYears, function (age) {
+    if (Core.applyAgeProfile(age)) UI.go('parent');
+  });
   var cs = row(dp, 'Session length', 'The hard stop for active play. The session ends with the bedtime ritual at this limit.');
   seg(cs, [{ v: 10, t: '10 min' }, { v: 15, t: '15 min' }, { v: 20, t: '20 min' }], [10, 15, 20].indexOf(Number(S.sessionMin)) >= 0 ? Number(S.sessionMin) : 15, function (v) { S.sessionMin = v; Core.persist(); });
   var csm = row(dp, 'Small sessions (age 3 to 4)', 'Only 4 new words a day (block A), then bedtime.');
@@ -135,8 +178,8 @@ UI.screens.parent = function (flow, root, p) {
           if (!ws.length) return;
           var g = el('div', 'pworld'); g.appendChild(el('h3', null, D.ui.en['w_' + w.id] || w.id));
           ws.forEach(function (id) {
-            var it = D.items[id], wd = L.words[id];
-            g.appendChild(el('div', 'pword', '<span>' + it[l].word + '</span><em>' + (D.items[id].ru || '') + '</em><u class="box b' + wd.box + '">' +
+            var it = D.items[id], wd = L.words[id], label = Core.vocabLabel(l, it);
+            g.appendChild(el('div', 'pword', '<span style="color:' + label.color + '">' + label.text + '</span><em>' + Core.glossText(id, l) + '</em><u class="box b' + wd.box + '">' +
               [1, 2, 3, 4, 5].map(function (k) { return '<i' + (k <= wd.box ? ' class="on"' : '') + '></i>'; }).join('') + '</u>'));
           });
           list.appendChild(g);
@@ -159,7 +202,7 @@ UI.screens.parent = function (flow, root, p) {
   tp.appendChild(el('div', 'ptips',
     '<p><b>Sit next to your child at first.</b> Let them tap the pictures; say the word with them, quietly and warmly.</p>' +
     '<p><b>There is no failing.</b> A wrong tap just wobbles and tries again. Never correct, just cheer.</p>' +
-    '<p><b>Short and often.</b> Ten happy minutes a day beat one long session. The game comes back to old words by itself.</p>' +
+    '<p><b>A little every day.</b> A happy session most days helps more than one long catch-up now and then. The game comes back to old words by itself.</p>' +
     '<p><b>Use the words outside the game.</b> Point at a real cat and say the word you just learned. The picture garden is for free play.</p>'));
   var qb = el('div', 'pbtn quit', 'Quit the game'); tp.appendChild(qb);
   click(qb, function () { Core.flushNow(); try { window.close(); } catch (e) {} });
