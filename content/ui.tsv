@@ -1099,3 +1099,139 @@ lisa_country_intro_au	en	We're in Australia! Here a mummy kangaroo carries her b
 lisa_country_intro_us	en	We're in the United States of America! In New York there are lots and lots of tall buildings: skyscrapers.
 house_pick	ru	Выбери, что тебе нравится!
 house_pick	en	Choose the one you like!
+cs_x_shadow_1	ru	Солнце светит на дерево. Видишь тёмное пятно на траве? Это тень дерева.
+cs_x_shadow_1	en	The sun shines on the tree. See the dark patch on the grass? That is the tree's shadow.
+cs_x_shadow_2	ru	Солнце слева, а тень убежала направо.
+cs_x_shadow_2	en	The sun is on the left, and the shadow ran to the right.
+cs_x_shadow_3	ru	Сейчас солнце перейдёт на другую сторону неба. Как думаешь, куда побежит тень?
+cs_x_shadow_3	en	Now the sun will move to the other side of the sky. Where do you think the shadow will go?
+cs_x_shadow_3q	ru	Куда побежит тень?
+cs_x_shadow_3q	en	Where will the shadow go?
+cs_x_shadow_4	ru	Смотри! Солнце справа, и тень перебежала налево. Тень всегда с другой стороны от солнца.
+cs_x_shadow_4	en	Look! The sun is on the right, and the shadow moved to the left. A shadow is always on the other side from the sun.
+cs_x_shadow_5	ru	Солнце высоко-высоко. Тень стала совсем короткой.
+cs_x_shadow_5	en	The sun is high, high up. The shadow got very short.
+cs_x_shadow_6	ru	Вечером солнце низко. А тень вытянулась длинная-длинная.
+cs_x_shadow_6	en	In the evening the sun is low. And the shadow stretched out long, long.
+cs_x_shadow_7	ru	Дерево загораживает свет. Там, куда свет не попадает, получается тень.
+cs_x_shadow_7	en	The tree blocks the light. Where the light can't reach, there is a shadow.
+cs_x_sprout_1	ru	Вот горшок с землёй. А вот маленькое семечко.
+cs_x_sprout_1	en	Here is a pot of soil. And here is a little seed.
+cs_x_sprout_2	ru	Положим семечко в землю. Прячься, семечко!
+cs_x_sprout_2	en	Let's put the seed in the soil. Hide, little seed!
+cs_x_sprout_3	ru	Польём водой. И пусть светит солнышко.
+cs_x_sprout_3	en	Let's give it water. And let the sun shine.
+cs_x_sprout_4	ru	Как думаешь, что первым появится из семечка?
+cs_x_sprout_4	en	What do you think will come out of the seed first?
+cs_x_sprout_4q	ru	Что появится первым?
+cs_x_sprout_4q	en	What will come first?
+cs_x_sprout_5	ru	Проходит несколько дней... И из земли выглядывает маленький росток!
+cs_x_sprout_5	en	A few days go by... And a little sprout peeks out of the soil!
+cs_x_sprout_6	ru	Росток пьёт воду, греется на солнце и растёт выше.
+cs_x_sprout_6	en	The sprout drinks water, warms up in the sun and grows taller.
+cs_x_sprout_7	ru	А потом раскрывается цветок!
+cs_x_sprout_7	en	And then a flower opens!
+cs_x_sprout_8	ru	Семечко, росток, цветок. Растения растут не сразу, а понемногу.
+cs_x_sprout_8	en	Seed, sprout, flower. Plants don't grow all at once, but little by little.
+cs_x_halves_1	ru	У Лизы одно яблоко. А есть хотят двое: Лиза и мишка.
+cs_x_halves_1	en	Lisa has one apple. But two friends are hungry: Lisa and Teddy.
+cs_x_halves_2	ru	Где резать, чтобы кусочки получились одинаковые?
+cs_x_halves_2	en	Where should we cut so the pieces come out the same?
+cs_x_halves_2q	ru	Где резать?
+cs_x_halves_2q	en	Where should we cut?
+cs_x_halves_3	ru	Режем у самого края. Получился большой кусок и маленький.
+cs_x_halves_3	en	We cut right at the edge. Now there's a big piece and a small one.
+cs_x_halves_4	ru	Кусочки разные. Соберём яблоко снова.
+cs_x_halves_4	en	The pieces are different. Let's put the apple back together.
+cs_x_halves_5	ru	Теперь режем ровно посередине.
+cs_x_halves_5	en	Now we cut right in the middle.
+cs_x_halves_6	ru	Два одинаковых кусочка! Они называются половинки.
+cs_x_halves_6	en	Two pieces the same! They are called halves.
+cs_x_halves_7	ru	Одна половинка Лизе, одна половинка мишке. Поровну!
+cs_x_halves_7	en	One half for Lisa, one half for Teddy. Fair and equal!
+cs_x_halves_8	ru	Две половинки вместе: снова целое яблоко.
+cs_x_halves_8	en	Two halves together make a whole apple again.
+cs_x_rainbow_1	ru	Набежала туча. Пошёл дождь.
+cs_x_rainbow_1	en	A cloud rolled in. It's raining.
+cs_x_rainbow_2	ru	Когда появится радуга? Когда идёт только дождь, или когда светят и дождь, и солнце?
+cs_x_rainbow_2	en	When will a rainbow appear? When there's only rain, or when there's rain and sunshine together?
+cs_x_rainbow_2q	ru	Когда появится радуга?
+cs_x_rainbow_2q	en	When will a rainbow appear?
+cs_x_rainbow_3	ru	Смотрим. Дождь идёт, а солнца нет. Радуги не видно.
+cs_x_rainbow_3	en	Let's watch. It's raining, but there's no sun. No rainbow.
+cs_x_rainbow_4	ru	А вот и солнце выглянуло! Оно светит Лизе в спину.
+cs_x_rainbow_4	en	Here comes the sun! It's shining on Lisa's back.
+cs_x_rainbow_5	ru	Солнечный свет проходит через капельки дождя, и в небе появляется радуга!
+cs_x_rainbow_5	en	Sunlight goes through the raindrops, and a rainbow appears in the sky!
+cs_x_rainbow_6	ru	Солнце сзади, дождь впереди: вот где прячется радуга.
+cs_x_rainbow_6	en	Sun behind you, rain in front of you: that's where a rainbow hides.
+cs_x_teremok_1	ru	Стоит в поле теремок. Он не низок, не высок.
+cs_x_teremok_1	en	In a field stands a little wooden house, a teremok. Not too low and not too high.
+cs_x_teremok_2	ru	Прибежала мышка-норушка. «Кто в теремочке живёт?» Никто не отвечает. Стала мышка там жить.
+cs_x_teremok_2	en	A little mouse came running. "Who lives in the little house?" Nobody answers. So the mouse moved in.
+cs_x_teremok_3	ru	Прискакала лягушка-квакушка, а за ней зайчик-побегайчик. Пустила их мышка, стали жить вместе.
+cs_x_teremok_3	en	A frog came hopping, and after her a hare. The mouse let them in, and they lived together.
+cs_x_teremok_4	ru	Пришли лисичка-сестричка и волчок-серый бочок. И им нашлось местечко.
+cs_x_teremok_4	en	Then a fox and a grey wolf came. There was room for them too.
+cs_x_teremok_5	ru	А потом пришёл медведь. Большой-пребольшой! «Пустите и меня!»
+cs_x_teremok_5	en	And then a bear came. Big, very big! "Let me in too!"
+cs_x_teremok_6	ru	Как думаешь, поместится медведь в теремок?
+cs_x_teremok_6	en	Do you think the bear will fit in the little house?
+cs_x_teremok_6q	ru	Поместится медведь?
+cs_x_teremok_6q	en	Will the bear fit?
+cs_x_teremok_7	ru	Полез медведь на крышу... и раздавил теремок! Звери успели выскочить. Все целы.
+cs_x_teremok_7	en	The bear climbed onto the roof... and squashed the little house! The animals jumped out in time. Everyone is fine.
+cs_x_teremok_8	ru	Звери не стали грустить. Все вместе, и медведь тоже, построили новый теремок, большой-пребольшой. Теперь места хватает всем!
+cs_x_teremok_8	en	The animals didn't stay sad. All together, the bear too, they built a new house, big, very big. Now there is room for everyone!
+cs_x_balance_1	ru	Это весы. У них две чаши. Чаша, где тяжелее, опускается вниз.
+cs_x_balance_1	en	These are scales. They have two pans. The pan with the heavier thing goes down.
+cs_x_balance_2	ru	Кладём на одну чашу яблоко. Чаша с яблоком опустилась.
+cs_x_balance_2	en	We put an apple on one pan. The pan with the apple went down.
+cs_x_balance_3	ru	А на другую чашу положим ключ. Какая чаша будет внизу?
+cs_x_balance_3	en	Now let's put a key on the other pan. Which pan will be at the bottom?
+cs_x_balance_3q	ru	Какая чаша будет внизу?
+cs_x_balance_3q	en	Which pan will be at the bottom?
+cs_x_balance_4	ru	Яблоко тяжелее ключа. Его чаша так и осталась внизу.
+cs_x_balance_4	en	The apple is heavier than the key. Its pan stayed at the bottom.
+cs_x_balance_5	ru	Уберём ключ и положим большой воздушный шарик. Шарик больше яблока. Какая чаша будет внизу теперь?
+cs_x_balance_5	en	Let's take the key away and put on a big balloon. The balloon is bigger than the apple. Which pan will be at the bottom now?
+cs_x_balance_5q	ru	Какая чаша будет внизу теперь?
+cs_x_balance_5q	en	Which pan will be at the bottom now?
+cs_x_balance_6	ru	Шарик большой, но лёгкий: внутри у него воздух. Яблоко всё равно тяжелее.
+cs_x_balance_6	en	The balloon is big but light: it is full of air. The apple is still heavier.
+cs_x_balance_7	ru	А теперь положим на другую чашу такое же яблоко. Весы стоят ровно. Поровну!
+cs_x_balance_7	en	Now let's put the same kind of apple on the other pan. The scales stay level. They are equal!
+cs_x_balance_8	ru	Что тяжелее, идёт вниз. Что легче, идёт вверх. Поровну, и весы стоят ровно.
+cs_x_balance_8	en	Heavier goes down. Lighter goes up. Equal, and the scales stay level.
+cs_x_stars_1	ru	Светит солнце. Небо голубое-голубое.
+cs_x_stars_1	en	The sun is shining. The sky is blue, so blue.
+cs_x_stars_2	ru	Как думаешь, днём на небе есть звёзды?
+cs_x_stars_2	en	Do you think there are stars in the sky in the daytime?
+cs_x_stars_2q	ru	Днём есть звёзды?
+cs_x_stars_2q	en	Are there stars in the daytime?
+cs_x_stars_3	ru	Давай представим, что голубое небо стало прозрачным, как стекло. Смотри: звёзды на месте!
+cs_x_stars_3	en	Let's pretend the blue sky turned clear like glass. Look: the stars are there!
+cs_x_stars_4	ru	Звёзды никуда не уходят. Просто днём солнце светит так ярко, что небо светлое, и звёзд не видно.
+cs_x_stars_4	en	The stars never go away. In the daytime the sun shines so brightly that the sky is light, and we can't see the stars.
+cs_x_stars_5	ru	Вечером солнце садится. Небо темнеет...
+cs_x_stars_5	en	In the evening the sun goes down. The sky gets dark...
+cs_x_stars_6	ru	И звёзды появляются. Они были на небе и днём, просто мы их не видели!
+cs_x_stars_6	en	And the stars come out. They were in the sky in the daytime too. We just couldn't see them!
+cs_x_stars_7	ru	А солнце тоже звезда. Самая близкая к нам, поэтому такая большая и яркая!
+cs_x_stars_7	en	And the sun is a star too. It's the closest one to us, so it looks so big and bright!
+cs_x_frog_1	ru	Это пруд. В воде плавает лягушачья икра: прозрачные шарики с чёрными точками внутри.
+cs_x_frog_1	en	This is a pond. Frog eggs float in the water: clear little balls with black dots inside.
+cs_x_frog_2	ru	Кто появится из икринки? Маленький лягушонок или головастик с хвостиком?
+cs_x_frog_2	en	What will come out of an egg? A tiny frog, or a tadpole with a tail?
+cs_x_frog_2q	ru	Кто появится из икринки?
+cs_x_frog_2q	en	What will come out of the egg?
+cs_x_frog_3	ru	Из икринок выплывают головастики! У них есть хвост, а ножек нет. Они живут в воде, как рыбки.
+cs_x_frog_3	en	Tadpoles swim out of the eggs! They have a tail but no legs. They live in the water like little fish.
+cs_x_frog_4	ru	Головастик ест и растёт. Сначала у него появляются задние лапки.
+cs_x_frog_4	en	The tadpole eats and grows. First it gets back legs.
+cs_x_frog_5	ru	Потом передние лапки. А хвостик становится всё короче и короче.
+cs_x_frog_5	en	Then front legs. And the tail gets shorter and shorter.
+cs_x_frog_6	ru	И вот это уже лягушка! Прыг из воды на лист кувшинки.
+cs_x_frog_6	en	And now it's a frog! Hop, out of the water onto a lily pad.
+cs_x_frog_7	ru	Икринка, головастик, лягушка. Ква!
+cs_x_frog_7	en	Egg, tadpole, frog. Ribbit!

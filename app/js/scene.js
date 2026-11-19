@@ -28,11 +28,8 @@ Scene.rec = function (lang, sid) {
 /* ---------- round selection: SRS due first, then new words, then the rest ---------- */
 function pickTargets(lang, sc, pw) {
   var ids = sc.items.map(function (i) { return i.id; }).filter(function (id) { return D.items[id] && D.items[id][lang]; });
-  if (pw) {   /* linear path: today's words first, then other met words of this scene; never an unmet word */
-    var pref = Core.shuffle(ids.filter(function (id) { return pw.indexOf(id) >= 0; }));
-    var met = Core.shuffle(ids.filter(function (id) { return pref.indexOf(id) < 0 && SRS.peek(lang, id).box >= 1; })), outP = [];
-    pref.concat(met).forEach(function (id) { if (outP.length < Math.min(ROUND, ids.length) && outP.indexOf(id) < 0) outP.push(id); });
-    if (outP.length >= 3) return Core.shuffle(outP);
+  if (pw) {   /* linear path: only the session-retrieval allowlist supplied by Path */
+    return Core.shuffle(ids.filter(function (id) { return pw.indexOf(id) >= 0; })).slice(0, ROUND);
   }
   var due = SRS.dueList(lang).filter(function (id) { return ids.indexOf(id) >= 0; });
   var neu = Core.shuffle(ids.filter(function (id) { return SRS.peek(lang, id).box < 1; }));

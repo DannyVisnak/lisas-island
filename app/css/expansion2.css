@@ -1,0 +1,6 @@
+/* Expansion v2 lessons only: every selector is scoped to .ls-x2-*; v1 (.ls-x-*) and the original 11 lessons are untouched. */
+.ls-x2-node { position: absolute; pointer-events: none; transform-origin: 50% 50%; }
+.ls-x2-node > svg, .ls-x2-full > svg, .ls-x2-tile > svg { display: block; width: 100%; height: 100%; }
+.ls-x2-full { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.ls-x2-pan, .ls-x2-pan > svg { overflow: visible; }
+.ls-x2-tad > svg, .ls-x2-stage > svg { transform-origin: 30% 50%; }

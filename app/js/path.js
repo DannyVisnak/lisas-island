@@ -67,6 +67,10 @@ Path.note = function (lang, id, kind) {
   if (!Path.active()) return;
   var S = Path.session(lang); if (!S || S.done) return;
   S.ret[id] = (S.ret[id] || 0) + 1;
+  if (kind === 'first') {
+    if (!S.rok || typeof S.rok !== 'object' || Array.isArray(S.rok)) S.rok = {};
+    Object.defineProperty(S.rok, id, { value: successful(S, id) + 1, writable: true, enumerable: true, configurable: true });
+  }
   if (kind === 'helped') {
     S.hs = (S.hs || 0) + 1;
     if (S.hs >= 3) { S.hs = 0; S.strikes = (S.strikes || 0) + 1; if (S.strikes >= 2) S.early = true; }
@@ -148,7 +152,7 @@ Path.newSession = function (lang) {
   var S = { day: dayStr(), step: 0, plan: [], newA: [], newB: [], startedAt: Date.now(), playedMs: 0, done: false,
     lessonsSeen: old.lessonsSeen || {}, queue: (old.queue || []).slice(), rot: (old.rot || 0) + 1,
     lastLessonDomain: old.lastLessonDomain || null, lessonId: old.lessonId || null,
-    ret: {}, cc: {}, paid: {}, hs: 0, strikes: 0, early: false, cor: 0, warm: [], rv: [], dueN: due.length, said: false };
+    ret: {}, rok: {}, cc: {}, paid: {}, hs: 0, strikes: 0, early: false, cor: 0, warm: [], rv: [], dueN: due.length, said: false };
   var pendingCountry = Core.L(lang).countries && Core.L(lang).countries.pending;
   var tripReady = Path.countryReady(lang,pendingCountry);
   var review = due.length > DUE_REVIEW_DAY;
@@ -189,6 +193,10 @@ Path.play = function () { Core.lang = Core.curLang(); Path.go(); };
 Path.home = function () { Core.persist(); UI.go('home'); };
 function P(S, id, o) { return Object.assign({ path: true, lang: Core.curLang(), step: id }, o || {}); }
 function ret(S, id) { return S.ret[id] || 0; }
+function successful(S, id) {
+  var counts = S.rok, n = counts && typeof counts === 'object' && !Array.isArray(counts) && Object.prototype.hasOwnProperty.call(counts, id) ? counts[id] : 0;
+  return Number.isSafeInteger(n) && n >= 0 ? n : 0;
+}
 function unavailableCountryIds(S) { return S && S.country && S.countryUnavailable && S.countryUnavailable.token===S.country.token ? S.country.ids : []; }
 function remainderA(S) { return unavailableCountryIds(S).length ? [] : S.newA; }
 function dueOld(lang, exclude, n) { var blocked=unavailableCountryIds(Path.session(lang)); return Core.shuffle(SRS.dueList(lang).filter(function (i) { return exclude.indexOf(i) < 0 && blocked.indexOf(i) < 0; })).slice(0, n); }
@@ -232,7 +240,7 @@ STEP.A3 = function (S, lang) {
 };
 Path.nextLesson = function (S, lang) {
   var list = window.Lesson ? Lesson.list() : [], next = null, available = list.filter(function(l){return !S.lessonsSeen[l.id] && !Lesson.seen(lang,l.id);});
-  if (S.lessonId && available.some(function(l){return l.id===S.lessonId;})) next = S.lessonId;
+  if (S.lessonId && list.some(function(l){return l.id===S.lessonId;})) next = S.lessonId;
   if (!next && available.length) {
     next = available[0].id;
     var nextDef=LESSON_DATA.lessons[next];
@@ -290,16 +298,16 @@ STEP.B2 = function (S, lang) {
   var a = Core.shuffle(remainderA(S)).slice(0, 2), seq = UI.makeSeq(S.newB, S.newB.length * 2).concat(a);
   UI.go('plisten', P(S, 'B2', { lang: lang, words: S.newB.concat(a), seq: seq })); return true;
 };
-/* game Z: rotate Run -> seek-and-find -> a mini-game of an EARLIER world; gates only use words retrieved >= 2 times today (relaxed to >= 1 only when too few) */
+/* game Z: rotate Run -> seek-and-find -> a mini-game of an EARLIER world; Run/seek targets only use words retrieved >= 2 times today; review mini-games retain their met-word selection */
 function zStep(S, lang, id, base) {
-  var all = uniq(base.concat(S.warm || [], S.rv || [])), w2 = all.filter(function (i) { return ret(S, i) >= 2; });
-  if (w2.length < 3) w2 = all.filter(function (i) { return ret(S, i) >= 1; });
-  if (w2.length < 3) { UI.go('plisten', P(S, id, { lang: lang, words: all, seq: UI.makeSeq(all, Math.max(6, all.length)) })); return true; }
+  var all = uniq(base.concat(S.warm || [], S.rv || [])), w2 = all.filter(function (i) { return successful(S, i) >= 2; });
+  var mode = ['run', 'scene', 'mg'][S.rot % 3];
+  if (w2.length < 3 && (mode !== 'mg' || all.filter(function (i) { return ret(S, i) >= 1; }).length < 3)) { UI.go('plisten', P(S, id, { lang: lang, words: all, seq: UI.makeSeq(all, Math.max(6, all.length)) })); return true; }
   if (base.every(function(id){return worldOf(id) === 'countries';})) { UI.go('plisten',P(S,id,{lang:lang,words:base,seq:UI.makeSeq(base,Math.max(6,base.length))})); return true; }
-  var mode = ['run', 'scene', 'mg'][S.rot % 3], world = worldOf(base[0]), wi = worldOrder().indexOf(world);
+  var world = worldOf(base[0]), wi = worldOrder().indexOf(world);
   if (mode === 'scene') {
     var scn = window.Scene && Scene.forWorld(world);
-    var met = scn ? scn.items.filter(function (it) { return D.items[it.id] && SRS.peek(lang, it.id).box >= 1; }).length : 0;
+    var met = scn ? scn.items.filter(function (it) { return D.items[it.id] && w2.indexOf(it.id) >= 0; }).length : 0;
     if (scn && met >= 3) { UI.go('scene', P(S, id, { lang: lang, world: world, scene: scn.id, words: w2 })); return true; }
     mode = 'run';
   }
@@ -318,6 +326,7 @@ function zStep(S, lang, id, base) {
     if (cand) { UI.go('minigame', P(S, id, { lang: lang, game: cand.g.id, world: cand.world, words: Core.shuffle(cand.words).slice(0, 6) })); return true; }
     mode = 'run';
   }
+  if (w2.length < 3) { UI.go('plisten', P(S, id, { lang: lang, words: all, seq: UI.makeSeq(all, Math.max(6, all.length)) })); return true; }
   UI.go('run', P(S, id, { lang: lang, world: world, words: Core.shuffle(w2).slice(0, 6), level: 4 })); return true;
 }
 STEP.B3 = function (S, lang) {
@@ -427,6 +436,7 @@ UI.screens.pmeet = function (flow, root, p) {
   (async function () {
     await flow.wait(800);
     for (var i = 0; i < words.length; i++) {
+      if (Path.shouldStop()) break;
       var id = words[i], first = SRS.peek(lang, id).box < 1;
       light(id);
       labels[id].classList.add('revealed');
@@ -436,7 +446,7 @@ UI.screens.pmeet = function (flow, root, p) {
       await flow.prompt(ctx.area, l1, [cards[id]]); await flow.wait(350);
       await flow.prompt(ctx.area, [Core.url.q(lang, id)], [cards[id]]); await flow.wait(350);
       if (i === 0) await Core.sayRu(flow, 'explore');
-      else await flow.prompt(ctx.area, [Core.url.w(lang, id)], [cards[id]]);
+      await flow.prompt(ctx.area, [Core.url.w(lang, id)], [cards[id]]);
       await waitTap(id, 6500);
       await flow.wait(300);
     }

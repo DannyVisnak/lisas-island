@@ -1,0 +1,6 @@
+/* Expansion lessons only: every selector is scoped to .ls-x-* so the original 11 lessons are untouched. */
+.ls-x-node { position: absolute; pointer-events: none; transform-origin: 50% 50%; }
+.ls-x-node > svg, .ls-x-full > svg, .ls-x-tile > svg { display: block; width: 100%; height: 100%; }
+.ls-x-full { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.ls-x-rain { overflow: hidden; }
+.ls-x-rain > svg { will-change: transform; }

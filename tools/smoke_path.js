@@ -246,19 +246,33 @@ async function solveLesson(lib, st) {
   }
 }
 
+function installPathWalkTrace(){
+ if(window.__pathWalkTrace)throw Error('walk trace already owned');const lang=Core.curLang(),owner=Path.session(lang),day=owner&&owner.day;const rows=[];let cursor=0;const original=UI.go;
+ const info=()=>{const S=Path.session(Core.curLang());return{sc:__test.screen(),step:S?S.step:-1,id:S?.plan?.[S.step]??null,done:!!S?.done};};
+ function capture(source,name){if(!owner||Path.session(lang)!==owner||Core.curLang()!==lang||owner.day!==day||!UI.p?.path||(UI.p.lang||lang)!==lang||UI.cur!==name)return;rows.push({screen:UI.cur,step:owner.step,id:owner.plan[owner.step],source,lang,day,done:!!owner.done});}
+ capture('initial',UI.cur);
+ const wrapper=function(name,...args){const result=original.call(this,name,...args);capture('entry',name);return result;};UI.go=wrapper;
+ window.__pathWalkTrace={read(){capture('poll',UI.cur);const sample={info:info(),rows:rows.slice(cursor)};cursor=rows.length;return sample;},stop(){const tail=this.read();if(UI.go!==wrapper)throw Error('walk UI.go ownership changed');UI.go=original;delete window.__pathWalkTrace;return tail;}};
+}
+function readPathWalkTrace(){return window.__pathWalkTrace.read();}
+function stopPathWalkTrace(){return window.__pathWalkTrace.stop();}
+function appendPathVisit(visited,row){visited.transitionTrace.push(row);const last=visited[visited.length-1];if(!last||last.screen!==row.screen||last.step!==row.step||last.id!==row.id)visited.push({screen:row.screen,step:row.step,id:row.id});}
+function validateCapVisits(visited){const ids=visited.map(x=>x.id),first=ids[0],entries=visited.transitionTrace.filter(x=>x.source==='entry');return ids[ids.length-1]==='R'&&ids.length<=3&&entries.some(x=>x.screen==='pritual'&&x.id==='R')&&entries.every(x=>x.id===first||x.id==='R');}
+
 /* walk the running session until Lisa is home again; returns the list of visited steps */
 const RUN_FALL = {};
 async function walk(lib, tag, vp, o) {
   o = o || {};
-  const visited = [], seenScreens = {}; let subtitleShot = false;
+  const visited = [], seenScreens = {};Object.defineProperty(visited,'transitionTrace',{value:[]});let subtitleShot = false;
   const t0 = Date.now(); let lastKey = '', st = null;
+  await ev(lib,installPathWalkTrace);try {
   while (Date.now() - t0 < (o.timeout || 420000)) {
-    const info = await ev(lib, () => { const S = Path.session(Core.curLang()); return { sc: __test.screen(), step: S ? S.step : -1, id: S && S.plan ? S.plan[S.step] : null, done: S ? S.done : false }; });
+    const sample=await ev(lib,readPathWalkTrace);sample.rows.forEach(row=>appendPathVisit(visited,row));const info=sample.info;
     if (info.sc === 'home') break;
     if (o.stopAt != null && info.step >= o.stopAt && info.sc !== 'pritual') break;
     const key = info.sc + '#' + info.step;
     if (key !== lastKey) {
-      lastKey = key; st = { screen: info.sc, wrong: { done: false }, shots: !!o.shots }; visited.push({ screen: info.sc, step: info.step, id: info.id });
+      lastKey = key; st = { screen: info.sc, wrong: { done: false }, shots: !!o.shots }; appendPathVisit(visited,{screen:info.sc,step:info.step,id:info.id,source:'poll'});
       const sk = info.sc + '_' + info.id;
       if (o.shots && info.id === 'R' && !seenScreens[sk]) { seenScreens[sk] = 1; await ev(lib, () => __test.realTime()); await sleep(1800); await lib.page.screenshot({ path: path.join(SHOTS, 'path_' + tag + '_ritual_' + vp.width + '.png') }); await ev(lib, () => __test.speedUp(8)); }
       if (!seenScreens[sk]) { seenScreens[sk] = 1; if (o.shots) { await sleep(1100); await lib.page.screenshot({ path: path.join(SHOTS, 'path_' + tag + '_' + sk + '_' + vp.width + '.png') }); } }
@@ -297,6 +311,7 @@ async function walk(lib, tag, vp, o) {
     if (st.lessonTaps) o.lessonTaps = st.lessonTaps;
   }
   return visited;
+  } finally {const tail=await ev(lib,stopPathWalkTrace);tail.rows.forEach(row=>appendPathVisit(visited,row));}
 }
 
 const shot = (lib, name, vp) => lib.page.screenshot({ path: path.join(SHOTS, 'path_' + name + '_' + vp.width + '.png') });
@@ -478,7 +493,7 @@ async function ruleCases(lib, vp) {
   await ev(lib, () => { Path.test.played(16 * 60000); });
   const v2 = await walk(lib, 'cap', vp, {});
   const ids = v2.map((x) => x.id);
-  expect(ids[ids.length - 1] === 'R' && ids.length <= 3, 'at the 15 min cap the rest is skipped: ' + ids.join());
+  expect(ids[ids.length - 1] === 'R' && ids.length <= 3 && validateCapVisits(v2), 'at the 15 min cap the rest is skipped: ' + ids.join());
   await waitHome(lib); expect((await sess(lib)).done, 'cap session ritual done');
   /* early end: 3 helped answers in a row, twice */
   await ev(lib, () => { Core.save.settings.pathSmall = false; __test.dayShift(2); __test.go('home'); }); await sleep(300);
@@ -541,7 +556,7 @@ async function freshBoot(vp) {
   return lib;
 }
 
-(async () => {
+if(require.main===module) (async () => {
   let code = 0;
   const ONLY = (process.env.PATH_CASES || 'ABCD'), ONLYVP = process.env.PATH_VP ? +process.env.PATH_VP : 0;   /* e.g. PATH_CASES=B PATH_VP=1920 runs one case at one viewport */
   for (const vp of VIEWPORTS) {
@@ -611,3 +626,5 @@ async function freshBoot(vp) {
   }
   process.exit(code);
 })();
+
+module.exports={installPathWalkTrace,readPathWalkTrace,stopPathWalkTrace,appendPathVisit,validateCapVisits};

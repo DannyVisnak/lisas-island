@@ -6,9 +6,10 @@ A friendly fox called Lisa talks to the child in Russian or English and teaches 
 There are no menus to read, no ads, no accounts and no internet.
 
 > **Status: early and experimental.** This is a family project in active development.
-> The desktop builds are test builds. The Mac builds are ad-hoc signed only: they are not signed with an
-> Apple developer certificate and not notarized (see "Testing status" below). Nothing here has been
-> shown to teach a language faster or better than anything else.
+> This README describes the current source in this checkout (19 lessons). The download builds are older
+> test builds with 11 lessons (see "Which version is which" below). The Mac builds are ad-hoc signed only:
+> they are not signed with an Apple developer certificate and not notarized (see "Testing status" below).
+> Nothing here has been shown to teach a language faster or better than anything else.
 
 ## Why this exists
 
@@ -27,10 +28,15 @@ cheers for him. That is the part we care most about. He should feel that he is d
 - **One Play button.** Each day Lisa runs one short session, and the child never has to choose:
   new words, a memory game, a mini-game with the same words, a tiny lesson and a movement break,
   more words, listen and tap, then a game with all of today's words. Then Lisa goes to sleep until tomorrow.
+- **Session length.** A grown-up can set the session to 10, 15 or 20 minutes. We do not claim that any
+  of these lengths is best. When the time is up, the child finishes the activity in progress, and then
+  Lisa says goodnight.
 - **Games instead of flash cards:** memory, a jump-and-run where the doors open with the right picture,
   hidden-picture scenes, seven mini-games and a play shop with play money in seven currencies
   (the foreign money cards are made-up designs).
-- **11 short lessons** from Lisa (things like counting and the sky).
+- **19 short lessons** from Lisa. The first 11 cover things like counting and the sky. 8 new ones are about
+  shadows, a sprout, halves, the rainbow, the Teremok fairy tale, balance, the stars and a frog.
+  They teach no new vocabulary words.
 - **12 countries** to visit on Lisa's map.
 - **Lisa's house.** Stars build her house step by step. Each of the 5 building parts and each of the
   17 pieces of furniture comes in 3 styles, so the child can mix styles and restyle the house.
@@ -63,9 +69,16 @@ The ideas we built in:
 
 ## Install
 
+### Which version is which
+
+- **This source checkout** has 19 lessons. It has not been pushed to GitHub, packaged or released yet.
+- **The `main` branch on GitHub** (commit `9139bb8`) and **the three download builds** are an older
+  snapshot with 11 lessons. The download builds are still drafts.
+
 ### Download (desktop test builds)
 
-Get the builds from the [Releases](../../releases) page when they are published:
+Get the builds from the [Releases](../../releases) page when they are published.
+These files are built from the older 11-lesson snapshot:
 
 | File | For |
 |---|---|
@@ -100,6 +113,9 @@ cd desktop && ./build.sh      # packages app/ with Electron -> desktop/dist/lisa
 cd .. && ./install.sh         # installs to ~/.local/share/lisa-island and adds a launcher
 ```
 
+`build.sh` installs its own Node dependencies first (`npm ci`, or `npm install` if there is no lock file).
+It needs Node.js and npm, and the first build needs internet access.
+
 Opening `app/index.html` directly in a browser also works as an option (from `file://`, no server needed),
 but whether the voices play depends on the browser's media backend. In our tests Firefox showed a known
 audio error (`OnMediaSinkAudioError`) with both old and new audio files, so no browser is guaranteed to play
@@ -111,17 +127,30 @@ progress per language and free play. More setup notes: [`docs/SETUP_NOTES.md`](d
 
 ## Testing status
 
-Honest state of this version:
+Honest state of the current 19-lesson source:
 
-- **Automated tests pass** on the current source: 382 Node assertions, 47 Python tests, 11 desktop checks,
-  the 6 older browser suites, and 4 cases in the real desktop app (one of them, the Portuguese case,
-  runs through 4 routes of the story).
+- **Focused automated tests pass:** 98 Node tests in 12 files. They cover lesson choice and resume,
+  review rules, the story rules and how the tests observe lessons and the path. This is a targeted set,
+  not a full rerun of every older test.
+- **The 6 older browser suites pass** on the current app. After a fix in how one test reads the game
+  (a test fix, not a game fix), the Path suite was rerun in full. No check was weakened or removed.
+- **In the real desktop app**, 66 lesson routes were checked on the source just before one last fix to
+  the Sun's position in the rainbow lesson. That fix then got its own checks. Separately, 2 whole lessons
+  ran normally in the app: a tap while Lisa is speaking is ignored, and a tap after she finishes counts.
+- **Older numbers** (382 Node assertions, 47 Python tests, 11 desktop checks) come from the earlier
+  11-lesson build. They were not all rerun on the 19-lesson source, so they are not a test result for this version.
 - **Those desktop runs were on Linux in a virtual screen, as root, with the browser sandbox and the
   GPU turned off.** That is not the same as a normal user account, a real Mac or a Windows tablet.
+  The new lessons have not been tried with real touch, sound and saving on a physical device yet.
+- **Pictures:** the pictures in the 8 new lessons were reviewed on screenshots and accepted.
+  That was a check of still images only, not of motion or sound.
 - **Mac builds** are ad-hoc signed only. There is no Apple developer certificate and no notarization.
   Neither the Apple Silicon build nor the Intel build has been tested on a real Mac.
   The Mac window controls and keeping progress across an update were checked in the code, not yet on a device.
-- **Voices:** the 30 new story lines and the optional Portuguese letter track still wait for a check by a
+- **Voices:** 135 of the 136 new Russian and English lines are installed. One Russian line in the shadows
+  lesson (`ru_cs_x_shadow_1`) is still missing while a decision about recording it is pending.
+  When a clip is missing, the game is built to go on within 4 seconds.
+  The new lines, the 30 story lines and the optional Portuguese letter track still wait for a check by a
   person who knows the language well. The isolated letter sounds are held back until a specialist hears them.
 - **Open test gates:** a strict screenshot check and a parallel stress test are still open.
   Until they pass, the builds count as test builds and not as a stable release.
@@ -136,7 +165,8 @@ If you try it, issues with your device, OS version and what happened are very we
    `tools/gen_audio_gemini.py --keys key1,key2`, with your own API key in the environment.
    `tools/check_assets.py` checks that every audio file exists.
 
-Tests are Playwright smoke suites in `tools/smoke*.js`. Open work is in [`tickets/BACKLOG.md`](tickets/BACKLOG.md).
+Tests are Playwright smoke suites in `tools/smoke*.js`. An older list of ideas and tasks is in
+[`tickets/BACKLOG.md`](tickets/BACKLOG.md). It is out of date and does not show what is open or done now.
 
 ## Credits and licences
 

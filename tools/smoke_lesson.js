@@ -26,7 +26,12 @@ function lessonObservation() {
     const left = owner.S.box.querySelector('.ls-more-left'), right = owner.S.box.querySelector('.ls-more-right');
     if (left && right) basketCounts = [left.dataset.count, right.dataset.count];
   }
-  return { state, basketCounts };
+  let repkaWitness = null;
+  if (owner.id === 'repka' && state.beat === 6 && state.phase === 'beat') {
+    const joined = [...owner.S.box.querySelectorAll('.ls-actors .ls-a[data-helper]')].filter(n => n.dataset.joined === 'true').map(n => n.dataset.helper);
+    repkaWitness = { joined, extracted: !!owner.S.box.querySelector('.ls-rp-turnip[data-extracted="true"]') };
+  }
+  return { state, basketCounts, repkaWitness };
 }
 
 
@@ -40,12 +45,13 @@ async function playLesson(lib, id, vp, firstRun) {
   await page.evaluate((i) => { window.__done = null; __test.go('lesson', { id: i, done: () => { window.__done = true; __test.go('home'); } }); window.__lessonSmokeOwner = window.__lessonTest; }, id);
   try {
   await page.waitForFunction(() => window.__lessonTest, null, { timeout: 8000 }).catch(() => lib.fail(id + ': lesson did not start'));
-  const t0 = Date.now(); let lastBeat = -1, shots = {}, pickedPrompts = 0, moreWitness = false;
+  const t0 = Date.now(); let lastBeat = -1, shots = {}, pickedPrompts = 0, moreWitness = false, repkaWitness = false;
   const want = SHOT_BEATS[id];            /* beat index -> shot name, taken ~0.6 s (real) into that beat */
   while (Date.now() - t0 < 120000) {
     const observation = await page.evaluate(lessonObservation), s = observation.state;
     if (!s) break;
     if (observation.basketCounts && observation.basketCounts.join() === '3,3') moreWitness = true;
+    if (observation.repkaWitness && ['grandpa','grandma','girl','dog','cat','mouse'].every(n => observation.repkaWitness.joined.includes(n)) && observation.repkaWitness.extracted) repkaWitness = true;
     if (s.beat !== lastBeat) { lastBeat = s.beat; if (want[s.beat] && s.phase === 'beat') { await sleep(600); await shot(want[s.beat]); } }
     if (s.phase === 'prompt') {
       if (!shots.prompt) { await sleep(500); await shot('prompt'); shots.prompt = 1; }
@@ -79,8 +85,9 @@ async function playLesson(lib, id, vp, firstRun) {
       continue;
     }
     if (id === 'repka' && s.beat === 5) await page.waitForFunction(() => document.querySelector('.ls-rp-turnip[data-extracted="true"]'), null, { timeout: 8000 });
-    if (id === 'repka' && s.beat === 6) {
-      const state = await page.evaluate(() => ({ joined: [...document.querySelectorAll('.ls-actors .ls-a[data-helper]')].filter(n => n.dataset.joined === 'true').map(n => n.dataset.helper), extracted: !!document.querySelector('.ls-rp-turnip[data-extracted="true"]') }));
+    if (id === 'repka' && s.beat === 6 && s.phase === 'beat') {
+      const state = observation.repkaWitness;
+      expect(!!state, 'repka: original-scene extraction witness required');
       expect(['grandpa','grandma','girl','dog','cat','mouse'].every(n => state.joined.includes(n)) && state.extracted, 'repka: all helpers joined before the turnip was extracted ' + JSON.stringify(state));
     }
     if (id === 'more' && s.beat === 6 && s.phase === 'beat') {
@@ -99,6 +106,7 @@ async function playLesson(lib, id, vp, firstRun) {
   const rec = await page.evaluate((i) => Core.L(Core.curLang()).lessons[i], id);
   expect(rec && rec.seen === after && rec.last > 0, id + ': bad save record ' + JSON.stringify(rec));
   expect(pickedPrompts === (id === 'float' || id === 'hist_tiles' && vp.width === 1920 ? 2 : 1), id + ': expected prompts, got ' + pickedPrompts);
+  if (id === 'repka') expect(repkaWitness, 'repka: required original-scene six-helper extraction witness was not observed');
   if (id === 'more') {
     expect(moreWitness, 'more: required original-scene final 3,3 witness was not observed');
     const audit=await page.evaluate(()=>window.__lessonSpeechLog.flat().map(String));
