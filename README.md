@@ -71,9 +71,10 @@ The ideas we built in:
 
 ### Which version is which
 
-- **This source checkout** has 19 lessons. It has not been pushed to GitHub, packaged or released yet.
-- **The `main` branch on GitHub** (commit `9139bb8`) and **the three download builds** are an older
-  snapshot with 11 lessons. The download builds are still drafts.
+- **The current source** has 19 lessons. It is on the `main` branch on GitHub. It has not been packaged
+  or released yet.
+- **The three download builds** are an older snapshot with 11 lessons. They have not changed and are still
+  drafts. There is no new packaged build and no stable release.
 
 ### Download (desktop test builds)
 
